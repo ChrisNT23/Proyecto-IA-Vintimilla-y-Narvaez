@@ -6,6 +6,7 @@ import { setCredentials } from "../slices/authSlice.js";
 import { toast } from "react-toastify";
 import * as faceapi from "face-api.js";
 import axios from "axios";
+import SplineEmbed from "../components/SplineEmbed.jsx";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -367,34 +368,16 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Right Panel: Visual / Animation (60% width, hidden on mobile) */}
-        <div className="hidden lg:relative lg:flex lg:w-[60%] lg:items-center lg:justify-center overflow-hidden bg-slate-900">
-          {/* Background Image with Overlay */}
-          <div
-            className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-overlay"
-            style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCVTMq2R-ck0pH7AbE1nFTkHUBEv0JO7alGdBrPW3MAtURQrxAUinVa8IpJ9DAJgFh052F7aa8GAYNgfgwb5RuNUp-3Yy5iJZgVZT16fapVBxItAY2-Kyk_C5ZYE0YmB3c4WsV8OOKHipnB65SNxQipXbZzh-txYtlyHA8uC0WBJn8Wy8ix0JjuebiatojthF_SZKM93CQwclKoxMU1AUYF1UI_tkCzVoao23-G_qXxlNcQA-ujgZOAIlOCJAhQ5m--3YUFJzJLftM')" }}
-          ></div>
-          {/* Gradient Overlay for smoothness */}
-          <div className="absolute inset-0 bg-gradient-to-br from-panel-dark via-transparent to-primary/40"></div>
-
-          {/* Content overlay on image */}
-          <div className="relative z-10 max-w-lg p-12 text-center">
-            <div className="mb-6 flex justify-center">
-              <div className="flex size-20 items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl">
-                <span className="material-symbols-outlined text-4xl text-white">self_improvement</span>
-              </div>
-            </div>
-            <h3 className="text-3xl font-bold text-white mb-4 drop-shadow-md">Claridad Mental y Bienestar</h3>
-            <p className="text-lg text-blue-100 font-light leading-relaxed drop-shadow-sm">
-              Nuestra plataforma combina la neurociencia avanzada con el cuidado humano para ofrecerte el mejor tratamiento posible.
-            </p>
-          </div>
-
-          {/* Decorative Elements */}
-          <div className="absolute bottom-10 right-10 flex gap-2">
-            <div className="h-1.5 w-1.5 rounded-full bg-white/50"></div>
-            <div className="h-1.5 w-1.5 rounded-full bg-white/30"></div>
-            <div className="h-1.5 w-1.5 rounded-full bg-white/10"></div>
+        {/* Right Panel: Spline 3D Animation (60% width, hidden on mobile) */}
+        <div className="hidden lg:relative lg:flex lg:w-[60%] lg:flex-col lg:items-center lg:justify-center overflow-hidden bg-slate-900 p-12">
+          {/* Título */}
+          <h3 className="text-4xl font-bold text-white mb-8 drop-shadow-lg z-10">
+            Claridad Mental y Bienestar
+          </h3>
+          
+          {/* Spline 3D Scene Component centrado */}
+          <div className="w-full h-full flex items-center justify-center">
+            <SplineEmbed />
           </div>
         </div>
       </div>

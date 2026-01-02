@@ -1,0 +1,9 @@
+/* Si el iframe tiene un fondo que no quieres, también puedes intentar darle un fondo transparente */
+iframe {
+    background-color: transparent; /* Establecer el fondo del iframe como transparente */
+    border: none; /* Eliminar cualquier borde alrededor del iframe */
+    width: 100%;
+    height: 380px;
+  }
+  
+  
