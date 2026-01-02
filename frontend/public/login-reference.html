@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>NeuroCare Clinic Login</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <!-- Tailwind CSS with configuration -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "panel-dark": "#1f2937",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased">
+    <div class="flex min-h-screen w-full flex-row overflow-hidden">
+        <!-- Left Panel: Dark Form Area (40% width on large screens) -->
+        <div
+            class="flex w-full flex-col justify-center bg-panel-dark px-8 py-12 lg:w-[40%] lg:px-16 xl:px-24 shadow-2xl z-10 relative">
+            <!-- Logo Section -->
+            <div class="mb-12 flex items-center gap-3">
+                <div class="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
+                    <span class="material-symbols-outlined text-3xl">neurology</span>
+                </div>
+                <h2 class="text-2xl font-bold tracking-tight text-white">Consultorio Mora</h2>
+            </div>
+            <!-- Header Text -->
+            <div class="mb-10">
+                <h1 class="mb-3 text-4xl font-black leading-tight tracking-tight text-white">
+                    Bienvenido
+                </h1>
+                <p class="text-slate-400">
+                    Accede a tu portal de salud mental y neurológica.
+                </p>
+            </div>
+            <!-- Login Form -->
+            <form class="flex flex-col gap-5">
+                <!-- Email Field -->
+                <div class="group relative">
+                    <label class="mb-2 block text-sm font-medium text-slate-300" for="email">Correo electrónico</label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-4 text-slate-500">mail</span>
+                        <input
+                            class="w-full rounded-lg border-none bg-slate-800 py-4 pl-12 pr-4 text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all"
+                            id="email" placeholder="nombre@ejemplo.com" type="email" />
+                    </div>
+                </div>
+                <!-- Password Field -->
+                <div class="group relative">
+                    <div class="mb-2 flex items-center justify-between">
+                        <label class="text-sm font-medium text-slate-300" for="password">Contraseña</label>
+                        <a class="text-sm font-medium text-primary hover:text-blue-400 transition-colors"
+                            href="#">¿Olvidaste tu contraseña?</a>
+                    </div>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-4 text-slate-500">lock</span>
+                        <input
+                            class="w-full rounded-lg border-none bg-slate-800 py-4 pl-12 pr-12 text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all"
+                            id="password" placeholder="••••••••" type="password" />
+                        <button
+                            class="absolute right-4 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+                            type="button">
+                            <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Primary Action -->
+                <button
+                    class="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-4 text-base font-bold text-white shadow-lg shadow-primary/30 transition-all hover:bg-blue-600 hover:shadow-primary/50 active:scale-[0.98]"
+                    type="button">
+                    <span>Iniciar Sesión</span>
+                    <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                </button>
+                <!-- Divider -->
+                <div class="relative my-4 flex items-center py-2">
+                    <div class="flex-grow border-t border-slate-700"></div>
+                    <span class="mx-4 flex-shrink-0 text-xs font-medium text-slate-500 uppercase tracking-wider">O
+                        continúa con</span>
+                    <div class="flex-grow border-t border-slate-700"></div>
+                </div>
+                <!-- Face ID / Biometric Button -->
+                <button
+                    class="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-700 bg-transparent py-3 text-sm font-medium text-slate-300 transition-all hover:bg-slate-800 hover:text-white hover:border-slate-600"
+                    type="button">
+                    <span class="material-symbols-outlined text-[20px]">face</span>
+                    <span>Reconocimiento Facial</span>
+                </button>
+            </form>
+            <!-- Footer Meta -->
+            <div class="mt-10 text-center">
+                <p class="text-sm text-slate-400">
+                    ¿Nuevo usuario?
+                    <a class="font-semibold text-primary hover:text-blue-400 hover:underline transition-colors"
+                        href="#">Regístrate aquí</a>
+                </p>
+            </div>
+        </div>
+        <!-- Right Panel: Visual / Animation (60% width, hidden on mobile) -->
+        <div
+            class="hidden lg:relative lg:flex lg:w-[60%] lg:items-center lg:justify-center overflow-hidden bg-slate-900">
+            <!-- Background Image with Overlay -->
+            <div class="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-overlay"
+                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCVTMq2R-ck0pH7AbE1nFTkHUBEv0JO7alGdBrPW3MAtURQrxAUinVa8IpJ9DAJgFh052F7aa8GAYNgfgwb5RuNUp-3Yy5iJZgVZT16fapVBxItAY2-Kyk_C5ZYE0YmB3c4WsV8OOKHipnB65SNxQipXbZzh-txYtlyHA8uC0WBJn8Wy8ix0JjuebiatojthF_SZKM93CQwclKoxMU1AUYF1UI_tkCzVoao23-G_qXxlNcQA-ujgZOAIlOCJAhQ5m--3YUFJzJLftM');">
+            </div>
+            <!-- Gradient Overlay for smoothness -->
+            <div class="absolute inset-0 bg-gradient-to-br from-panel-dark via-transparent to-primary/40"></div>
+            <!-- Content overlay on image -->
+            <div class="relative z-10 max-w-lg p-12 text-center">
+                <div class="mb-6 flex justify-center">
+                    <div
+                        class="flex size-20 items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl">
+                        <span class="material-symbols-outlined text-4xl text-white">self_improvement</span>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-bold text-white mb-4 drop-shadow-md">Claridad Mental y Bienestar</h3>
+                <p class="text-lg text-blue-100 font-light leading-relaxed drop-shadow-sm">
+                    Nuestra plataforma combina la neurociencia avanzada con el cuidado humano para ofrecerte el mejor
+                    tratamiento posible.
+                </p>
+            </div>
+            <!-- Decorative Elements simulating motion/particles -->
+            <div class="absolute bottom-10 right-10 flex gap-2">
+                <div class="h-1.5 w-1.5 rounded-full bg-white/50"></div>
+                <div class="h-1.5 w-1.5 rounded-full bg-white/30"></div>
+                <div class="h-1.5 w-1.5 rounded-full bg-white/10"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

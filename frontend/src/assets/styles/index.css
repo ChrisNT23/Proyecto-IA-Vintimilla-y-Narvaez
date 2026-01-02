@@ -1,4 +1,6 @@
 /* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,6 +18,16 @@ body {
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Remove all margins and padding on login page */
+body.no-navbar,
+body.no-navbar #root,
+body.no-navbar main {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
 }
 
 
@@ -88,17 +100,24 @@ table th {
 }
 
 .filter-button {
-  width: 60%; /* Ocupar el ancho completo */
-  background-color: #bb8f56; /* Color del botón */
-  color: white; /* Color del texto */
-  border: none; /* Sin borde */
-  padding: 10px; /* Relleno para hacerlo más grande */
-  cursor: pointer; /* Cursor de mano al pasar por encima */
+  width: 60%;
+  /* Ocupar el ancho completo */
+  background-color: #bb8f56;
+  /* Color del botón */
+  color: white;
+  /* Color del texto */
+  border: none;
+  /* Sin borde */
+  padding: 10px;
+  /* Relleno para hacerlo más grande */
+  cursor: pointer;
+  /* Cursor de mano al pasar por encima */
   border-radius: 5px;
 }
 
 .filter-button:hover {
-  background-color: #d870b5; /* Cambiar color al pasar el ratón por encima */
+  background-color: #d870b5;
+  /* Cambiar color al pasar el ratón por encima */
 }
 
 .recommendations-container {
@@ -209,19 +228,25 @@ table th {
 
 
 .supplier-card {
-  max-width: 300px; /* Ajusta este valor según tus necesidades */
+  max-width: 300px;
+  /* Ajusta este valor según tus necesidades */
   margin: auto;
 }
 
 .supplier-card-image {
-  max-height: 200px; /* Altura máxima para la imagen */
-  object-fit: cover; /* Asegura que la imagen cubra completamente el espacio asignado */
+  max-height: 200px;
+  /* Altura máxima para la imagen */
+  object-fit: cover;
+  /* Asegura que la imagen cubra completamente el espacio asignado */
 }
 
 .supplier-card-description {
-  min-height: 100px; /* Asegura un mínimo de altura para la descripción */
-  overflow: hidden; /* Oculta el texto que exceda el espacio */
-  text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es demasiado largo */
+  min-height: 100px;
+  /* Asegura un mínimo de altura para la descripción */
+  overflow: hidden;
+  /* Oculta el texto que exceda el espacio */
+  text-overflow: ellipsis;
+  /* Añade puntos suspensivos si el texto es demasiado largo */
 }
 
 /* Estilos del header ahora están en Header.css */

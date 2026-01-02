@@ -1,82 +1,26 @@
-/* Fondo que ocupa toda la pantalla */
-.fullscreen-background {
-    position: fixed;
-    /* Fijo para que el fondo abarque toda la pantalla */
-    top: 0;
-    right: 0;
-    width: 50%;
-    height: 100%;   
-    background-size: cover;
-    background-position: center;
-    z-index: 0;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.1));
-    background-size: cover;
-    background-position: center;
-    filter: blur(2px); /* Aplica un desenfoque suave */  
-    
-}
-
-.background-image {
-    width: 100%; /* Ancho completo del contenedor */
-    height: 100%; /* Alto completo del contenedor */
-    object-fit: cover; /* Ajusta la imagen para cubrir el contenedor sin deformarla */
-    display: block; /* Evita espacios extra alrededor de la imagen */
-    position: absolute; /* Asegura que siempre ocupe el contenedor */
-    top: 0;
-    left: 0;
-}
-
-
 /* Contenedor del formulario */
 .login-container {
     display: flex;
     align-items: left;
     justify-content: left;
     width: 100%;
-    height: 100vh;    
-   padding-bottom: 3rem;  
-   position: relative; 
-}
-
-input,
-button,
-a {
-    z-index: 2;
+    height: 100vh;
+    padding-bottom: 3rem;
     position: relative;
 }
 
-.login-page {
-    width: 40%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;   
-    z-index: 2;
-    flex-direction: column;
-    align-items: center;
-   
-    
-}
 
-.form-wrapper {
-    position: relative;
-    padding: 15px;
-    border-radius: 1rem;   
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 30rem;
-    height: auto;
-    animation: fadeIn 1.5s ease-out;
-}
+
+
+
+
 /* Animación de entrada */
 @keyframes fadeIn {
     0% {
         opacity: 0;
         transform: translateY(-50px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -98,22 +42,7 @@ a {
     }
 }
 
-/* Contenedor interior del formulario */
-.form-inner {
-    background-color: #ffffff;
-    /* Fondo blanco */
-    padding: 3rem;
-    /* Espaciado interno */
-    border-radius: 0.75rem;
-    /* Bordes redondeados */
-    position: relative;
-    z-index: 1;
-    /* Por encima del contenedor exterior */
-    width: 28rem;
-    /* Ancho del contenedor interno */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    /* Sombra adicional opcional */
-}
+
 
 /* Título del formulario */
 #form-title {
@@ -130,31 +59,9 @@ a {
     /* Color de texto gris oscuro */
 }
 
-/* Espaciado entre elementos del formulario */
-.form-space {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
 
-}
 
-/* Estilos de los inputs */
-.input-field {
-    width: 100%;
-    height: 3.5rem;
-    /* Incrementamos la altura */
-    border: 1px solid #1f2937;
-    /* Borde gris oscuro */
-    padding-left: 1rem;
-    /* Espaciado interno */
-    padding-right: 1rem;
-    border-radius: 15rem;
-    /* Bordes redondeados */
-    box-sizing: border-box;
-    font-size: 1.1rem;
-    /* Tamaño de fuente mayor */
-  
-}
+
 
 /* Estilos del botón principal */
 .primary-button {
@@ -187,50 +94,7 @@ a {
     cursor: not-allowed;
 }
 
-/* Estilos de los botones secundarios */
-.secondary-button {
-    width: 100%;
-    height: 3.5rem;
-    /* Incrementamos la altura */
-    background-color: #10b981;
-    /* Verde */
-    color: white;
-    /* Texto blanco */
-    font-weight: 700;
-    /* Negrita */
-    border-radius: 15rem;
-    /* Bordes redondeados */
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-size: 1.1rem;
-    /* Tamaño de fuente mayor */
-}
 
-.secondary-button:hover {
-    background-color: #059669;
-    /* Verde más oscuro al pasar el cursor */
-}
-
-.secondary-button.yellow {
-    background-color: #f59e0b;
-    /* Amarillo */
-}
-
-.secondary-button.yellow:hover {
-    background-color: #d97706;
-    /* Amarillo más oscuro al pasar el cursor */
-}
-
-.secondary-button.purple {
-    background-color: #8b5cf6;
-    /* Púrpura */
-}
-
-.secondary-button.purple:hover {
-    background-color: #7c3aed;
-    /* Púrpura más oscuro al pasar el cursor */
-}
 
 /* Estilos del enlace */
 .link {
@@ -278,25 +142,7 @@ a {
     /* Verde */
 }
 
-/* Estilos para el video y canvas */
-.video-container {
-    position: relative;
-    margin-top: 1.5rem;
-}
 
-.video-container video,
-.video-container canvas {
-    border-radius: 0.625rem;
-    /* Bordes redondeados */
-    width: 320px;
-    height: 240px;
-}
-
-.video-container canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
 
 /* Estilos para mensajes de carga */
 .loader {
@@ -308,21 +154,7 @@ a {
     /* Tamaño de fuente ajustado */
 }
 
-/* Reseteo de estilos para botones */
-button {
-    font: inherit;
-}
 
-/* Reseteo de estilos para inputs */
-input {
-    font: inherit;
-    margin: 0;
-}
-
-/* Reseteo de estilos para enlaces */
-a {
-    text-decoration: none;
-}
 
 /* Estilos para las etiquetas de campo */
 .input-label {
@@ -340,121 +172,9 @@ a {
     font-weight: bold;
 }
 
-.mailfield {
-    position: relative;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    border: 1px solid #8f8f8f;
-    border-radius: 15rem;
-    padding: 4px;
-    box-sizing: border-box;
-   
-}
-
-.icon {
-    color: #000000;
-    /* Color del ícono */
-    font-size: 20px;
-    /* Tamaño del ícono */
-    margin-right: 1px;
-}
-
-.input-field {
-    flex: 1;
-    border: none;
-    /* Sin borde, lo maneja el contenedor */
-    outline: none;
-    font-size: 16px;
-    color: #333;
-}
-
-.input-field2 {
-    flex: 1;
-    border: none;
-    /* Sin borde, lo maneja el contenedor */
-    outline: none;
-    font-size: 16px;
-    color: #333;
-}
-
-.mailfield2 {
-    position: relative;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    border: 1px solid #8f8f8f;
-    border-radius: 15rem;
-    padding: 3px;
-    box-sizing: border-box;
-}
 
 
-.icon2 {
-    color: #000000;
-    /* Color del ícono */
-    font-size: 20px;
-    /* Tamaño del ícono */
 
-}
-
-.typing-animation-container {
-    position: absolute; /* Para sacarlo del flujo normal del contenido */
-    top: 50%; /* Centra verticalmente */
-    right: 2rem; /* Ajusta la distancia desde el borde derecho */
-    transform: translateY(-50%); /* Ajusta el centro verticalmente */
-    z-index: 1000; /* Coloca el texto al frente de todo */
-    color: white;
-    font-size: 1.2rem; /* Ajusta el tamaño del texto */
-    text-align: right;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Sombra para mejorar visibilidad */
-    max-width: 300px; /* Ajusta el ancho máximo */
-    white-space: pre-wrap; /* Permite saltos de línea */
-  }
-  
-  .typing-animation-container .typing-text {
-    font-size: 1.2rem;
-    line-height: 1.5;
-    overflow: hidden;
-    border-right: 2px solid white;
-    animation: blink 0.7s step-end infinite;
-  }
-  
-  @keyframes blink {
-    50% {
-      border-color: transparent;
-    }
-  }
-  
-/* Responsividad */
-@media (max-width: 768px) {
-    .fullscreen-background {
-        display: none; /* Oculta el fondo en pantallas pequeñas */
-    }
-
-    .text-container {
-        display: none; /* Oculta el texto lateral en pantallas pequeñas */
-    }
-
-    .login-container {
-        justify-content: center; /* Centra el formulario */
-        align-items: center; /* Asegura que quede verticalmente centrado */
-    }
-
-    .login-page {
-        width: 90%; /* Ajusta el ancho del formulario a pantallas pequeñas */
-        max-width: 30rem; /* Asegura que no exceda el tamaño máximo */
-        padding: 1.5rem; /* Reduce el padding */
-    }
-}
-
-@media (max-width: 480px) {
-    .login-page {
-        width: 95%; /* Aumenta el ancho relativo en pantallas muy pequeñas */
-        padding: 1rem; /* Reduce más el padding */
-    }
-}
 
 
 
@@ -465,14 +185,21 @@ a {
 /*ESTILOS PARA REGISTRO*/
 .register-page {
     display: flex;
-    justify-content: center; /* Centrar horizontalmente */
-    align-items: center; /* Centrar verticalmente */
-    min-height: 100vh; /* Ocupa toda la altura de la pantalla */
-    width: 100vw; /* Ocupa todo el ancho de la pantalla */
-    position: relative; /* Asegura un stacking context para los elementos hijos */
-    z-index: 10; /* Asegura que este contenedor esté sobre el fondo */
-    overflow: hidden; /* Evita que los elementos sobresalgan */
-    
+    justify-content: center;
+    /* Centrar horizontalmente */
+    align-items: center;
+    /* Centrar verticalmente */
+    min-height: 100vh;
+    /* Ocupa toda la altura de la pantalla */
+    width: 100vw;
+    /* Ocupa todo el ancho de la pantalla */
+    position: relative;
+    /* Asegura un stacking context para los elementos hijos */
+    z-index: 10;
+    /* Asegura que este contenedor esté sobre el fondo */
+    overflow: hidden;
+    /* Evita que los elementos sobresalgan */
+
 }
 
 
@@ -482,19 +209,22 @@ a {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;    
+    height: 100%;
     background-size: cover;
     background-position: center;
-    z-index: 0;   
+    z-index: 0;
 
 }
+
 .background-image2 {
-    position: absolute; /* Permite que la imagen se ajuste al contenedor */
+    position: absolute;
+    /* Permite que la imagen se ajuste al contenedor */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Cubre completamente el área del contenedor */
+    object-fit: cover;
+    /* Cubre completamente el área del contenedor */
     z-index: -1;
 }
 
@@ -508,11 +238,11 @@ a {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); */
     z-index: 3;
     display: flex;
-    justify-content: center;    
+    justify-content: center;
     width: 45rem;
-    max-width: 90%;   
+    max-width: 90%;
     margin-bottom: 30px;
-   
+
 
 }
 
@@ -523,8 +253,9 @@ a {
     position: relative;
     z-index: 11;
     width: 100%;
-    max-width: 40rem; /* Limita el ancho para pantallas grandes */   
-    
+    max-width: 40rem;
+    /* Limita el ancho para pantallas grandes */
+
 }
 
 /* Diseño del formulario en dos columnas */
@@ -532,15 +263,17 @@ a {
     display: flex;
     gap: 10px;
     justify-content: space-between;
-    flex-wrap: wrap; /* Permite que las columnas se ajusten en pantallas pequeñas */
-   
-    
+    flex-wrap: wrap;
+    /* Permite que las columnas se ajusten en pantallas pequeñas */
+
+
 }
 
 .form-column {
     flex: 1;
-    min-width: 16rem; /* Aseguramos que las columnas no sean demasiado pequeñas */
-  
+    min-width: 16rem;
+    /* Aseguramos que las columnas no sean demasiado pequeñas */
+
     padding-bottom: 1rem;
 }
 
@@ -560,7 +293,7 @@ a {
 .input-field2:focus {
     border-color: #1986f3;
     outline: none;
-    box-shadow: 0 0 5px rgba(25, 134, 243, 0.5);    
+    box-shadow: 0 0 5px rgba(25, 134, 243, 0.5);
 }
 
 /* Media Queries para Responsividad */
@@ -577,12 +310,14 @@ a {
 
 @media (max-width: 768px) {
     .form-grid {
-        flex-direction: column; /* Cambia las columnas a filas */
+        flex-direction: column;
+        /* Cambia las columnas a filas */
         gap: 1rem;
     }
 
     .form-column {
-        min-width: 100%; /* Cada columna ocupa todo el ancho */
+        min-width: 100%;
+        /* Cada columna ocupa todo el ancho */
     }
 
     .form-wrapper2 {
@@ -596,7 +331,8 @@ a {
     }
 
     .input-field2 {
-        font-size: 0.9rem; /* Reduce el tamaño de fuente en pantallas pequeñas */
+        font-size: 0.9rem;
+        /* Reduce el tamaño de fuente en pantallas pequeñas */
         height: 2.8rem;
     }
 }
@@ -606,63 +342,72 @@ a {
     display: flex;
     align-items: left;
     justify-content: left;
- 
+
 }
-@media (max-width: 768px) {
-    .typing-animation-container {
-      display:none;
-      right: 1rem;
-      font-size: 1rem; /* más pequeño para tablets */
-      max-width: 200px; /* reduce el ancho */
-    }
-  }
 
 
-  /* Media Queries para pantallas pequeñas */
+
+/* Media Queries para pantallas pequeñas */
 @media (max-width: 768px) {
     .register-page {
-        align-items: flex-start; /* Cambia a inicio para permitir scroll */
-        padding-top: 20px; /* Añade espacio en la parte superior */
-        overflow-y: auto; /* Asegura que el contenido pueda desplazarse */
+        align-items: flex-start;
+        /* Cambia a inicio para permitir scroll */
+        padding-top: 20px;
+        /* Añade espacio en la parte superior */
+        overflow-y: auto;
+        /* Asegura que el contenido pueda desplazarse */
     }
 
     .form-wrapper2 {
-        margin-top: 20px; /* Añade margen superior para evitar recortes */
-        padding: 1rem; /* Reduce el padding en pantallas pequeñas */
-        max-width: 90%; /* Ajusta el ancho máximo para dispositivos más pequeños */
+        margin-top: 20px;
+        /* Añade margen superior para evitar recortes */
+        padding: 1rem;
+        /* Reduce el padding en pantallas pequeñas */
+        max-width: 90%;
+        /* Ajusta el ancho máximo para dispositivos más pequeños */
     }
 
     .form-inner2 {
-        padding: 1.5rem; /* Reduce el padding interno */
+        padding: 1.5rem;
+        /* Reduce el padding interno */
     }
 
     .form-grid {
-        flex-direction: column; /* Coloca los elementos en una columna */
+        flex-direction: column;
+        /* Coloca los elementos en una columna */
         gap: 1rem;
     }
 
     .form-column {
-        min-width: 100%; /* Asegura que las columnas ocupen el ancho completo */
+        min-width: 100%;
+        /* Asegura que las columnas ocupen el ancho completo */
     }
 
     .input-field2 {
-        font-size: 0.9rem; /* Reduce el tamaño de fuente */
-        height: 2.8rem; /* Ajusta la altura del input */
+        font-size: 0.9rem;
+        /* Reduce el tamaño de fuente */
+        height: 2.8rem;
+        /* Ajusta la altura del input */
     }
 }
 
 @media (max-width: 480px) {
     .form-wrapper2 {
-        margin-top: 10px; /* Menor margen superior */
-        padding: 0.5rem; /* Reduce aún más el padding */
+        margin-top: 10px;
+        /* Menor margen superior */
+        padding: 0.5rem;
+        /* Reduce aún más el padding */
     }
 
     .form-inner2 {
-        padding: 1rem; /* Reduce el padding interno */
+        padding: 1rem;
+        /* Reduce el padding interno */
     }
 
     .input-field2 {
-        font-size: 0.85rem; /* Reduce aún más el tamaño de fuente */
-        height: 2.5rem; /* Ajusta la altura de los campos */
+        font-size: 0.85rem;
+        /* Reduce aún más el tamaño de fuente */
+        height: 2.5rem;
+        /* Ajusta la altura de los campos */
     }
 }
