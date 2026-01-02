@@ -6,22 +6,22 @@
 html,
 body {
   margin: 0;
-  /* Elimina márgenes */
   padding: 0;
-  /* Elimina paddings */
   width: 100vw;
-  /* Ancho completo de la ventana */
   height: 100vh;
-  /* Altura completa de la ventana */
   box-sizing: border-box;
-  /* Incluye bordes y padding en el tamaño */
   overflow: auto;
-  /* Evita scroll innecesario */
+  background-color: #F8FAFC;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 
 main {
-  min-height: 80vh;
+  min-height: calc(100vh - 72px);
+  background-color: #F8FAFC;
 }
 
 .rating span {
@@ -224,85 +224,7 @@ table th {
   text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es demasiado largo */
 }
 
-header {
-   /*background: #2c3474; /* Azul translúcido */
-  /*height: 90px;*/
-  background: linear-gradient(to right, #fcb64c, #1986f3);
-  backdrop-filter: blur(10px); /* Efecto de desenfoque */
-  padding: 0px 0; /* Espaciado arriba y abajo */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil debajo del header */
-  position: sticky; /* Se mantiene visible en la parte superior */ 
-  z-index: 1000; /* Asegura que quede sobre otros elementos */
-}
-
-header img {
-  height: 100px; /* Ajusta el tamaño del logo si es necesario */
-
-}
-
-header .navbar-brand {
-  font-size: 1.5rem; /* Tamaño más grande para el logo o nombre */
-  font-weight: bold;
-  color: #fff; /* Contraste claro */
-  text-transform: uppercase; /* Texto en mayúsculas */
-  display: flex;
-  align-items: center; /* Centrar verticalmente */
-  gap: 10px; /* Espaciado entre el logo y el texto */
-}
-header .navbar-brand img {
-  height: 60px; /* Tamaño del logo */
-  border-radius: 50%; /* Forma redondeada opcional */
-}
-
-.navbar-dark .navbar-nav .nav-link {
-  color: white;
-  font-weight: bold;
-  
-}
-
-header .navbar-nav .nav-link {
-  color: #ffffff; /* Blanco para enlaces */
-  font-weight: 500; /* Peso medio */
-  padding: 10px 15px; /* Espaciado interno */
-  margin-right: 20px; /* Espaciado entre enlaces */
-  transition: all 0.3s ease; /* Transición suave */
-}
-
-header .navbar-nav .nav-link:hover {
-  background: rgba(255, 255, 255, 0.2); /* Fondo semitransparente al pasar el cursor */
-  border-radius: 10px; /* Bordes redondeados */
-}
-
-header .nav-dropdown .dropdown-menu {
-  background: #1986f3; /* Fondo del menú desplegable */
-  border: none;
-  border-radius: 10px; /* Bordes redondeados */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Sombra para resaltar */
-}
-
-header .nav-dropdown .dropdown-menu .dropdown-item {
-  color: #ffffff; /* Texto blanco */
-  padding: 10px 15px; /* Espaciado interno */
-  transition: all 0.3s ease; /* Transición suave */
-}
-
-header .nav-dropdown .dropdown-menu .dropdown-item:hover {
-  background: rgba(255, 255, 255, 0.2); /* Fondo semitransparente al pasar el cursor */
-  border-radius: 8px; /* Bordes redondeados */
-}
-
-header .menu-toggle-btn {
-  color: #ffffff; /* Blanco para el ícono del menú */
-  background: none;
-  border: none;
-  font-size: 1.5rem; /* Tamaño del ícono */
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-header .menu-toggle-btn:hover {
-  transform: scale(1.1); /* Efecto de agrandamiento */
-}
+/* Estilos del header ahora están en Header.css */
 
 .App {
   text-align: center;

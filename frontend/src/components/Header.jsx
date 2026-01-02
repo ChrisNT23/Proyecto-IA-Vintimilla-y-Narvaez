@@ -1,25 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
-import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
 import { 
-  FaUser, 
   FaComments, 
   FaBrain, 
   FaBars, 
-  FaBell, 
-  FaTachometerAlt, 
-  FaRegChartBar, 
   FaSignOutAlt, 
   FaCogs, 
   FaUsers, 
-  FaQuestionCircle 
+  FaQuestionCircle,
+  FaChevronDown
 } from "react-icons/fa";
 import logo from "../assets/logoHigeasinfondo.png";
-import { LinkContainer } from "react-router-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import { logout } from "../slices/authSlice";
-import { useGetPatientsQuery } from "../slices/patientApiSlice"; // <--- Importa tu hook
+import { useGetPatientsQuery } from "../slices/patientApiSlice";
 import '../assets/styles/Header.css';
 
 const Header = () => {
@@ -28,7 +23,26 @@ const Header = () => {
   const navigate = useNavigate();
   const [logoutApiCall] = useLogoutMutation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
+  const dropdownRef = useRef(null);
+
+  // Cerrar dropdown al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   // 1. Obtener pacientes
   const { data: patients = [], isLoading, isError } = useGetPatientsQuery();
@@ -68,143 +82,191 @@ const Header = () => {
       navigate("/login");
     }
     setIsMenuOpen(false);
+    setIsDropdownOpen(false);
   };
 
   return (
-    <header>
-      {/* Navbar principal */}
-      <Navbar variant="dark" expand="lg" collapseOnSelect>
-        <Container>
-          {/* Botón para abrir el menú lateral (solo si es admin) */}
+    <header className="saas-header">
+      <div className="header-container">
+        {/* Logo */}
+        <div 
+          className="header-logo" 
+          onClick={() => navigateTo('/', 'home')}
+        >
+          <img src={logo} alt="Logo" className="logo-image" />
+        </div>
+
+        {/* Navegación Desktop */}
+        <nav className="header-nav">
+          {userInfo && userInfo.isAdmin === false && (
+            <>
+              <button 
+                className="nav-link-ghost"
+                onClick={() => navigateTo('/api/treatments/activities', 'actividades')}
+              >
+                <FaBrain className="nav-icon" />
+                <span>Actividades</span>
+              </button>
+              <button 
+                className="nav-link-ghost"
+                onClick={() => navigateTo(`/moca/patient/${myPatientId}`, 'moca')}
+                disabled={!myPatientId}
+              >
+                <FaBrain className="nav-icon" />
+                <span>MoCA</span>
+              </button>
+            </>
+          )}
           {userInfo && userInfo.isAdmin && (
-            <button className="menu-toggle-btn" onClick={handleMenuToggle}>
-              <FaBars size={24} />
+            <button 
+              className="nav-link-ghost"
+              onClick={() => navigateTo('/mocaPanel', 'moca')}
+            >
+              <FaBrain className="nav-icon" />
+              <span>MoCA</span>
+            </button>
+          )}
+        </nav>
+
+        {/* Acciones del Header */}
+        <div className="header-actions">
+          {/* Botón Chat - Ghost Style */}
+          <button 
+            className="btn-ghost"
+            onClick={() => navigateTo('/chat', 'chat')}
+          >
+            <FaComments className="btn-icon" />
+            <span>Chat</span>
+          </button>
+
+          {/* Usuario autenticado */}
+          {userInfo ? (
+            <div className="user-menu-wrapper" ref={dropdownRef}>
+              <button 
+                className="user-menu-trigger"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <div className="user-avatar">
+                  {userInfo.name ? userInfo.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <span className="user-name">{userInfo.name || 'Usuario'}</span>
+                <FaChevronDown className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`} />
+              </button>
+
+              {isDropdownOpen && (
+                <div className="user-dropdown">
+                  {userInfo.isAdmin && (
+                    <>
+                      <button 
+                        className="dropdown-item"
+                        onClick={() => navigateTo('/admin/help', 'help')}
+                      >
+                        <FaQuestionCircle className="dropdown-icon" />
+                        <span>Ayuda</span>
+                      </button>
+                      <button 
+                        className="dropdown-item"
+                        onClick={() => navigateTo('/admin/configuration', 'config')}
+                      >
+                        <FaCogs className="dropdown-icon" />
+                        <span>Configuración</span>
+                      </button>
+                      <button 
+                        className="dropdown-item"
+                        onClick={() => navigateTo('/admin/userlist', 'users')}
+                      >
+                        <FaUsers className="dropdown-icon" />
+                        <span>Usuarios</span>
+                      </button>
+                    </>
+                  )}
+                  {userInfo.isAdmin === false && (
+                    <button 
+                      className="dropdown-item"
+                      onClick={() => navigateTo('/profile', 'profile')}
+                    >
+                      <FaUsers className="dropdown-icon" />
+                      <span>Perfil de usuario</span>
+                    </button>
+                  )}
+                  <div className="dropdown-divider"></div>
+                  <button 
+                    className="dropdown-item logout"
+                    onClick={logoutHandler}
+                  >
+                    <FaSignOutAlt className="dropdown-icon" />
+                    <span>Cerrar Sesión</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Botón Iniciar Sesión - CTA Pill */
+            <button 
+              className="btn-cta"
+              onClick={() => navigate('/login')}
+            >
+              Iniciar Sesión
             </button>
           )}
 
-          {/* Marca y logo con clase personalizada */}
-          <Navbar.Brand 
-            className="d-flex align-items-center clickable-logo" 
-            onClick={() => navigateTo('/')}
-          >
-            <img src={logo} alt="Seguimiento" height="70" />
-          </Navbar.Brand>
-
-          {/* Menú de navegación principal */}
-          <Navbar.Toggle aria-controls="basic-navbar-nav" className="ms-auto" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto align-items-center">
-              {/* Enlace a Actividades */}
-              {userInfo && userInfo.isAdmin==false && (
-              <Nav.Link onClick={() => navigateTo('/api/treatments/activities', 'actividades')}>
-                <FaBrain /> Actividades
-              </Nav.Link>
-              )}
-              {/* Enlace a MoCA para usuario normal */}
-              {userInfo && userInfo.isAdmin==false && (
-              <Nav.Link
-                onClick={() => navigateTo(`/moca/patient/${myPatientId}`, 'moca')}
-                disabled={!myPatientId} // desactiva el link si no encuentra paciente
-              >
-                <FaBrain /> MoCA
-              </Nav.Link>
-              )}
-
-              {/* Enlace a MoCA extra para admin (si es que quieres uno distinto) */}
-              {userInfo && userInfo.isAdmin && (
-                <Nav.Link onClick={() => navigateTo('/mocaPanel', 'moca')}>
-                  <FaBrain /> MoCA
-                </Nav.Link>
-              )}
-
-              {/* Enlace al chat */}
-              <Nav.Link onClick={() => navigateTo('/chat', 'chat')}>
-                <FaComments /> Chat
-              </Nav.Link>
-
-              {/* Dropdown de usuario */}
-              {userInfo ? (
-                <NavDropdown title={userInfo.name} id="username" className="custom-dropdown">
-                  {userInfo && userInfo.isAdmin && (
-                    <NavDropdown.Item onClick={() => navigateTo('/admin/help', 'orderlist')}>
-                      <FaQuestionCircle className="dropdown-icon" /> Ayuda
-                    </NavDropdown.Item>
-                  )}
-                  {userInfo && userInfo.isAdmin && (
-                    <NavDropdown.Item onClick={() => navigateTo('/admin/configuration', 'productlist')}>
-                      <FaCogs className="dropdown-icon" /> Configuración
-                    </NavDropdown.Item>
-                  )}
-                  {userInfo && userInfo.isAdmin && (
-                    <NavDropdown.Item onClick={() => navigateTo('/admin/userlist', 'userlist')}>
-                      <FaUsers className="dropdown-icon" /> Usuarios
-                    </NavDropdown.Item>
-                  )}
-                  {/*{userInfo && userInfo.isAdmin && (
-                    <NavDropdown.Item onClick={() => navigateTo('/admin/activities', 'adminActivities')}>
-                      <FaBrain className="dropdown-icon" /> Actividades (Admin)
-                    </NavDropdown.Item>
-                  )}*/}
-                  {userInfo && userInfo.isAdmin==false && (
-                  <NavDropdown.Item onClick={() => navigateTo('/profile', '´profile')}>
-                      <FaUsers className="dropdown-icon" /> Perfil de usuario
-                    </NavDropdown.Item>
-                  )}
-                  <NavDropdown.Item onClick={logoutHandler}>
-                    <FaSignOutAlt className="dropdown-icon" /> Cerrar Sesión
-                  </NavDropdown.Item>
-                </NavDropdown>
-    
-              ) : (
-                <LinkContainer to="/login">
-                  <Nav.Link>
-                    <FaUser /> Iniciar Sesión
-                  </Nav.Link>
-                </LinkContainer>
-              )}
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+          {/* Botón menú móvil (solo admin) */}
+          {userInfo && userInfo.isAdmin && (
+            <button 
+              className="menu-toggle-btn"
+              onClick={handleMenuToggle}
+              aria-label="Toggle menu"
+            >
+              <FaBars />
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Menú lateral solo para administradores */}
       {userInfo && userInfo.isAdmin && (
-        <div className={`sidebar ${isMenuOpen ? 'open' : ''}`}>
-          <button className="close-btn" onClick={handleMenuToggle}>×</button>
-          <div className="menu-title">Menu</div>
-          <nav className="sidebar-menu">
-            <button 
-              className={selectedOption === 'profile' ? 'active' : ''} 
-              onClick={() => navigateTo('/profile', 'profile')}
-            >
-              <FaUser /> Perfil Público
-            </button>
-            <button 
-              className={selectedOption === 'config' ? 'active' : ''} 
-              onClick={() => navigateTo('/admin/configuration', 'config')}
-            >
-              <FaRegChartBar /> Configuración
-            </button>
-            <button 
-              className={selectedOption === 'reports' ? 'active' : ''} 
-              onClick={() => navigateTo('/reports', 'reports')}
-            >
-              <FaRegChartBar /> Reportes
-            </button>
-            <button 
-              className={selectedOption === 'activities' ? 'active' : ''} 
-              onClick={() => navigateTo('/activities', 'activities')}
-            >
-              <FaBrain /> Actividades
-            </button>
-            <button 
-              className={selectedOption === 'dashboard' ? 'active' : ''} 
-              onClick={() => navigateTo('/dashboard', 'dashboard')}
-            >
-              <FaTachometerAlt /> Dashboard
-            </button>
-          </nav>
-        </div>
+        <>
+          <div 
+            className={`sidebar-overlay ${isMenuOpen ? 'active' : ''}`}
+            onClick={handleMenuToggle}
+          ></div>
+          <div className={`sidebar ${isMenuOpen ? 'open' : ''}`}>
+            <div className="sidebar-header">
+              <h3 className="sidebar-title">Menú</h3>
+              <button className="sidebar-close" onClick={handleMenuToggle}>×</button>
+            </div>
+            <nav className="sidebar-menu">
+              <button 
+                className={selectedOption === 'profile' ? 'active' : ''} 
+                onClick={() => navigateTo('/profile', 'profile')}
+              >
+                <FaUsers className="sidebar-icon" />
+                <span>Perfil Público</span>
+              </button>
+              <button 
+                className={selectedOption === 'config' ? 'active' : ''} 
+                onClick={() => navigateTo('/admin/configuration', 'config')}
+              >
+                <FaCogs className="sidebar-icon" />
+                <span>Configuración</span>
+              </button>
+              <button 
+                className={selectedOption === 'reports' ? 'active' : ''} 
+                onClick={() => navigateTo('/reports', 'reports')}
+              >
+                <FaCogs className="sidebar-icon" />
+                <span>Reportes</span>
+              </button>
+              <button 
+                className={selectedOption === 'activities' ? 'active' : ''} 
+                onClick={() => navigateTo('/activities', 'activities')}
+              >
+                <FaBrain className="sidebar-icon" />
+                <span>Actividades</span>
+              </button>
+            </nav>
+          </div>
+        </>
       )}
     </header>
   );
