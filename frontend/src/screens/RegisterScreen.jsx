@@ -145,6 +145,7 @@ const RegisterScreen = () => {
 
   return (
     <>
+      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       <style>
         {`
           .no-navbar header {
@@ -157,20 +158,29 @@ const RegisterScreen = () => {
               max-width: 100% !important;
               overflow-x: hidden !important;
           }
+          .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+          }
         `}
       </style>
-      <div className="flex min-h-screen w-full m-0 p-0 flex-col justify-center items-center overflow-y-auto bg-slate-50 dark:bg-[#101922] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-100 via-slate-50 to-slate-200 dark:from-slate-900 dark:via-[#101922] dark:to-black py-8 sm:py-12 font-display antialiased">
-        <div className="w-full max-w-5xl flex-col justify-center bg-panel-dark px-6 py-8 sm:px-8 sm:py-10 md:px-12 lg:py-12 shadow-2xl z-10 relative rounded-none sm:rounded-2xl border-0 sm:border border-slate-700/50 sm:mx-4">
-          {/* Logo Section */}
-          <div className="mb-6 sm:mb-8 flex flex-col items-center gap-3 text-center">
-            <div className="flex size-12 sm:size-14 items-center justify-center rounded-xl bg-primary/20 text-primary mb-2">
-              <span className="material-symbols-outlined text-3xl sm:text-4xl">neurology</span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">Consultorio Mora</h2>
-          </div>
+      <div className="flex min-h-screen w-screen m-0 p-0 flex-col justify-center items-center bg-panel-dark font-display antialiased overflow-auto">
+        <div className="w-full max-w-4xl flex-col justify-center bg-panel-dark px-6 py-6 z-10 relative rounded-2xl mx-4">
+       
 
           {/* Header Text */}
-          <div className="mb-8 sm:mb-10 text-center">
+          <div className="mb-4 text-center">
             <h1 className="mb-2 sm:mb-3 text-2xl sm:text-3xl font-black leading-tight tracking-tight text-white">
               Crea una cuenta
             </h1>
@@ -180,9 +190,9 @@ const RegisterScreen = () => {
           </div>
 
           {/* Registration Form */}
-          <form className="flex flex-col gap-6 sm:gap-8" onSubmit={submitHandler}>
+          <form className="flex flex-col gap-3" onSubmit={submitHandler}>
             {/* Grid for Name and Lastname */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {/* Name Field */}
               <div className="group relative">
                 <label className="mb-1 sm:mb-2 block text-xs sm:text-sm font-medium text-slate-300" htmlFor="nombre">
@@ -191,7 +201,7 @@ const RegisterScreen = () => {
                 <div className="relative flex items-center">
                   <span className="material-symbols-outlined absolute left-4 text-slate-500 text-[20px]">person</span>
                   <input
-                    className="w-full rounded-lg border-none bg-slate-800 py-3 sm:py-4 pl-11 pr-4 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all shadow-inner outline-none"
+                    className="w-full rounded-lg border-none bg-slate-800 py-2.5 pl-11 pr-4 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all outline-none"
                     id="nombre"
                     placeholder="Juan"
                     type="text"
@@ -209,7 +219,7 @@ const RegisterScreen = () => {
                 <div className="relative flex items-center">
                   <span className="material-symbols-outlined absolute left-4 text-slate-500 text-[20px]">person</span>
                   <input
-                    className="w-full rounded-lg border-none bg-slate-800 py-3 sm:py-4 pl-11 pr-4 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all shadow-inner outline-none"
+                    className="w-full rounded-lg border-none bg-slate-800 py-2.5 pl-11 pr-4 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all outline-none"
                     id="apellido"
                     placeholder="Pérez"
                     type="text"
@@ -227,7 +237,7 @@ const RegisterScreen = () => {
                 <div className="relative flex items-center">
                   <span className="material-symbols-outlined absolute left-4 text-slate-500 text-[20px]">call</span>
                   <input
-                    className="w-full rounded-lg border-none bg-slate-800 py-3 sm:py-4 pl-11 pr-4 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all shadow-inner outline-none"
+                    className="w-full rounded-lg border-none bg-slate-800 py-2.5 pl-11 pr-4 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all outline-none"
                     id="telefono"
                     placeholder="+593 999 999 999"
                     type="tel"
@@ -245,7 +255,7 @@ const RegisterScreen = () => {
                 <div className="relative flex items-center">
                   <span className="material-symbols-outlined absolute left-4 text-slate-500 text-[20px]">badge</span>
                   <input
-                    className="w-full rounded-lg border-none bg-slate-800 py-3 sm:py-4 pl-11 pr-4 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all shadow-inner outline-none"
+                    className="w-full rounded-lg border-none bg-slate-800 py-2.5 pl-11 pr-4 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all outline-none"
                     id="cedula"
                     placeholder="1234567890"
                     type="text"
@@ -264,7 +274,7 @@ const RegisterScreen = () => {
               <div className="relative flex items-center">
                 <span className="material-symbols-outlined absolute left-4 text-slate-500 text-[20px]">mail</span>
                 <input
-                  className="w-full rounded-lg border-none bg-slate-800 py-3 sm:py-4 pl-11 pr-4 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all shadow-inner outline-none"
+                  className="w-full rounded-lg border-none bg-slate-800 py-2.5 pl-11 pr-4 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all outline-none"
                   id="email"
                   placeholder="nombre@ejemplo.com"
                   type="email"
@@ -275,7 +285,7 @@ const RegisterScreen = () => {
             </div>
 
             {/* Password Fields Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {/* Password Field */}
               <div className="group relative">
                 <label className="mb-1 sm:mb-2 block text-xs sm:text-sm font-medium text-slate-300" htmlFor="password">
@@ -284,7 +294,7 @@ const RegisterScreen = () => {
                 <div className="relative flex items-center">
                   <span className="material-symbols-outlined absolute left-4 text-slate-500 text-[20px]">lock</span>
                   <input
-                    className="w-full rounded-lg border-none bg-slate-800 py-3 sm:py-4 pl-11 pr-10 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all shadow-inner outline-none"
+                    className="w-full rounded-lg border-none bg-slate-800 py-2.5 pl-11 pr-10 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all outline-none"
                     id="password"
                     placeholder="••••••••"
                     type={showPassword ? "text" : "password"}
@@ -311,7 +321,7 @@ const RegisterScreen = () => {
                 <div className="relative flex items-center">
                   <span className="material-symbols-outlined absolute left-4 text-slate-500 text-[20px]">lock_reset</span>
                   <input
-                    className="w-full rounded-lg border-none bg-slate-800 py-3 sm:py-4 pl-11 pr-10 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all shadow-inner outline-none"
+                    className="w-full rounded-lg border-none bg-slate-800 py-2.5 pl-11 pr-10 text-sm sm:text-base text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:bg-slate-900/50 transition-all outline-none"
                     id="confirm_password"
                     placeholder="••••••••"
                     type={showConfirmPassword ? "text" : "password"}
@@ -332,7 +342,7 @@ const RegisterScreen = () => {
             </div>
 
             {/* Terms Checkbox */}
-            <div className="flex items-center justify-center gap-2 mt-2 sm:mt-4">
+            <div className="flex items-center justify-center gap-2 mt-1">
               <input
                 className="rounded border-slate-600 bg-slate-800 text-primary focus:ring-offset-slate-900 focus:ring-primary size-4"
                 id="terms"
@@ -353,17 +363,17 @@ const RegisterScreen = () => {
 
             {/* Submit Button */}
             <button
-              className="mt-2 sm:mt-4 flex w-full max-w-sm mx-auto items-center justify-center gap-2 rounded-lg bg-primary py-3 sm:py-4 text-sm sm:text-base font-bold text-white shadow-lg shadow-primary/30 transition-all hover:bg-blue-600 hover:shadow-primary/50 active:scale-[0.98]"
+              className="mt-2 flex w-full max-w-sm mx-auto items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm sm:text-base font-bold text-white shadow-lg shadow-primary/30 transition-all hover:bg-blue-600 hover:shadow-primary/50 active:scale-[0.98]"
               type="submit"
               disabled={isLoading}
             >
               <span>{isLoading ? "Registrando..." : "Registrarse"}</span>
-              <span className="material-symbols-outlined text-[20px]">how_to_reg</span>
+              {!isLoading && <span className="material-symbols-outlined text-[18px] sm:text-[20px]">how_to_reg</span>}
             </button>
           </form>
 
           {/* Footer Link */}
-          <div className="mt-6 sm:mt-8 text-center border-t border-slate-700/50 pt-6 sm:pt-8">
+          <div className="mt-4 text-center border-t border-slate-700/50 pt-4">
             <p className="text-xs sm:text-sm text-slate-400">
               ¿Ya tienes una cuenta?{" "}
               <Link
