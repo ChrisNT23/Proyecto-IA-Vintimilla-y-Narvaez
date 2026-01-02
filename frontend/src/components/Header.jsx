@@ -10,7 +10,7 @@ import {
   FaQuestionCircle,
   FaChevronDown
 } from "react-icons/fa";
-import logo from "../assets/logoHigeasinfondo.png";
+import logo from "../assets/clinicamora.png";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import { logout } from "../slices/authSlice";
