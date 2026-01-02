@@ -1,0 +1,83 @@
+/* Contenedor principal para la pantalla de ayuda */
+.help-screen {
+    max-width: 1200px; /* Define un ancho máximo para centrar contenido */
+  }
+  
+  /* Título principal */
+  .help-screen h1 {
+    font-weight: 700;
+    color: #333;
+  }
+  
+  /* Texto introductorio */
+  .intro-text {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.6;
+  }
+  
+  /* -- Tarjetas de cada desarrollador -- */
+  .developer-card {
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.07); /* Sombra suave */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #fff; /* Fondo blanco */
+  }
+  
+  /* Efecto hover para la tarjeta */
+  .developer-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* Contenedor de la imagen para controlar su altura */
+  .card-img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 260px; /* Ajusta la altura según te convenga */
+    overflow: hidden;
+  }
+  
+  /* Imagen dentro de la tarjeta */
+  .developer-card .card-img-top {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;        /* Mantener proporción de la foto */
+    object-position: center;  /* Centrar la imagen */
+  }
+  
+  /* Nombre del desarrollador (Card Title) */
+  .developer-name {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+  }
+  
+  /* Label y valor de cada campo */
+  .label-field {
+    display: inline-block;
+    font-weight: 600;
+    color: #333;
+    margin-right: 5px;
+  }
+  
+  .value-field {
+    color: #666;
+  }
+  
+  /* Sección de información adicional */
+  .additional-info h2 {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+  }
+  
+  .additional-info p {
+    color: #555;
+    line-height: 1.6;
+  }
+  

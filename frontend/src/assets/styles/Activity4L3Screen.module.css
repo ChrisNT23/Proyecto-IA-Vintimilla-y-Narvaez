@@ -1,0 +1,307 @@
+/* src/screens/ActivityScreen4.module.css */
+
+/* Clase para el fondo específico de esta pantalla */
+.background {
+    /* Opción 1: Usar una imagen de fondo */
+    background-image: url('../../images/background/cerebro4.webp'); /* Reemplaza con la ruta de tu imagen */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    
+    /* Opción 2: Usar un degradado de color */
+    /* background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); */
+  
+    /* Opcional: Añadir un overlay para mejorar el contraste */
+    position: relative;
+  }
+  
+  .background::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* Ajusta la opacidad según sea necesario */
+    z-index: 0;
+  }
+  
+  /* Contenedor principal de la actividad */
+  .container {
+    position: relative; /* Para que esté encima del overlay */
+    max-width: 1200px;
+    width: 100%;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.95); /* Fondo semitransparente para destacar sobre el fondo */
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    z-index: 1; /* Asegura que esté encima del overlay */
+  }
+  
+  /* Título de la actividad */
+  .title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-family: 'Arial', sans-serif;
+    font-size: 2.5em;
+  }
+  
+  /* Contenedor de información (puntaje, tiempo, diferencias encontradas) */
+  .infoContainer {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  
+  .infoBox {
+    background-color: #ffffff;
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1.5em;
+    display: flex;
+    align-items: center;
+    margin: 10px;
+  }
+  
+  .score {
+    font-weight: bold;
+    color: #4caf50;
+    margin-left: 10px;
+  }
+  
+  .timer {
+    font-weight: bold;
+    color: #ff9800;
+    margin-left: 10px;
+  }
+  
+  .differencesFound {
+    font-weight: bold;
+    color: #2196f3;
+    margin-left: 10px;
+  }
+  
+  /* Indicadores de estado */
+  .recording {
+    text-align: center;
+    color: #2196f3;
+    margin-bottom: 10px;
+  }
+  
+  .error {
+    text-align: center;
+    color: #f44336;
+    margin-bottom: 10px;
+  }
+  
+  /* Finalización del juego */
+  .gameFinished {
+    text-align: center;
+    padding: 40px;
+    background-color: #e8f5e9;
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  }
+  
+  .gameTitle {
+    color: #2e7d32;
+    margin-bottom: 20px;
+    font-size: 2em;
+  }
+  
+  .gameFinished p {
+    font-size: 1.5em;
+    margin: 10px 0;
+  }
+  
+  /* Contenedor de las imágenes */
+  .imagesContainer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .image {
+    width: 464px;
+    height: 534px;
+    object-fit: cover;
+    border: 2px solid #333;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .image:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Botón de envío */
+  .submitButton {
+    display: block;
+    margin: 0 auto;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 15px 30px;
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .submitButton:hover {
+    background-color: #1565c0;
+    transform: scale(1.05);
+  }
+  
+  /* Botones de siguiente par y enviar respuesta */
+  .buttonContainer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .nextButton,
+  .submitButton {
+    /* Ya definidos arriba */
+  }
+  
+  /* Caja de retroalimentación */
+  .feedbackBox {
+    margin-top: 20px;
+    font-size: 1.8em;
+    color: #333;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  /* Diálogo de confirmación */
+  .dialogOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+  }
+  
+  .dialogBox {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  }
+  
+  .dialogButtons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .dialogButton {
+    padding: 12px 25px;
+    font-size: 1em;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .terminate {
+    background-color: #f44336;
+    color: #fff;
+  }
+  
+  .terminate:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
+  }
+  
+  .continue {
+    background-color: #4caf50;
+    color: #fff;
+  }
+  
+  .continue:hover {
+    background-color: #388e3c;
+    transform: scale(1.05);
+  }
+  
+  /* Responsividad */
+  @media (max-width: 768px) {
+    .container {
+      padding: 20px;
+    }
+  
+    .title {
+      font-size: 2em;
+    }
+  
+    .infoBox {
+      font-size: 1.2em;
+      padding: 10px 20px;
+    }
+  
+    .gameFinished .gameTitle {
+      font-size: 1.8em;
+    }
+  
+    .gameFinished p {
+      font-size: 1.3em;
+    }
+  
+    .submitButton {
+      font-size: 1em;
+      padding: 10px 20px;
+    }
+  
+    .imagesContainer {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .image {
+      width: 300px;
+      height: 345px;
+    }
+  
+    .differencesFound {
+      font-size: 1.2em;
+    }
+  
+    .feedbackBox {
+      font-size: 1.5em;
+    }
+  
+    .dialogBox {
+      padding: 20px;
+    }
+  
+    .dialogButton {
+      padding: 10px 20px;
+      font-size: 0.9em;
+    }
+  }
+  

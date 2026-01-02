@@ -1,0 +1,1326 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  margin: 0;
+  /* Elimina márgenes */
+  padding: 0;
+  /* Elimina paddings */
+  width: 100vw;
+  /* Ancho completo de la ventana */
+  height: 100vh;
+  /* Altura completa de la ventana */
+  box-sizing: border-box;
+  /* Incluye bordes y padding en el tamaño */
+  overflow: auto;
+  /* Evita scroll innecesario */
+}
+
+
+main {
+  min-height: 80vh;
+}
+
+.rating span {
+  margin: 0.1rem;
+}
+
+.rating svg {
+  color: #f8e825;
+}
+
+.rating-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding-left: 0.5rem;
+}
+
+.product-title {
+  height: 2.5em;
+  /* Set a fixed height */
+  overflow: hidden;
+  /* Hide overflow content */
+  text-overflow: ellipsis;
+  /* Add ellipsis for long text */
+  white-space: nowrap;
+  /* Prevent wrapping */
+}
+
+table td,
+table th {
+  text-align: center;
+}
+
+.review {
+  margin-top: 30px;
+}
+
+.review h2 {
+  font-size: 24px;
+  background: #f4f4f4;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.review button {
+  margin-top: 10px;
+}
+
+.carousel-caption {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Agrega este estilo en tu archivo CSS */
+.filter-input {
+  margin-bottom: 15px;
+  /* Espacio debajo de cada entrada */
+  width: 60%;
+  /* Ocupar el ancho completo */
+  border-radius: 5px;
+}
+
+.filter-button {
+  width: 60%; /* Ocupar el ancho completo */
+  background-color: #bb8f56; /* Color del botón */
+  color: white; /* Color del texto */
+  border: none; /* Sin borde */
+  padding: 10px; /* Relleno para hacerlo más grande */
+  cursor: pointer; /* Cursor de mano al pasar por encima */
+  border-radius: 5px;
+}
+
+.filter-button:hover {
+  background-color: #d870b5; /* Cambiar color al pasar el ratón por encima */
+}
+
+.recommendations-container {
+  padding: 20px;
+}
+
+.recommendation-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.recommendation-card {
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-card h3 {
+  margin-top: 0;
+}
+
+.reason {
+  font-style: italic;
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.recommendations {
+  padding: 20px;
+}
+
+.recommendation-section {
+  margin-bottom: 40px;
+}
+
+.recommendation-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.recommendation-card {
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.recommendation-card h3 {
+  margin-top: 0;
+}
+
+.reason {
+  font-style: italic;
+  color: #666;
+  font-size: 0.8rem;
+  margin-top: 15px;
+}
+
+.error {
+  color: red;
+  margin-top: 20px;
+}
+
+.recommendation-container {
+  padding: 20px;
+}
+
+.recommendation-section {
+  margin-bottom: 40px;
+}
+
+.recommendation-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.recommendation-card {
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  width: 250px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.recommendation-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.recommendation-info {
+  padding: 10px;
+}
+
+/* Puedes añadir más estilos según sea necesario */
+
+
+.supplier-card {
+  max-width: 300px; /* Ajusta este valor según tus necesidades */
+  margin: auto;
+}
+
+.supplier-card-image {
+  max-height: 200px; /* Altura máxima para la imagen */
+  object-fit: cover; /* Asegura que la imagen cubra completamente el espacio asignado */
+}
+
+.supplier-card-description {
+  min-height: 100px; /* Asegura un mínimo de altura para la descripción */
+  overflow: hidden; /* Oculta el texto que exceda el espacio */
+  text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es demasiado largo */
+}
+
+header {
+   /*background: #2c3474; /* Azul translúcido */
+  /*height: 90px;*/
+  background: linear-gradient(to right, #fcb64c, #1986f3);
+  backdrop-filter: blur(10px); /* Efecto de desenfoque */
+  padding: 0px 0; /* Espaciado arriba y abajo */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil debajo del header */
+  position: sticky; /* Se mantiene visible en la parte superior */ 
+  z-index: 1000; /* Asegura que quede sobre otros elementos */
+}
+
+header img {
+  height: 100px; /* Ajusta el tamaño del logo si es necesario */
+
+}
+
+header .navbar-brand {
+  font-size: 1.5rem; /* Tamaño más grande para el logo o nombre */
+  font-weight: bold;
+  color: #fff; /* Contraste claro */
+  text-transform: uppercase; /* Texto en mayúsculas */
+  display: flex;
+  align-items: center; /* Centrar verticalmente */
+  gap: 10px; /* Espaciado entre el logo y el texto */
+}
+header .navbar-brand img {
+  height: 60px; /* Tamaño del logo */
+  border-radius: 50%; /* Forma redondeada opcional */
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: white;
+  font-weight: bold;
+  
+}
+
+header .navbar-nav .nav-link {
+  color: #ffffff; /* Blanco para enlaces */
+  font-weight: 500; /* Peso medio */
+  padding: 10px 15px; /* Espaciado interno */
+  margin-right: 20px; /* Espaciado entre enlaces */
+  transition: all 0.3s ease; /* Transición suave */
+}
+
+header .navbar-nav .nav-link:hover {
+  background: rgba(255, 255, 255, 0.2); /* Fondo semitransparente al pasar el cursor */
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+header .nav-dropdown .dropdown-menu {
+  background: #1986f3; /* Fondo del menú desplegable */
+  border: none;
+  border-radius: 10px; /* Bordes redondeados */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Sombra para resaltar */
+}
+
+header .nav-dropdown .dropdown-menu .dropdown-item {
+  color: #ffffff; /* Texto blanco */
+  padding: 10px 15px; /* Espaciado interno */
+  transition: all 0.3s ease; /* Transición suave */
+}
+
+header .nav-dropdown .dropdown-menu .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.2); /* Fondo semitransparente al pasar el cursor */
+  border-radius: 8px; /* Bordes redondeados */
+}
+
+header .menu-toggle-btn {
+  color: #ffffff; /* Blanco para el ícono del menú */
+  background: none;
+  border: none;
+  font-size: 1.5rem; /* Tamaño del ícono */
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+header .menu-toggle-btn:hover {
+  transform: scale(1.1); /* Efecto de agrandamiento */
+}
+
+.App {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Centra verticalmente el contenido */
+  width: 100vw;
+  /* Ocupa todo el ancho de la ventana */
+  height: 100vh;
+  /* Ocupa todo el alto de la ventana */
+  background-image: url('../cerebro.png');
+  /* Ruta relativa corregida */
+  background-size: cover;
+  /* Asegura que cubra todo el fondo */
+  background-position: center;
+  /* Centra la imagen */
+  background-repeat: no-repeat;
+  /* Evita que se repita */
+  margin: 0;
+  padding: 0;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  /* Centra horizontalmente las filas */
+}
+
+.cell {
+  width: 40px;
+  /* Aumentado para que las letras tengan más espacio */
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  /* Centra el contenido dentro de cada celda */
+  align-items: center;
+  /* Centra verticalmente */
+  font-weight: bold;
+  /* Pone las letras en negrilla */
+  font-size: 20px;
+  /* Aumenta el tamaño de la letra */
+  border: 1px solid #ccc;
+  /* Añade un borde a las celdas para visibilidad */
+  color: #000;
+}
+
+.hasWonLetter {
+  font-weight: bolder;
+  color: rgb(15, 202, 30);
+  font-size: 20px;
+  /* Corrige la unidad */
+}
+
+.incorrect {
+  color: orange;
+}
+
+.cell:hover {
+  cursor: pointer;
+  background-color: #f0f0f0;
+  /* Agrega un color de fondo al pasar el mouse */
+}
+
+.photo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.options-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.option-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.option-button:hover {
+  background-color: #e0e0e0;
+}
+
+.answer-message {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #333;
+  text-align: center;
+}
+
+.game-finished {
+  margin-top: 20px;
+  font-size: 24px;
+  text-align: center;
+}
+
+.equation {
+  margin: 20px 0;
+}
+
+.equation input {
+  margin-right: 10px;
+  padding: 5px;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.game-finished {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.find-differences-game {
+  text-align: center;
+}
+
+.images-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.images-container img {
+  width: 300px;
+  height: auto;
+  margin: 0 20px;
+}
+
+.options-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.option {
+  padding: 10px;
+  border: 2px solid #333;
+  cursor: pointer;
+  margin: 5px;
+  width: 100px;
+  text-align: center;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.option:hover {
+  background-color: #f0f0f0;
+}
+
+.option.selected {
+  background-color: #4caf50;
+  color: white;
+}
+
+.submit-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.results {
+  margin-top: 20px;
+}
+
+.Toastify__toast {
+  font-size: 16px;
+}
+
+.phrase-game {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.options-container {
+  margin: 20px 0;
+}
+
+.option-button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.submit-button,
+.next-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.option-button.selected {
+  background-color: #4caf50;
+  color: white;
+}
+
+.results {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.word-classification {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.categories-container {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+
+.category {
+  width: 45%;
+  border: 2px dashed #333;
+  padding: 20px;
+  min-height: 200px;
+  background-color: #f9f9f9;
+}
+
+.assigned-words {
+  margin-top: 10px;
+}
+
+.words-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  background-color: #ffb547;
+}
+
+.word {
+  margin: 10px;
+  padding: 8px 15px;
+  background-color: #4c77af;
+  color: white;
+  cursor: pointer;
+}
+
+.submit-button {
+  padding: 10px 20px;
+  margin-top: 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.results {
+  margin-top: 20px;
+}
+
+.memory-game-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.memory-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.memory-card {
+  width: 90px;
+  height: 90px;
+  margin: 10px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.memory-card.flipped .memory-card-inner {
+  transform: rotateY(180deg);
+}
+
+.memory-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.memory-card-front,
+.memory-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 10px;
+}
+
+.memory-card-front {
+  transform: rotateY(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+}
+
+.memory-card-back {
+  background-color: #4caf50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.memory-card img {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+}
+
+.memory-results {
+  margin-top: 20px;
+}
+
+.story-game-container {
+  text-align: center;
+  margin-top: 20px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  /* Permitir posicionamiento absoluto dentro del contenedor */
+}
+
+.timer-container {
+  position: absolute;
+  top: 10px;
+  right: 5px;
+  background-color: #f9f9f9;
+  padding: 4px 9px;
+  border-radius: 8px;
+  font-weight: bold;
+  box-shadow: 0 4px 3px rgba(0, 0, 0, 0.1);
+}
+
+.story-text {
+  text-align: justify;
+  font-size: 16px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.questions-container {
+  margin-top: 20px;
+}
+
+.question {
+  margin-bottom: 20px;
+  text-align: left;
+
+}
+
+.question-text {
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.option-button {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin: 8px auto;
+  padding: 12px 20px;
+  font-size: 16px;
+  background-color: #f0f0f0;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.option-button:hover {
+  background-color: #4caf50;
+  color: white;
+  border-color: #45a049;
+}
+
+.option-button:active {
+  background-color: #388e3c;
+  border-color: #2e7d32;
+}
+
+.submit-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.submit-button:hover {
+  background-color: #f8b44f;
+}
+
+.results {
+  margin-top: 20px;
+}
+
+.follow-instructions-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.timer-text {
+  font-size: 18px;
+  color: #555;
+  margin-top: 10px;
+}
+
+.instruction {
+  margin-bottom: 20px;
+}
+
+.options-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.option-button {
+  width: 100%;
+  max-width: 300px;
+  margin: 5px 0;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  transition: background-color 0.3s;
+}
+
+.option-button:hover {
+  background-color: #d1e7dd;
+}
+
+.option-button.selected {
+  background-color: #4caf50;
+  color: white;
+  border-color: #4caf50;
+}
+
+.instruction-input {
+  width: 80%;
+  padding: 10px;
+  font-size: 14px;
+  margin-top: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.identify-objects-game-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.timer-text {
+  font-size: 18px;
+  color: #555;
+  margin-top: 10px;
+}
+
+.object-card {
+  margin-top: 20px;
+}
+
+.object-image {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.options-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.option-button {
+  width: 80%;
+  max-width: 300px;
+  margin: 10px 0;
+  padding: 15px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  transition: background-color 0.3s, color 0.3s;
+  color: #333;
+}
+
+.option-button.selected {
+  background-color: #28a745;
+  color: rgb(15, 6, 6);
+  border-color: #218838;
+}
+
+.option-button:hover {
+  background-color: #039c17;
+}
+
+.activity-card {
+  --main-color: #f5b235;
+  --submain-color: #3caaff;
+  --bg-color: #fff;
+  font-family: 'Arial', sans-serif;
+  position: relative;
+  width: 300px;
+  height: 450px;
+  /* Fijamos la altura para que todas sean del mismo tamaño */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  /* Asegura que los elementos internos se distribuyan uniformemente */
+  border-radius: 20px;
+  background: var(--bg-color);
+  box-shadow: 0 4px 8px rgba(194, 161, 14, 0.1);
+  overflow: hidden;
+  text-align: center;
+  margin: 20px;
+  /* Aumenta el margen para asegurar la separación */
+}
+
+.activity-card__bg {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  position: relative;
+}
+
+.activity-background-image {
+  width: 100%;
+  height: 150%;
+  object-fit: cover;
+}
+
+.activity-card__avatar {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--bg-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.activity-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.activity-title {
+  margin-top: 40px;
+  /* Reducir el margen para acercar el texto a la imagen */
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--main-color);
+}
+
+.activity-description {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--submain-color);
+}
+
+.activity-card__wrapper {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.activity-card__btn {
+  margin: 5px;
+  width: 120px;
+  /* Ajuste del tamaño del botón */
+  height: 35px;
+  border: 2px solid var(--main-color);
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 14px;
+  /* Aumentar el tamaño de la fuente */
+  color: var(--main-color);
+  background: var(--bg-color);
+  transition: all 0.3s;
+}
+
+.activity-card__btn:hover {
+  background: var(--main-color);
+  color: var(--bg-color);
+}
+
+.activity-card__btn-solid {
+  background: var(--main-color);
+  color: var(--bg-color);
+}
+
+.activity-card__btn-solid:hover {
+  background: var(--bg-color);
+  color: var(--main-color);
+}
+
+.activity-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  /* Añadimos un espacio entre las filas también */
+}
+
+.activity-card-container {
+  padding: 20px;
+  /* Añade un padding alrededor del contenedor si es necesario */
+}
+
+.activity-card {
+  margin: 0 10px 20px 10px;
+  /* Ajusta el margen entre tarjetas si es necesario */
+}
+
+.activity-card {
+  margin-left: 2px;
+  /* Ajusta el margen izquierdo */
+  margin-right: 2px;
+  /* Ajusta el margen derecho */
+  /* Si necesitas forzar el tamaño */
+  max-width: 280px;
+  /* Fija un tamaño máximo para evitar que las tarjetas se expandan demasiado */
+}
+
+.story-game-container {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  z-index: 1;
+}
+
+.background-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(250, 228, 130, 0.2);
+  /* Color con transparencia */
+  border: 2px solid #f5b326;
+  /* Borde del cuadro */
+  z-index: -1;
+  /* Se envía el cuadro al fondo */
+  border-radius: 15px;
+  /* Bordes redondeados (opcional) */
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  /* Más espacio dentro del contenedor para que el contenido no esté ajustado */
+}
+
+.timer-container {
+  text-align: right;
+  margin-bottom: 10px;
+  /* Espacio debajo del temporizador */
+}
+
+.story-text {
+  margin-bottom: 30px;
+  max-height: 400px;
+  /* Aumenta la altura máxima del contenedor para que permita más contenido */
+  overflow-y: auto;
+  /* Permite scroll si el contenido es muy largo */
+  padding: 10px;
+  /* Espacio interior para mayor legibilidad */
+  background-color: #f5f5f5;
+  /* Color de fondo opcional para distinguir el texto */
+  border-radius: 10px;
+  /* Bordes redondeados opcionales */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* Sombra ligera para destacar el contenedor */
+}
+
+.questions-container {
+  margin-top: 20px;
+  overflow: hidden;
+  /* Asegura que el contenido del carrusel no se desborde */
+}
+
+.question-slide {
+  padding: 20px;
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.submit-button {
+  margin-top: 30px;
+  padding: 10px 20px;
+  background-color: #f8d538;
+  color: rgb(10, 10, 10);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 30%;
+}
+
+.results {
+  margin-top: 20px;
+}
+
+.option-button {
+  margin-top: 10px;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.option-button:hover {
+  background-color: #fac145;
+}
+
+.option-button:disabled {
+  background-color: #8dc4e4;
+  /* Evitar cambios en el color cuando está deshabilitado */
+  color: black;
+}
+
+.dots {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.phrase-box {
+  background-color: #f5f5f5;
+  border: 2px solid #ddd;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.option-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.option-button.selected {
+  background-color: #2e7d32;
+}
+
+.submit-button {
+  background-color: #2196f3;
+  color: white;
+  padding: 12px 25px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.results {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.message-box {
+  margin-top: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #d32f2f;
+}
+
+.word {
+  cursor: pointer;
+  border: 1px solid black;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: capitalize;
+}
+
+.category {
+  min-height: 200px;
+  padding: 20px;
+  border: 2px dashed gray;
+  margin: 10px;
+}
+
+.assigned-words {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.submit-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.results {
+  margin-top: 20px;
+  font-size: 18px;
+  text-align: center;
+}
+
+h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.words-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.dialog-box-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Fondo semi-transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.dialog-box {
+  width: 300px;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.dialog-box p {
+  margin-bottom: 15px;
+}
+
+.dialog-box button {
+  margin: 5px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.dialog-box button:first-of-type {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.dialog-box button:last-of-type {
+  background-color: #ccc;
+}
+
+.dialog-box-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.dialog-box {
+  width: 300px;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.dialog-box p {
+  margin-bottom: 15px;
+}
+
+.dialog-box button {
+  margin: 5px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.dialog-box button:first-of-type {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.dialog-box button:last-of-type {
+  background-color: #ccc;
+}
+
+.mood-screen {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  color: #333;
+}
+
+.patients-list {
+  margin-bottom: 20px;
+}
+
+.patients-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.patients-list li {
+  cursor: pointer;
+  padding: 10px;
+  background: #f4f4f4;
+  margin: 5px 0;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.patients-list li:hover {
+  background: #007bff;
+  color: white;
+}
+
+.mood-chart {
+  margin-top: 20px;
+}
+
+.mood-chart h3 {
+  margin-bottom: 10px;
+}

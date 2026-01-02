@@ -1,0 +1,216 @@
+/* src/assets/styles/PatientReport.css */
+
+.patient-report-screen {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    min-height: 100vh;
+  }
+  
+  .report-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    /* Removido cualquier fondo si existía */
+    background: none;
+  }
+  
+  .report-header h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    /* Asegurarse de que no haya fondo */
+    background: none;
+  }
+  
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .card {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .selection-section h2,
+  .report-section h2 {
+    display: flex;
+    align-items: center;
+    font-size: 1.8rem;
+    color: #34495e;
+    margin-bottom: 1rem;
+  }
+  
+  .selection-section h2 svg,
+  .report-section h2 svg {
+    margin-right: 0.5rem;
+  }
+  
+  .patient-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+  }
+  
+  .patient-select:focus {
+    border-color: #2980b9;
+    outline: none;
+  }
+  
+  .error-message {
+    color: #e74c3c;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .success-message {
+    color: #27ae60;
+    font-weight: bold;
+    margin-top: 1rem;
+    text-align: center;
+  }
+  
+  .report-section h2 {
+    margin-top: 0;
+  }
+  
+  .patient-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .details-card {
+    background-color: #f9f9f9;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+  }
+  
+  .details-card h3 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .details-card h3 svg {
+    margin-right: 0.5rem;
+  }
+  
+  .details-card p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #555555;
+    display: flex;
+    align-items: center;
+  }
+  
+  .details-card p svg {
+    margin-right: 0.5rem;
+    color: #2980b9;
+  }
+  
+  /* Ajuste de espacio después de los dos puntos */
+  .details-card p strong {
+    margin-right: 0.3rem;
+  }
+  
+  /* Botones de Acción */
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end; /* Alinea los botones a la derecha */
+    margin-bottom: 1rem;
+  }
+  
+  .btn {
+    display: inline-flex;
+    height: 60px;
+    width: 200px;
+    align-items: center;
+    gap: 0rem; /* Espacio entre el icono y el texto */
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px; /* Bordes muy redondeados para un estilo moderno */
+    cursor: pointer;
+    transition: 
+      background-color 0.3s ease, 
+      box-shadow 0.3s ease, 
+      transform 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-download {
+    background: linear-gradient(135deg, #28a745, #218838);
+    color: #ffffff;
+  }
+  
+  .btn-download:hover {
+    background: linear-gradient(135deg, #218838, #28a745);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  .btn-download:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-print {
+    background: linear-gradient(135deg, #007bff, #0069d9);
+    color: #ffffff;
+  }
+  
+  .btn-print:hover {
+    background: linear-gradient(135deg, #0069d9, #007bff);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  .btn-print:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Iconos en los botones */
+  .btn-icon {
+    font-size: 1.2rem;
+  }
+  
+  /* Responsive Design */
+  @media (min-width: 768px) {
+    .patient-details {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  
+    .details-card {
+      flex: 1 1 calc(33.333% - 1rem);
+    }
+  
+    .action-buttons {
+      justify-content: flex-end;
+    }
+  }
+  
+  /* Ocultar botones de acción al imprimir */
+  @media print {
+    .action-buttons {
+      display: none;
+    }
+  }
+  
+  /* General Styling for Buttons */
+  .btn {
+    text-decoration: none;
+  }
+  

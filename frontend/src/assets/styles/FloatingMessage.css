@@ -1,0 +1,26 @@
+/* src/assets/styles/MedicationReminder.css */
+
+.medication-reminder {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  background-color: #2F80ED;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 1000; /* Asegura que esté por encima de otros elementos */
+  transition: background-color 0.3s ease;
+  
+}
+
+.medication-reminder:hover {
+  background-color: #1c5bbf;
+}
+
+.medication-reminder p {
+  margin: 0;
+  font-size: 1rem;
+  text-align: center;
+}

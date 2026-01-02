@@ -1,0 +1,72 @@
+# Node modules
+node_modules/
+env/
+.env/
+.env
+
+# Python virtual environment and cache
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg
+*.egg-info
+dist/
+build/
+env/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Editor directories and files
+.vscode/
+.idea/
+.DS_Store
+
+# Optional caching files
+.cache/
+.parcel-cache/
+
+# Temporary files
+*.swp
+*.swo
+*.tmp
+*.bak
+*.pid
+*.seed
+*.old
+*.orig
+
+# Coverage files
+coverage/
+*.cover
+.hypothesis/
+
+# Test output
+*.test_output
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Flask cache and uploads
+instance/
+*.sqlite
+*.sqlite3
+uploads/
+
+# OS generated files
+Thumbs.db
+*.DS_Store
+
+# Static analysis and type checking
+.mypy_cache/
+.pytest_cache/
+
+# Backup files
+*~

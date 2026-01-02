@@ -1,0 +1,46 @@
+/* Contenedor principal del ProfileScreen */
+.profile-screen-container {
+    padding: 2rem 0;
+  }
+  
+  /* Tarjeta del perfil */
+  .profile-card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  }
+  
+  /* Encabezado de la tarjeta (title, íconos, etc.) */
+  .profile-card-header {
+    background-color: #4585e4; /* color primario de Bootstrap */
+    color: #fff;
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile-card-header h4 {
+    margin-bottom: 0;
+    margin-left: 0.5rem;
+  }
+  
+  /* Sección donde se muestra la cámara y el botón de captura */
+  .profile-camera-section {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 320px;
+  }
+  
+  /* Ajustes para el video */
+  .profile-video {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  /* Para inputs de solo lectura */
+  .profile-readonly {
+    cursor: not-allowed;
+    background-color: #f8f9fa !important;
+  }
+  

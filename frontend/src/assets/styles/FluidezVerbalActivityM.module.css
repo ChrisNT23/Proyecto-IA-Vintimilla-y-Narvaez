@@ -1,0 +1,274 @@
+/* src/screens/FluidezVerbalActivityM.module.css */
+
+/* Clase para el fondo específico de esta pantalla */
+.background {
+    /* Opción 1: Usar una imagen de fondo */
+    background-image: url('../../images/background/cerebro9.webp'); /* Reemplaza con la ruta de tu imagen */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    
+    /* Opción 2: Usar un degradado de color */
+    /* background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); */
+  
+    /* Opcional: Añadir un overlay para mejorar el contraste */
+    position: relative;
+}
+
+.background::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* Ajusta la opacidad según sea necesario */
+    z-index: 0;
+}
+
+/* Contenedor principal de la actividad */
+.container {
+    position: relative; /* Para que esté encima del overlay */
+    max-width: 800px;
+    width: 100%;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.95); /* Fondo semitransparente para destacar sobre el fondo */
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    z-index: 1; /* Asegura que esté encima del overlay */
+}
+
+/* Título de la actividad */
+.title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-family: 'Arial', sans-serif;
+    font-size: 2em;
+}
+
+/* Contenedor de información (puntaje y tiempo) */
+.infoContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.infoBox {
+    display: flex;
+    justify-content: flex-end; /* Alinea el contenido hacia la derecha */
+    align-items: center;
+    background-color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    position: absolute; /* Hace que el temporizador flote */
+    right: 20px; /* Ajusta la posición en la parte derecha */
+    z-index: 10; /* Asegura que el temporizador esté encima de otros elementos */
+}
+
+.timer {
+    font-weight: bold;
+    color: #ff9800;
+    margin-left: 10px;
+}
+
+.score {
+    font-weight: bold;
+    color: #4caf50;
+    margin-left: 5px;
+}
+
+/* Sección de instrucciones */
+.instructions {
+    font-size: 1em;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Controles de la actividad */
+.controlsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centrar horizontalmente */
+    justify-content: center; /* Centrar verticalmente */
+    margin-bottom: 20px;
+    gap: 1rem;
+    min-height: 150px; /* Agregar espacio mínimo para centrar en la pantalla */
+}
+
+.voiceButton {
+    background: none;
+    align-items: center; 
+    border: none;
+    color: #007bff;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.voiceButton:hover {
+    color: #0056b3;
+}
+
+.listeningContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    align-items: center; 
+}
+
+/* Formulario de ingreso de palabras */
+.formContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+.wordInput {
+    flex: 1;
+}
+
+/* Listado de palabras */
+.wordListSection {
+    margin-top: 20px;
+}
+
+.wordList {
+    list-style-type: disc;
+    margin-left: 20px;
+    color: #333;
+}
+
+/* Botones finales */
+.footerButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+/* Botón de envío */
+.submitButton {
+    padding: 12px 25px;
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.submitButton:hover {
+    background-color: #1565c0;
+    transform: scale(1.05);
+}
+
+.submitButton:disabled {
+    background-color: #a5d6a7;
+    cursor: not-allowed;
+}
+
+/* Finalización de la actividad */
+.gameFinished {
+    text-align: center;
+    padding: 40px;
+    background-color: #e8f5e9;
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.gameFinished h2 {
+    color: #2e7d32;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+.gameFinished p {
+    font-size: 1.3em;
+    margin: 10px 0;
+}
+
+.finishButton {
+    margin-top: 25px;
+    padding: 12px 25px;
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.finishButton:hover {
+    background-color: #1565c0;
+    transform: scale(1.05);
+}
+
+/* Mensajes de estado */
+.recording {
+    text-align: center;
+    color: #2196f3;
+    margin-bottom: 10px;
+}
+
+.loading {
+    text-align: center;
+    color: #ff9800;
+    margin-bottom: 10px;
+}
+
+.error {
+    text-align: center;
+    color: #f44336;
+    margin-bottom: 10px;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    .title {
+        font-size: 1.8em;
+    }
+
+    .infoBox {
+        font-size: 1em;
+        padding: 8px 16px;
+    }
+
+    .instructions {
+        font-size: 0.95em;
+    }
+
+    .submitButton,
+    .finishButton {
+        font-size: 1em;
+        padding: 10px 20px;
+    }
+
+    .gameFinished h2 {
+        font-size: 1.6em;
+    }
+
+    .gameFinished p {
+        font-size: 1.1em;
+    }
+}

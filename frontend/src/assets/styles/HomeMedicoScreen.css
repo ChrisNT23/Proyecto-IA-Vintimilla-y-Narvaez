@@ -1,0 +1,177 @@
+/* HomeMedicoScreen.css */
+
+.home-medico-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  /*background-color: #eeeeee;*/
+}
+
+.home-medico-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #2c3e50;
+}
+
+.shortcut-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.shortcut-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  width: 200px;
+  height: 150px;
+  text-decoration: none;
+  color: #2c3e50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.shortcut-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+.card-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.patients-section {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  /*background-color: #9ecceb;*/
+}
+
+.medico-section {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom:30px ;
+ /* background-color: #9ecceb;*/
+}
+
+.patients-section h2 {
+  margin-bottom: 20px;
+  color: #34495e;
+}
+
+.table-responsive {
+  width: 100%;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1); /* Sombra más suave */
+  overflow-x: auto; /* Para pantallas pequeñas */
+}
+
+.assigned-patients-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 16px;
+  font-family: 'Roboto', Arial, sans-serif; /* Fuente moderna */
+}
+
+
+.assigned-patients-table th,
+.assigned-patients-table td {
+  padding: 14px 20px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;  /* Línea sutil */
+}
+
+
+.assigned-patients-table th {
+  background-color: #ffa726; /* Naranja más vibrante */
+  color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.assigned-patients-table tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.report-link {
+  color: #2980b9;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.report-link:hover {
+  text-decoration: underline;
+}
+
+.buttonContainer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.table-button {
+  background-color: #27ae60;
+  color: #ffffff;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+}
+
+.table-button:hover {
+  background-color: #219150;
+}
+
+.error-message {
+  color: #e74c3c;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Responsividad */
+
+@media (max-width: 768px) {
+  .shortcut-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .shortcut-card {
+    width: 80%;
+    height: auto;
+    padding: 20px;
+  }
+
+  .card-icon {
+    font-size: 30px;
+  }
+
+  .card-title {
+    font-size: 14px;
+  }
+
+  .assigned-patients-table th,
+  .assigned-patients-table td {
+    padding: 10px 12px;
+  }
+}

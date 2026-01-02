@@ -1,0 +1,110 @@
+.loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Opcional: añade un fondo semitransparente */
+    /* background-color: rgba(0, 0, 0, 0.5); */
+    z-index: 9999;
+  }
+  
+  /* Loader Circular */
+  .loader-circle {
+    width: 100px;
+    height: 100px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    border-top: 5px solid #e74c3c;
+    position: relative;
+    animation: load 2s linear infinite;
+  }
+  
+  .loader-circle::before,
+  .loader-circle::after {
+    content: '';
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    box-sizing: border-box;
+    border-radius: 50%;
+  }
+  
+  .loader-circle::before {
+    border-top: 5px solid #e67e22;
+    transform: rotate(120deg);
+  }
+  
+  .loader-circle::after {
+    border-top: 5px solid #3498db;
+    transform: rotate(240deg);
+  }
+  
+  @keyframes load {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Corazón Latiendo */
+  .loader-heart {
+    width: 30px;
+    height: 27px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: beat 1s infinite;
+  }
+  
+  .loader-heart::before,
+  .loader-heart::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 15px;
+    height: 27px;
+    border-radius: 15px 15px 0 0;
+    background-color: rgb(255, 255, 255);
+    animation: coldblue 1s infinite;
+  }
+  
+  .loader-heart::before {
+    left: 15px;
+    transform: rotate(-45deg);
+    transform-origin: 0 100%;
+  }
+  
+  .loader-heart::after {
+    left: 0;
+    transform: rotate(45deg);
+    transform-origin: 100% 100%;
+  }
+  
+  @keyframes beat {
+    0% {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  
+  @keyframes coldblue {
+    0%,
+    100% {
+      background-color: rgb(255, 255, 255);
+    }
+    50% {
+      background-color: rgb(198, 23, 23);
+    }
+  }
+  

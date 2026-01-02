@@ -1,0 +1,174 @@
+/* src/screens/Activity1L2Screen.module.css */
+
+/* Clase para el fondo específico de esta pantalla */
+.background {
+    /* Opción 1: Usar una imagen de fondo */
+    background-image: url('../../images/background/cerebro2.webp'); /* Reemplaza con la ruta de tu imagen */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    
+    /* Opción 2: Usar un degradado de color */
+    /* background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); */
+  
+    /* Opcional: Añadir un overlay para mejorar el contraste */
+    position: relative;
+  }
+  
+  .background::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* Ajusta la opacidad según sea necesario */
+    z-index: 0;
+  }
+  
+  /* Contenedor principal de la actividad */
+  .container {
+    position: relative; /* Para que esté encima del overlay */
+    max-width: 800px;
+    width: 100%;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.95); /* Fondo semitransparente para destacar sobre el fondo */
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    z-index: 1; /* Asegura que esté encima del overlay */
+  }
+  
+  /* Título de la actividad */
+  .title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-family: 'Arial', sans-serif;
+    font-size: 2em;
+  }
+  
+  /* Contenedor de información (tiempo y juegos restantes) */
+  .infoContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .infoBox {
+    background-color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+  }
+  
+  .timer {
+    font-weight: bold;
+    color: #ff9800;
+    margin-left: 5px;
+  }
+  
+  .gamesToWin {
+    font-weight: bold;
+    color: #4caf50;
+    margin-left: 5px;
+  }
+  
+  /* Indicadores de estado */
+  .recording {
+    text-align: center;
+    color: #2196f3;
+    margin-bottom: 10px;
+  }
+  
+  .error {
+    text-align: center;
+    color: #f44336;
+    margin-bottom: 10px;
+  }
+  
+  /* Finalización del juego */
+  .gameFinished {
+    text-align: center;
+    padding: 40px;
+    background-color: #e8f5e9;
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  }
+  
+  .gameFinished h2 {
+    color: #2e7d32;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+  }
+  
+  .gameFinished p {
+    font-size: 1.3em;
+    margin: 10px 0;
+  }
+  
+  .finishButton {
+    margin-top: 25px;
+    padding: 12px 25px;
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .finishButton:hover {
+    background-color: #1565c0;
+    transform: scale(1.05);
+  }
+  
+  /* Tablero de juego */
+  .board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .row {
+    display: flex;
+  }
+  
+  /* Responsividad */
+  @media (max-width: 768px) {
+    .container {
+      padding: 20px;
+    }
+  
+    .title {
+      font-size: 1.8em;
+    }
+  
+    .infoBox {
+      font-size: 1em;
+      padding: 8px 16px;
+    }
+  
+    .gameFinished h2 {
+      font-size: 1.6em;
+    }
+  
+    .gameFinished p {
+      font-size: 1.1em;
+    }
+  
+    .finishButton {
+      font-size: 1em;
+      padding: 10px 20px;
+    }
+  }
+  

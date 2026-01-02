@@ -1,0 +1,177 @@
+/* HomeMedicoScreen.css */
+
+/* Contenedor Principal */
+.home-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  /* Título */
+  .home-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #1e3a8a; /* Azul oscuro */
+  }
+  
+  /* Mensajes de Error y Estado Vacío */
+  .error-message, .no-patients-message {
+    color: #ef4444; /* Rojo */
+    font-size: 1.2rem;
+    margin-top: 20px;
+  }
+  
+  /* Grid de Pacientes */
+  .patients-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  
+  /* Tarjeta de Paciente */
+  .patient-card {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    background-color: #f8fafc; /* bg-slate-50 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s;
+  }
+  
+  .patient-card:hover {
+    transform: scale(0.95);
+  }
+  
+  /* Fondo de Gradiente */
+  .gradient-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(to bottom left, #38bdf8, #f78f44, #e79b5d); /* from-sky-200 via-orange-200 to-orange-700 */
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    z-index: 1;
+  }
+  
+  /* Indicador de Estado */
+  .patient-status {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #22c55e; /* Verde para activo */
+  }
+  
+  .patient-card.inactive .patient-status {
+    background-color: #ef4444; /* Rojo para inactivo */
+  }
+  
+  /* Contenedor de la Foto del Paciente */
+  .patient-photo-container {
+    width: 112px; /* 28 * 4px = 112px */
+    height: 112px;
+    background-color: #1e40af; /* bg-blue-700 */
+    margin-top: 32px; /* mt-8 */
+    border: 4px solid #f8fafc; /* border-4 border-slate-50 */
+    border-radius: 50%;
+    overflow: hidden;
+    transition: transform 0.5s;
+    z-index: 2;
+  }
+  
+  .patient-card:hover .patient-photo-container {
+    transform: scale(1.5) translate(-96px, -80px); /* group-hover:scale-150 group-hover:-translate-x-24 group-hover:-translate-y-20 */
+  }
+  
+  .patient-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* Información del Paciente */
+  .patient-info {
+    z-index: 2;
+    transition: transform 0.5s;
+  }
+  
+  .patient-card:hover .patient-info {
+    transform: translateY(-40px); /* group-hover:-translate-y-10 equivalent */
+  }
+  
+  .patient-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: block;
+    color: #1e3a8a; /* Azul oscuro */
+  }
+  
+  .patient-role {
+    color: #6b7280; /* text-gray-600 */
+    font-size: 1rem;
+  }
+  
+  /* Botón para Ver Reporte */
+  .report-button {
+    position: absolute;
+    bottom: 16px;
+    background-color: #1e40af; /* bg-blue-700 */
+    color: #f8fafc; /* text-slate-50 */
+    padding: 8px 16px; /* px-4 py-1 */
+    border-radius: 0.375rem; /* rounded-md */
+    text-decoration: none;
+    transition: transform 0.5s, background-color 0.3s;
+    z-index: 2;
+  }
+  
+  .report-button:hover {
+    transform: scale(1.25);
+    background-color: #3b82f6; /* hover:bg-blue-500 */
+  }
+  
+  /* Contenedor de las iniciales cuando no hay foto */
+.patient-initials {
+  width: 100%;
+  height: 100%;
+  background-color: #4870f3; /* Mismo color de fondo para consistencia */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.patient-role {
+  color: #6b7280; /* text-gray-600 */
+  font-size: 1rem;
+  margin-bottom: 2rem; /* Ajusta el margen según necesites */
+}
+
+.report-button {
+  position: absolute;
+  bottom: 16px;
+  background-color: #1e40af; /* bg-blue-700 */
+  color: #f8fafc;
+  padding: 8px 16px;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  transition: transform 0.5s, background-color 0.3s;
+  z-index: 2;
+
+}

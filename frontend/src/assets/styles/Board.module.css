@@ -1,0 +1,11 @@
+/* src/utils/Board.module.css */
+
+.board {
+    display: inline-block;
+    border: 2px solid #000;
+  }
+  
+  .row {
+    display: flex;
+  }
+  

@@ -1,0 +1,219 @@
+/* src/assets/styles/Mood.css */
+
+.mood-screen {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f6f8;
+  min-height: 100vh;
+}
+
+.report-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  background: none;
+}
+
+.report-header h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  background: none;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.card {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.selection-section h3 {
+  display: flex;
+  align-items: center;
+  font-size: 1.4rem;
+  color: #34495e;
+  margin-bottom: 0.5rem;
+}
+
+.selection-section h3 svg {
+  margin-right: 0.5rem;
+}
+
+.patients-list {
+  list-style-type: none;
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.patient-item {
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  transition: background-color 0.3s;
+}
+
+.patient-item:hover,
+.patient-item.active {
+  background-color: #f0f0f0;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end; /* Alinea los botones a la derecha */
+  margin-bottom: 1rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* Espacio entre el icono y el texto */
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 50px; /* Bordes muy redondeados para un estilo moderno */
+  cursor: pointer;
+  transition: 
+    background-color 0.3s ease, 
+    box-shadow 0.3s ease, 
+    transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-download {
+  background: linear-gradient(135deg, #28a745, #218838);
+  color: #ffffff;
+}
+
+.btn-download:hover {
+  background: linear-gradient(135deg, #218838, #28a745);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-download:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-print {
+  background: linear-gradient(135deg, #007bff, #0069d9);
+  color: #ffffff;
+}
+
+.btn-print:hover {
+  background: linear-gradient(135deg, #0069d9, #007bff);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-print:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-icon {
+  font-size: 1.2rem;
+}
+
+.mood-data {
+  margin-top: 20px;
+}
+
+.mood-data h3 {
+  display: flex;
+  align-items: center;
+  font-size: 1.6rem;
+  color: #34495e;
+  margin-bottom: 1rem;
+}
+
+.mood-data h3 svg {
+  margin-right: 0.5rem;
+}
+
+.mood-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Centrar la gráfica y la tabla */
+.mood-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.mood-chart h3 {
+  margin-bottom: 10px;
+}
+
+.mood-table {
+  width: 100%;
+  max-width: 600px; /* Limitar el ancho de la tabla */
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.mood-table th,
+.mood-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.mood-table th {
+  background-color: #f2f2f2;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .mood-content {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 3rem;
+  }
+
+  .mood-chart {
+    width: 45%;
+  }
+
+  .mood-table {
+    width: 45%;
+  }
+}
+
+/* Ocultar botones de acción al imprimir */
+@media print {
+  .action-buttons {
+    display: none;
+  }
+
+  /* Ajustes adicionales para impresión */
+  .report-header,
+  .selection-section,
+  .success-message,
+  .error-message {
+    display: none;
+  }
+
+  .mood-data {
+    box-shadow: none;
+    border: none;
+  }
+
+  body {
+    margin: 0;
+  }
+}

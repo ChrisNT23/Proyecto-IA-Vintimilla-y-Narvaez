@@ -1,0 +1,198 @@
+/* src/assets/styles/ActivityScreenLevel2.css */
+
+/* Nuevo contenedor para aplicar fondo */
+.image-classification-wrapper {
+    /* Opción 1: Usar una imagen de fondo */
+    background-image: url('../../images/background/cerebro6.webp'); /* Reemplaza con la ruta de tu imagen */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    
+    /* Opción 2: Usar un degradado de color */
+    /* background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); */
+  
+    /* Opcional: Añadir un overlay para mejorar el contraste */
+    position: relative;
+}
+
+/* Asegurar que el contenedor interno se destaque sobre el fondo */
+.image-classification-level2 {
+    position: relative; /* Para que esté encima del overlay si se agrega */
+    max-width: 900px;
+    width: 100%;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.95); /* Fondo semitransparente para destacar sobre el fondo */
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo para el título */
+.title-level2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-family: 'Arial', sans-serif;
+    font-size: 2em;
+}
+
+/* Estilo para el temporizador */
+.timer-level2 {
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ff9800;
+    margin-bottom: 20px;
+}
+
+/* Estilos para el contenedor de categorías */
+.categories-container-level2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* Distribuye el espacio entre las categorías */
+    align-items: flex-start;
+    flex-wrap: wrap; /* Permite que las categorías se envuelvan en pantallas pequeñas */
+    gap: 20px; /* Espacio entre las categorías */
+    margin-bottom: 20px; /* Espacio debajo del contenedor de categorías */
+}
+
+/* Estilo para cada categoría */
+.category-level2 {
+    background-color: white;
+    padding: 20px;
+    border: 2px dashed gray;
+    min-height: 200px;
+    border-radius: 8px;
+    width: 30%; /* Ajuste para tres categorías en una fila */
+    box-sizing: border-box; /* Asegura que el padding no aumente el ancho total */
+    transition: background-color 0.3s ease;
+}
+
+/* Cambio de fondo al pasar el cursor */
+.category-level2:hover {
+    background-color: #f9f9f9;
+}
+
+/* Estilo para las imágenes asignadas dentro de cada categoría */
+.assigned-images-level2 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Estilos para los elementos de imagen dentro de las categorías */
+.image-item-level2 {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f9f9f9;
+}
+
+.image-item-level2 img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Estilos para los contenedores de imágenes no asignadas */
+.images-container-level2 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 20px; /* Espacio entre las imágenes */
+}
+
+/* Estilos para los botones */
+.submit-button-level2, .restart-button-level2 {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    color: white;
+}
+
+.submit-button-level2 {
+    background-color: #007bff;
+}
+
+.submit-button-level2:hover {
+    background-color: #0056b3;
+}
+
+.restart-button-level2 {
+    background-color: #28a745;
+}
+
+.restart-button-level2:hover {
+    background-color: #218838;
+}
+
+/* Estilos para los resultados */
+.results-level2 {
+    margin-top: 20px;
+    font-size: 18px;
+    text-align: center;
+}
+
+/* Estilos para mensajes de estado */
+.recording-level2, .error-level2 {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 1em;
+}
+
+.recording-level2 {
+    color: #2196f3;
+}
+
+.error-level2 {
+    color: #f44336;
+}
+
+/* Responsividad */
+@media (max-width: 1024px) {
+    .category-level2 {
+        width: 45%; /* Ajuste para dos categorías en una fila */
+    }
+}
+
+@media (max-width: 768px) {
+    .image-classification-level2 {
+        padding: 20px;
+    }
+
+    .title-level2 {
+        font-size: 1.8em;
+    }
+
+    .timer-level2 {
+        font-size: 1em;
+    }
+
+    .categories-container-level2 {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .category-level2 {
+        width: 80%; /* Ajuste para una categoría por fila en pantallas pequeñas */
+    }
+
+    .submit-button-level2, .restart-button-level2 {
+        width: 100%;
+        padding: 10px;
+    }
+}

@@ -1,0 +1,122 @@
+/* src/components/Popup.css */
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Asegura que esté por encima de otros elementos */
+}
+
+.popup-content {
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  text-align: center;
+  position: relative;
+  width: 80%;
+  max-width: 400px;
+}
+
+.popup h1 {
+  margin-bottom: 20px;
+}
+
+.mood-meter {
+  position: relative;
+  width: 300px;
+  height: 150px;
+  margin: 20px auto;
+  background: linear-gradient(to right, red, orange, yellow, lightgreen, green);
+  border-radius: 150px 150px 0 0;
+  overflow: hidden;
+}
+
+/*.arrow {
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 20px solid black;
+  transform-origin: bottom;
+  transition: transform 0.5s ease;
+  transform: translateX(-50%);
+}*/ 
+
+
+/*.arrow {
+  background-color: yellowgreen;
+  justify-content: center;
+  position: absolute;
+  top: 85%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 20px solid black;
+  transform-origin: 50% 0%; 
+  transition: transform 0.5s ease; 
+  transform: translateX(-50%) rotate(-90deg); 
+}  */
+
+.arrow {
+  position: absolute;
+  top: 50%; /* Ajusta para colocar la flecha correctamente */
+  left: 50%;
+  width: 8px; /* Grosor de la flecha */
+  height: 60px; /* Altura de la flecha */
+  background-color: black; /* Color de la flecha */
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(0deg); /* Rotación inicial */
+  transition: transform 0.5s ease; /* Suavidad en el movimiento */
+  z-index: 2; /* Asegura que esté visible */
+  border-radius: 4px; /* Redondea los bordes */
+}
+
+/* Triángulo para la punta de la flecha */
+.arrow::after {
+  content: '';
+  position: absolute;
+  top: -10px; /* Ajusta para conectar correctamente la punta */
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 14px solid black;
+  transform: translateX(-50%);
+}
+
+.emojis-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mood-wrapper {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.mood-button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.mood-button:hover {
+  transform: scale(1.2);
+}

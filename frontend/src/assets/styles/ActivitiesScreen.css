@@ -1,0 +1,122 @@
+/* ActivitiesScreen.css */
+
+.activity-row {
+    display: flex;
+    align-items: center;
+  }
+  
+  .activity-name {
+    min-width: 150px;
+  }
+  
+  .activity-levels {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .activity-level {
+    /* Puedes ajustar el ancho de los niveles para que quepan en la línea */
+    flex: 1;
+    max-width: 200px; /* Ajusta según necesites */
+  }
+  
+  .activity-level + .activity-level {
+    margin-left: 15px;
+  }
+  
+  /* Ajustes adicionales para UserActivity */
+.user-activity-container {
+  margin: 20px auto;
+  max-width: 1200px;
+  padding: 20px;
+}
+
+.activity-container {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.activity-levels {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.activity-level {
+  flex: 1;
+  max-width: 300px;
+  position: relative;
+}
+
+.activity-card {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.activity-card:hover {
+  transform: translateY(-5px);
+}
+
+.activity-checkbox {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+.assign-button {
+  display: block;
+  margin: 0 auto;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.assign-button:hover {
+  background-color: #0056b3;
+}
+
+.activity-card {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.activity-card:hover {
+  transform: translateY(-5px);
+}
+
+.activity-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.activity-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.activity-button:hover {
+  background-color: #0056b3;
+}

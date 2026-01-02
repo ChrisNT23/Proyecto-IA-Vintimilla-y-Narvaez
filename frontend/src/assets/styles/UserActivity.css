@@ -1,0 +1,126 @@
+.user-activity-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .user-activity-container h2 {
+    text-align: center;
+    color: #333;
+  }
+  
+  .user-activity-container h3 {
+    margin-top: 20px;
+    color: #555;
+    font-size: 1.2em;
+  }
+  
+  .activity-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .activity-item {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    width: calc(50% - 10px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .activity-item input[type="checkbox"] {
+    margin-right: 10px;
+  }
+  
+  .activity-item span {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  .activity-item p {
+    color: #666;
+    font-size: 0.9em;
+    margin: 5px 0;
+  }
+  
+  .assign-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+  }
+  
+  .assign-button:hover {
+    background-color: #45a049;
+  }
+  
+  .assign-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .user-activity-container {
+    margin: 20px auto;
+    max-width: 1200px;
+    padding: 20px;
+  }
+  
+  .activity-card {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+  
+  .activity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .activity-checkbox {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    transform: scale(1.5);
+    cursor: pointer;
+  }
+  
+  .activity-card.selected {
+    border: 2px solid #007bff;
+  }
+  
+  .assign-button {
+    display: block;
+    margin: 0 auto;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .assign-button:hover {
+    background-color: #0056b3;
+  }
+  

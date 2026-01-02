@@ -1,0 +1,120 @@
+/* MocaStart.css */
+
+/* Contenedor Principal */
+.moca-start-container {
+    margin-top: 30px;
+    margin-bottom: 50px;
+  }
+  
+  /* Título */
+  .moca-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+  
+  /* Bloque de Educación */
+  .education-block {
+    margin-bottom: 20px;
+    background-color: #fffaf0;
+    border-left: 4px solid #feb47b;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  /* Tarjeta de Módulo */
+  .module-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #ffffff;
+  }
+  
+  .module-card .card-body {
+    padding: 15px;
+  }
+  
+  /* Puntaje Parcial */
+  .module-score {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 5px;
+    color: #555;
+  }
+  
+  /* Estilo para los elementos de la lista */
+  .module-card .list-group-item {
+    border: none;
+    background-color: transparent;
+    padding: 10px 0;
+  }
+  
+  /* Sección Botones de Puntuación */
+  .score-buttons {
+    margin-top: 5px;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  
+  .toggle-button {
+    min-width: 38px;
+    text-align: center;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  }
+  
+  .toggle-button.active {
+    box-shadow: 0 0 6px rgba(0, 255, 127, 0.7);
+    font-weight: 600;
+  }
+  
+  /* Deshabilitar Botones */
+  .toggle-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  /* Contenedor final (botones Guardar y Simular) */
+  .final-results-container {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border: 2px dashed #ced4da;
+    border-radius: 8px;
+    margin-top: 10px;
+  }
+  
+  /* Instrucciones */
+  .instructions {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .instructions p {
+    margin: 0;
+    color: #333;
+  }
+  
+  /* Responsividad */
+  @media (max-width: 576px) {
+    /* Pantallas muy pequeñas: 1 columna por fila */
+    .module-card {
+      width: 100%;
+    }
+  }
+  
+  @media (min-width: 577px) and (max-width: 768px) {
+    /* Pantallas medianas: 2 columnas por fila */
+    .module-card {
+      width: 100%;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    /* Pantallas grandes: 2 columnas por fila */
+    .module-card {
+      width: 100%;
+    }
+  }
+  

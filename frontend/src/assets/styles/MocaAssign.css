@@ -1,0 +1,20 @@
+/* src/assets/styles/MocaAssign.css */
+
+.moca-assign-container {
+  max-width: 800px;
+}
+
+.moca-assign-container h1 {
+  color: #2F80ED;
+}
+
+.list-group-item {
+  transition: background-color 0.3s;
+}
+
+.list-group-item:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+/* Agrega más estilos según sea necesario */

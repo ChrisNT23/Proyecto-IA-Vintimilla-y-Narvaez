@@ -1,0 +1,46 @@
+/* src/assets/styles/MocaScreen.css */
+
+.moca-screen {
+    padding: 20px;
+  }
+  
+  .patients-list {
+    margin-bottom: 30px;
+  }
+  
+  .patients-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .patients-list li {
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+    border-radius: 5px;
+  }
+  
+  .patients-list li.active {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .average-score {
+    text-align: center;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  .report-details {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+  }
+  

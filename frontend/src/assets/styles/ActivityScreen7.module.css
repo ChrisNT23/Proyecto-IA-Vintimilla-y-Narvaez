@@ -1,0 +1,284 @@
+/* src/assets/styles/ActivityScreen7.module.css */
+
+/* Clase para el fondo específico de esta pantalla */
+.background {
+    /* Opción 1: Usar una imagen de fondo */
+    background-image: url('../../images/background/cerebro7.webp'); /* Reemplaza con la ruta de tu imagen */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  
+    /* Opcional: Añadir un overlay para mejorar el contraste */
+    position: relative;
+  }
+  
+.background::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* Ajusta la opacidad según sea necesario */
+    z-index: 0;
+}
+  
+/* Contenedor principal de la actividad */
+.container {
+    position: relative; /* Para que esté encima del overlay */
+    max-width: 800px;
+    width: 100%;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.95); /* Fondo semitransparente para destacar sobre el fondo */
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    z-index: 1; /* Asegura que esté encima del overlay */
+    justify-content: center; /* Centrar verticalmente */
+    align-items: center; /* Centrar horizontalmente */
+
+}
+  
+/* Título de la actividad */
+.title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-family: 'Arial', sans-serif;
+    font-size: 2.5em;
+}
+  
+/* Información del juego (puntaje, tiempo) */
+.infoContainer {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+  
+.infoBox {
+    background-color: #ffffff;
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1.5em;
+    display: flex;
+    align-items: center;
+    margin: 10px;
+}
+  
+.score {
+    font-weight: bold;
+    color: #4caf50;
+    margin-left: 10px;
+}
+  
+.timer {
+    font-weight: bold;
+    color: #ff9800;
+    margin-left: 10px;
+}
+  
+/* Contenedor de las cartas */
+.memoryCardsContainer {
+    display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Grilla adaptable */
+  gap: 15px; /* Espaciado entre cartas */
+  justify-content: center; /* Centra las columnas horizontalmente */
+  align-items: center; /* Centra las filas verticalmente */
+  margin: 0 auto; /* Centra el contenedor en la pantalla */
+  max-width: 600px; /* Limita el ancho máximo */
+}
+  
+/* Carta de memoria */
+.memoryCard {
+    perspective: 1000px;
+    cursor: pointer;
+}
+  
+.memoryCardInner {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    transform: rotateY(0deg); /* Inicialmente muestra la cara trasera */
+  }
+
+  
+.memoryCardFront,
+.memoryCardBack {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 10px;
+}
+  
+.memoryCardFront {
+    background-color: #ffffff;
+    transform: rotateY(180deg); /* Oculta la cara frontal */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+.memoryCardFront img {
+    max-width: 80%;
+    max-height: 80%;
+    border-radius: 5px;
+}
+  
+.memoryCardBack {
+    background-color: #2196f3; /* Azul visible */
+    border-radius: 10px; /* Bordes redondeados */
+    border: 2px solid #1976d2; /* Borde más oscuro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+
+.flipped .memoryCardInner {
+    transform: rotateY(180deg); /* Muestra la cara frontal */
+}
+
+/* Resultados del juego */
+/* Finalización del juego */
+.gameFinished {
+    text-align: center;
+    padding: 40px;
+    background-color: #e8f5e9;
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  }
+  
+  .gameTitle {
+    color: #2e7d32;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+  }
+  
+  .gameFinished p {
+    font-size: 1.3em;
+    margin: 10px 0;
+  }
+
+  
+/* Estilos de estado */
+.recording {
+    text-align: center;
+    color: #2196f3;
+    margin-bottom: 10px;
+}
+  
+.error {
+    text-align: center;
+    color: #f44336;
+    margin-bottom: 10px;
+}
+  
+/* Diálogo de confirmación (opcional si deseas implementar uno similar al ActivityScreen4) */
+.dialogOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+  
+.dialogBox {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+  
+.dialogButtons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+  
+.dialogButton {
+    padding: 12px 25px;
+    font-size: 1em;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+  
+.dialogButton.terminate {
+    background-color: #f44336;
+    color: #fff;
+}
+  
+.dialogButton.terminate:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
+}
+  
+.dialogButton.continue {
+    background-color: #4caf50;
+    color: #fff;
+}
+  
+.dialogButton.continue:hover {
+    background-color: #388e3c;
+    transform: scale(1.05);
+}
+  
+/* Responsividad */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+  
+    .title {
+        font-size: 2em;
+    }
+  
+    .infoBox {
+        font-size: 1.2em;
+        padding: 10px 20px;
+    }
+  
+    .memoryCardsContainer {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 10px;
+    }
+  
+    .memoryCardInner {
+        padding-top: 100%;
+    }
+  
+    .memoryCardFront img {
+        max-width: 70%;
+        max-height: 70%;
+    }
+  
+    .dialogBox {
+        padding: 20px;
+    }
+  
+    .dialogButton {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+}

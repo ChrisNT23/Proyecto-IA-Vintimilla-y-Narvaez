@@ -1,0 +1,198 @@
+/* src/assets/styles/ReportsScreen.css */
+
+.reports-screen-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.reports-screen-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #2c3e50;
+}
+
+.report-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.report-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  width: 250px;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.report-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+.report-card-image {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.report-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.report-card-title {
+  padding: 15px;
+  text-align: center;
+}
+
+.report-card-title p {
+  font-size: 16px;
+  font-weight: bold;
+  color: #34495e;
+  margin: 0;
+}
+
+/* Search Bar */
+.search-bar {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Pacientes List */
+.patients-list {
+  margin-bottom: 30px;
+}
+
+.patients-list h4 {
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.patient-item {
+  cursor: pointer;
+}
+
+.patient-item.active {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Grid for Buttons */
+.moca-options-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* Instructions Container */
+.instructions-container {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.instructions-container h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.instructions-container p {
+  color: #555;
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.instructions-container .instruction-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  margin: 5px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.instructions-container .instruction-button:hover {
+  background-color: #0056b3;
+}
+
+.instructions-container .instruction-button.disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* Microphone Test Section */
+.microphone-test {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.microphone-test button {
+  margin: 10px;
+}
+
+/* Responsividad */
+
+@media (max-width: 768px) {
+  .report-card {
+    width: 80%;
+  }
+
+  .report-card-image {
+    height: 120px;
+  }
+
+  .report-card-title p {
+    font-size: 14px;
+  }
+
+  .moca-options-container {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .report-card {
+    width: 100%;
+  }
+
+  .report-card-image {
+    height: 100px;
+  }
+
+  .report-card-title p {
+    font-size: 14px;
+  }
+
+  .moca-options-container {
+    grid-template-columns: 1fr;
+  }
+
+  .instructions-container .instruction-button {
+    width: 100%;
+    justify-content: center;
+  }
+}

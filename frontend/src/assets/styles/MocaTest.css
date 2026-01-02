@@ -1,0 +1,471 @@
+/* src/assets/styles/MocaTest.css */
+
+/* Estilo para el título de la sección con fondo */
+.section-title {
+  background-color: #f0f0f0 !important;
+  padding: 10px !important;
+  width: 100% !important;
+  text-align: left !important;
+  font-weight: bold !important;
+  font-size: 1.1rem !important;
+  color: #333 !important;
+  margin-top: 20px !important;
+  border-bottom: 1px solid #ddd !important;
+}
+
+/* Estilo para las instrucciones con separadores */
+.instructions-text {
+  color: #555 !important;
+  font-size: 1rem !important;
+  text-align: justify !important;
+  margin-bottom: 20px !important;
+}
+
+/* Estilo para el botón activo */
+.toggle-button.active {
+  background-color: #007bff !important;
+  color: white !important;
+}
+
+.toggle-button.active.success {
+  background-color: #28a745 !important;
+}
+
+.toggle-button.active.danger {
+  background-color: #dc3545 !important;
+}
+
+/* Botones en stack con ancho completo */
+.toggle-button {
+  width: 100% !important;
+  text-align: center !important;
+}
+
+.moca-container {
+  max-width: 1200px !important;
+  margin: auto !important;
+}
+
+.instructions-container {
+  padding: 20px !important;
+  background-color: #f8f9fa !important;
+  border-radius: 16px !important;
+  margin-bottom: 30px !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05) !important;
+}
+
+.instructions-container h2 {
+  color: #2c3e50 !important;
+  margin-bottom: 15px !important;
+  font-size: 1.8rem !important;
+}
+
+.instructions-container p {
+  color: #555 !important;
+  font-size: 1.1rem !important;
+  margin-bottom: 20px !important;
+  line-height: 1.6 !important;
+}
+
+/* Botones de instrucciones y prueba de micrófono */
+.instructions-container .instruction-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 12px 25px !important;
+  margin: 8px 0 !important;
+  background-color: #007bff !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 25px !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease, transform 0.2s !important;
+  min-width: 200px !important;
+  text-decoration: none !important;
+  font-size: 1rem !important;
+}
+
+.instructions-container .instruction-button:hover {
+  background-color: #0056b3 !important;
+  transform: translateY(-2px) !important;
+}
+
+.instructions-container .instruction-button.disabled {
+  background-color: #6c757d !important;
+  cursor: not-allowed !important;
+}
+
+/* Botón grande y verde suave para iniciar la prueba */
+.instructions-container .start-button {
+  display: block !important;
+  margin: 25px auto 0 auto !important;
+  width: 100% !important;
+  max-width: 350px !important;
+  padding: 15px !important;
+  font-size: 1.3rem !important;
+  background-color: #6cbf6c !important; /* Verde más suave */
+  border: none !important;
+  border-radius: 30px !important;
+  text-align: center !important;
+  transition: background-color 0.3s ease, transform 0.2s !important;
+}
+
+.instructions-container .start-button:hover {
+  background-color: #5aa75a !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Estilos para las alertas */
+.instructions-container .alert {
+  margin-top: 20px !important;
+}
+
+/* Microphone Test Section */
+.microphone-test {
+  text-align: center !important;
+  margin-top: 30px !important;
+}
+
+.microphone-test button {
+  margin: 12px 0 !important;
+}
+
+/* Instrucciones y descripción en columna izquierda */
+.instructions-text {
+  text-align: justify !important;
+}
+
+/* Estilos para los botones grandes y centrados */
+.instructions-container .start-button {
+  display: block !important;
+  margin: 25px auto 0 auto !important;
+}
+
+/* Estilos para los botones de reproducción y grabación */
+.microphone-test .instruction-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 12px 25px !important;
+  font-size: 1rem !important;
+  min-width: 200px !important;
+  border-radius: 25px !important;
+  transition: background-color 0.3s ease, transform 0.2s !important;
+}
+
+.microphone-test .instruction-button:hover {
+  background-color: #0056b3 !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Agrupación de botones para centrar */
+.button-group {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 20px !important;
+}
+
+/* Estilo para botones específicos */
+.listen-button,
+.verify-audio-button,
+.listen-audio-button,
+.speak-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.listen-button {
+  margin-bottom: 20px !important;
+}
+
+.listen-audio-button {
+  margin-bottom: 10px !important;
+}
+
+.speak-button {
+  margin-bottom: 10px !important;
+}
+
+/* Indicador de escucha */
+.listening-indicator {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  margin-top: 15px !important;
+}
+
+/* Estilos para mensajes de verificación */
+.verification-section {
+  margin-top: 20px !important;
+}
+
+.verification-section h4 {
+  margin-bottom: 10px !important;
+}
+
+.verification-section p {
+  margin-bottom: 10px !important;
+}
+
+.additional-help {
+  margin-top: 20px !important;
+}
+
+.confirmation-buttons {
+  margin-top: 20px !important;
+}
+
+/* Estilos para mensajes de audio reproduciéndose */
+.audio-playing {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-top: 15px !important;
+}
+
+.audio-playing span {
+  margin-left: 10px !important;
+  font-size: 0.95rem !important;
+}
+
+/* Mejora del estilo del contenedor de módulos */
+.module-container {
+  background-color: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 16px !important;
+  padding: 25px !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05) !important;
+  margin-bottom: 25px !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.module-container:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+.module-title {
+  font-weight: 600 !important;
+  color: #2c3e50 !important;
+}
+
+/* Estilos para los puntos de estado del módulo */
+.module-status {
+  display: flex !important;
+  justify-content: center !important;
+  margin-top: 10px !important;
+}
+
+.module-dot {
+  width: 12px !important;
+  height: 12px !important;
+  margin: 0 5px !important;
+  border-radius: 50% !important;
+  background-color: #e0e0e0 !important;
+  transition: background-color 0.3s ease !important;
+}
+
+.module-dot.completed {
+  background-color: #6cbf6c !important;
+}
+
+.module-dot.pending {
+  background-color: #e0e0e0 !important;
+}
+
+/* Estilos para botones de selección de módulo utilizando tarjetas */
+.module-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.module-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.module-card.active {
+  border: 2px solid #6cbf6c !important;
+}
+
+/* Clase para animación de spinner */
+.spin {
+  animation: spin 2s linear infinite;
+}
+
+/* Keyframes para la animación de spin */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsividad */
+
+@media (max-width: 1200px) {
+  .moca-container {
+    max-width: 1000px !important;
+  }
+}
+
+@media (max-width: 992px) {
+  .moca-options-container {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+  }
+
+  .instructions-container .instruction-button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .module-container {
+    padding: 20px !important;
+  }
+
+  .module-title {
+    font-size: 1.5rem !important;
+  }
+
+  .moca-options-container {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+  }
+
+  .instructions-container .instruction-button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .moca-options-container {
+    grid-template-columns: 1fr !important;
+  }
+
+  .instructions-container .instruction-button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .module-title {
+    font-size: 1.3rem !important;
+  }
+
+  .module-container {
+    padding: 15px !important;
+  }
+}
+
+/* Estilos adicionales para centrar botones de escuchar y hablar */
+.listen-button,
+.speak-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Estilos para botones de simulación */
+.simulate-button {
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Estilos para el título del módulo en esquina */
+.module-title {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 1.5rem; /* Tamaño más pequeño */
+  color: #2c3e50;
+}
+
+/* Estilos para el botón de pantalla completa */
+.fullscreen-button {
+  position: absolute;
+  top: 0px;
+  right: 20px;
+  font-size: 1.2rem;
+  color: #007bff;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.fullscreen-button:hover {
+  color: #0056b3;
+}
+
+/* Estilos para el botón de ocultar/mostrar detalles admin */
+.toggle-admin-button {
+  position: absolute;
+  top: 75px;
+  right: 20px;
+  font-size: 1.2rem;
+  color: #6c757d;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.toggle-admin-button:hover {
+  color: #343a40;
+}
+
+/* Estilos para la barra de progreso rediseñada */
+.progress-bar-container {
+  background-color: #e0e0e0;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 40px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.progress-bar-container .progress-bar {
+  background-color: #6cbf6c;
+  height: 60%;
+  transition: width 0.4s ease;
+}
+
+/* Estilos para el puntaje y tiempo con diseño mejorado */
+.score-container, .time-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 10px 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-bottom: 10px;
+}
+
+.score-container span, .time-container span {
+  font-size: 1rem;
+  color: #555;
+}
+
+.score-container .score, .time-container .time {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+/* Estilos para la vista de módulo en pantalla completa */
+.module-view {
+  position: relative;
+}
+
+/* Estilos para la barra de progreso visible para todos */
+.progress-bar-container-global {
+  background-color: #e0e0e0;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 20px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+  margin-bottom: 20px;
+}
+
+.progress-bar-container-global .progress-bar {
+  background-color: #007bff;
+  height: 100%;
+  transition: width 0.4s ease;
+}

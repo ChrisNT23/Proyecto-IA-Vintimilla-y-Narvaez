@@ -1,0 +1,42 @@
+ActivityScreenTreatment
+.activity-selector2 {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+  }
+
+  .activity-card2 {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .activity-card2.selected {
+    background-color: #e6f7ff;
+    border-color: #91d5ff;
+  }
+
+  .activity-checkbox2 {
+    margin-right: 15px;
+    transform: scale(1.2);
+  }
+
+  .activity-info {
+    flex: 1;
+  }
+
+  .activity-name2 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+  }
+
+  .activity-description2 {
+    font-size: 14px;
+    color: #555;
+    margin: 0;
+  }

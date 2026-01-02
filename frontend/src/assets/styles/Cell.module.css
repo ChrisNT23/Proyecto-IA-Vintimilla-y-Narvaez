@@ -1,0 +1,22 @@
+/* src/utils/Cell.module.css */
+
+.cell {
+    width: 35px;
+    height: 35px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    user-select: none; /* Evita que se seleccione el texto al arrastrar */
+    cursor: pointer;
+  }
+  
+  .cell:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .highlight {
+    background-color: #ffeb3b; /* Amarillo */
+  }
+  

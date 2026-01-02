@@ -1,0 +1,102 @@
+/* src/assets/styles/ActivityScreen6Level1.css */
+
+/* Nuevo contenedor para aplicar fondo */
+.image-classification-wrapper {
+  /* Opción 1: Usar una imagen de fondo */
+  background-image: url('../../images/background/cerebro6.webp'); /* Reemplaza con la ruta de tu imagen */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  
+  /* Opción 2: Usar un degradado de color */
+  /* background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); */
+
+  /* Opcional: Añadir un overlay para mejorar el contraste */
+  position: relative;
+}
+
+/* Asegurar que el contenedor interno se destaque sobre el fondo */
+.image-classification {
+  position: relative; /* Para que esté encima del overlay si se agrega */
+  max-width: 800px;
+  width: 100%;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.95); /* Fondo semitransparente para destacar sobre el fondo */
+  border-radius: 15px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo para el título */
+.title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 25px;
+  font-family: 'Arial', sans-serif;
+  font-size: 2em;
+}
+
+/* Estilo para el temporizador */
+.timer {
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #ff9800;
+  margin-bottom: 20px;
+}
+
+/* Agregar estilos para los mensajes de estado */
+.recording, .error {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 1em;
+}
+
+.recording {
+  color: #2196f3;
+}
+
+.error {
+  color: #f44336;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .image-classification {
+      padding: 20px;
+  }
+
+  .title {
+      font-size: 1.8em;
+  }
+
+  .infoBox{
+    background-color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  }
+
+  .timer {
+    font-weight: bold;
+    color: #ff9800;
+    margin-left: 5px;
+  }
+
+  .category {
+      width: 100%;
+  }
+
+  .submit-button, .restart-button {
+      width: 100%;
+      padding: 10px;
+  }
+}

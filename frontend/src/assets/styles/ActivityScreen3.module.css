@@ -1,0 +1,244 @@
+/* src/screens/ActivityScreen3.module.css */
+
+/* Clase para el fondo específico de esta pantalla */
+.background {
+    /* Opción 1: Usar una imagen de fondo */
+    background-image: url('../../images/background/cerebro3.webp'); /* Reemplaza con la ruta de tu imagen */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    
+    /* Opción 2: Usar un degradado de color */
+    /* background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%); */
+  
+    /* Opcional: Añadir un overlay para mejorar el contraste */
+    position: relative;
+  }
+  
+  .background::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* Ajusta la opacidad según sea necesario */
+    z-index: 0;
+  }
+  
+  /* Contenedor principal de la actividad */
+  .container {
+    position: relative; /* Para que esté encima del overlay */
+    max-width: 800px;
+    width: 100%;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.95); /* Fondo semitransparente para destacar sobre el fondo */
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    z-index: 1; /* Asegura que esté encima del overlay */
+  }
+  
+  /* Título de la actividad */
+  .title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-family: 'Arial', sans-serif;
+    font-size: 2em;
+  }
+  
+  /* Contenedor de información (puntaje y tiempo) */
+  .infoContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .infoBox {
+    background-color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+  }
+  
+  .score {
+    font-weight: bold;
+    color: #4caf50;
+    margin-left: 5px;
+  }
+  
+  .timer {
+    font-weight: bold;
+    color: #ff9800;
+    margin-left: 5px;
+  }
+  
+  /* Indicadores de estado */
+  .recording {
+    text-align: center;
+    color: #2196f3;
+    margin-bottom: 10px;
+  }
+  
+  .error {
+    text-align: center;
+    color: #f44336;
+    margin-bottom: 10px;
+  }
+  
+  /* Finalización del juego */
+  .gameFinished {
+    text-align: center;
+    padding: 40px;
+    background-color: #e8f5e9;
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  }
+  
+  .gameTitle {
+    color: #2e7d32;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+  }
+  
+  .gameFinished p {
+    font-size: 1.3em;
+    margin: 10px 0;
+  }
+  
+  /* Contenedor de la ecuación */
+  .equation {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .equationContent {
+    margin-bottom: 10px;
+  }
+  
+  .number {
+    font-size: 32px;
+  }
+  
+  .operator {
+    font-size: 32px;
+  }
+  
+  .line {
+    width: 50px;
+    margin: 10px auto;
+    border: 1px solid #333;
+  }
+  
+  .answerInput {
+    font-size: 32px;
+    text-align: center;
+    width: 80px;
+    height: 50px;
+    border: 2px solid #1976d2; /* Borde más grueso y color primario */
+    border-radius: 8px; /* Bordes redondeados */
+    padding: 5px 10px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: #f0f8ff; /* Color de fondo suave */
+  }
+  
+  .answerInput:focus {
+    border-color: #1565c0;
+    box-shadow: 0 0 5px rgba(21, 101, 192, 0.5);
+    background-color: #fff; /* Cambia el fondo al enfocarse */
+  }
+  
+  .answerInput::placeholder {
+    color: #a9a9a9;
+    font-style: italic;
+  }
+  
+  /* Eliminación de flechas en navegadores Webkit (Chrome, Safari) */
+  .answerInput::-webkit-outer-spin-button,
+  .answerInput::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  .submitButton {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 20px;
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .submitButton:hover {
+    background-color: #1565c0;
+    transform: scale(1.05);
+  }
+  
+  /* Mensaje de retroalimentación */
+  .messageBox  {
+    margin-top: 20px;
+    text-align: center;
+    padding: 15px;
+    background-color: #fff3e0;
+    border-left: 6px solid #ff9800;
+    border-radius: 8px;
+    font-size: 1.1em;
+  }
+  
+  /* Responsividad */
+  @media (max-width: 768px) {
+    .container {
+      padding: 20px;
+    }
+  
+    .title {
+      font-size: 1.8em;
+    }
+  
+    .infoBox {
+      font-size: 1em;
+      padding: 8px 16px;
+    }
+  
+    .gameFinished .gameTitle {
+      font-size: 1.6em;
+    }
+  
+    .gameFinished p {
+      font-size: 1.1em;
+    }
+  
+    .submitButton {
+      font-size: 1em;
+      padding: 10px 20px;
+    }
+  
+    .equation {
+      font-size: 24px;
+    }
+  
+    .number, .operator {
+      font-size: 28px;
+    }
+  
+    .answerInput {
+      font-size: 28px;
+      width: 70px;
+      height: 45px;
+    }
+  }
+  
