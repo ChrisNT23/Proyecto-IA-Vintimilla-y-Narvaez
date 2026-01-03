@@ -16,6 +16,7 @@ import {
 import { useSelector } from "react-redux";
 import { useGetPatientsQuery, useUpdatePatientMutation } from "../slices/patientApiSlice";
 import { useCreateMocaSelfMutation } from "../slices/mocaSelfApiSlice";
+import EmotionCapture from "../components/EmotionCapture";
 import Visuoespacial from "./MOCAmodules/Visuoespacial";
 import Identificacion from "./MOCAmodules/Identificacion";
 import Memoria from "./MOCAmodules/Memoria";
@@ -34,6 +35,7 @@ import {
   FaEye,
   FaEyeSlash,
 } from "react-icons/fa";
+import * as faceapi from "face-api.js";
 import "../assets/styles/MocaTest.css";
 
 const MODULES = [
@@ -56,6 +58,8 @@ const MocaStartSelf = () => {
   const userInfo = useSelector((state) => state.auth.userInfo);
   const isAdmin = userInfo?.isAdmin || false;
 
+  const [showEmotionCapture, setShowEmotionCapture] = useState(false);
+  const [emotionDataId, setEmotionDataId] = useState(null);
   const [testStarted, setTestStarted] = useState(false);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
@@ -72,6 +76,7 @@ const MocaStartSelf = () => {
   const [showAdminDetails, setShowAdminDetails] = useState(true);
 
   const moduleRef = useRef(null);
+  const emotionCaptureInterval = useRef(null);
 
   const [
     updatePatient,
@@ -112,9 +117,111 @@ const MocaStartSelf = () => {
       );
       return;
     }
+    // Mostrar pantalla de captura de emoción
+    setShowEmotionCapture(true);
+  };
+
+  // Callback cuando se completa la captura inicial de emoción
+  const handleEmotionCaptureComplete = (data) => {
+    setEmotionDataId(data.emotionDataId);
+    setShowEmotionCapture(false);
     setTestStarted(true);
     setStartTime(new Date().toLocaleString());
+    
+    // Iniciar captura periódica de emociones durante el test
+    startPeriodicEmotionCapture();
   };
+
+  // Captura periódica de emociones durante el test
+  const startPeriodicEmotionCapture = async () => {
+    // Capturar cada 2 minutos (120000 ms)
+    emotionCaptureInterval.current = setInterval(async () => {
+      try {
+        await captureEmotionDuringTest();
+      } catch (error) {
+        console.error("Error en captura periódica:", error);
+      }
+    }, 120000); // 2 minutos
+  };
+
+  // Capturar emoción durante el test (sin mostrar UI)
+  const captureEmotionDuringTest = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      video.autoplay = true;
+      
+      // Esperar a que el video esté listo
+      await new Promise((resolve) => {
+        video.onloadedmetadata = () => {
+          video.play();
+          resolve();
+        };
+      });
+
+      // Detectar rostro y emoción
+      const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 });
+      const result = await faceapi
+        .detectSingleFace(video, options)
+        .withFaceLandmarks()
+        .withFaceExpressions();
+
+      if (result) {
+        // Capturar imagen
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+        const imageData = canvas.toDataURL('image/jpeg', 0.8);
+
+        // Obtener emoción dominante
+        const expressions = result.expressions;
+        const dominantEmotion = Object.entries(expressions).reduce((a, b) => 
+          expressions[a[0]] > expressions[b[0]] ? a : b
+        );
+
+        // Enviar al backend
+        await fetch('/api/emotions/capture', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            patientId: id,
+            emotionDataId: emotionDataId,
+            image: imageData,
+            emotion: dominantEmotion[0],
+            confidence: (dominantEmotion[1] * 100).toFixed(2),
+            timestamp: new Date().toISOString(),
+            captureType: 'during_test',
+            currentModule: MODULES[currentModuleIndex]?.name || 'unknown'
+          })
+        });
+
+        console.log(`Emoción capturada: ${dominantEmotion[0]} (${(dominantEmotion[1] * 100).toFixed(2)}%)`);
+      }
+
+      // Detener la cámara
+      stream.getTracks().forEach(track => track.stop());
+    } catch (error) {
+      console.error("Error al capturar emoción durante el test:", error);
+    }
+  };
+
+  // Limpiar intervalo al completar el test o desmontar componente
+  useEffect(() => {
+    if (testCompleted && emotionCaptureInterval.current) {
+      clearInterval(emotionCaptureInterval.current);
+    }
+    
+    return () => {
+      if (emotionCaptureInterval.current) {
+        clearInterval(emotionCaptureInterval.current);
+      }
+    };
+  }, [testCompleted]);
 
   /**
    * Maneja la finalización de cada módulo.
@@ -475,6 +582,16 @@ const MocaStartSelf = () => {
   };
 
   const CurrentModuleComponent = MODULES[currentModuleIndex].component;
+
+  // Mostrar pantalla de captura de emoción
+  if (showEmotionCapture) {
+    return (
+      <EmotionCapture 
+        onCaptureComplete={handleEmotionCaptureComplete}
+        patientId={id}
+      />
+    );
+  }
 
   return (
     <Container className="moca-container my-5">

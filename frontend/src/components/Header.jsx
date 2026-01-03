@@ -8,7 +8,9 @@ import {
   FaCogs, 
   FaUsers, 
   FaQuestionCircle,
-  FaChevronDown
+  FaChevronDown,
+  FaRegChartBar,
+  FaUserCircle
 } from "react-icons/fa";
 import logo from "../assets/clinicamora.png";
 import { useSelector, useDispatch } from "react-redux";
@@ -118,13 +120,31 @@ const Header = () => {
             </>
           )}
           {userInfo && userInfo.isAdmin && (
-            <button 
-              className="nav-link-ghost"
-              onClick={() => navigateTo('/mocaPanel', 'moca')}
-            >
-              <FaBrain className="nav-icon" />
-              <span>MoCA</span>
-            </button>
+            <>
+              <button 
+                className="nav-link-ghost"
+                onClick={() => navigateTo('/profile', 'profile')}
+              >
+                <FaUserCircle className="nav-icon" />
+                <span>Perfil Público</span>
+              </button>
+              
+              <button 
+                className="nav-link-ghost"
+                onClick={() => navigateTo('/reports', 'reports')}
+              >
+                <FaRegChartBar className="nav-icon" />
+                <span>Reportes</span>
+              </button>
+              
+              <button 
+                className="nav-link-ghost"
+                onClick={() => navigateTo('/mocaPanel', 'moca')}
+              >
+                <FaBrain className="nav-icon" />
+                <span>MoCA</span>
+              </button>
+            </>
           )}
         </nav>
 

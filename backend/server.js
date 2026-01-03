@@ -14,6 +14,7 @@ import chatRoutes from "./routes/chatRoutes.js";
 import treatmentRoutes from "./routes/treatmentRoutes.js";
 import assignmentRoutes from "./routes/assignmentRoutes.js";
 import mocaSelfRoutes from "./routes/mocaSelfRoutes.js";
+import emotionRoutes from "./routes/emotionRoutes.js";
 import axios from "axios"; // Importar axios para realizar solicitudes HTTP
 
 import connectDB from "./config/db.js";
@@ -41,6 +42,7 @@ app.use("/api/doctors", doctorRoutes);
 app.use("/api/patients", patientRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/mocaSelf", mocaSelfRoutes);
+app.use("/api/emotions", emotionRoutes);
 
 // Montar las rutas de tratamientos y asignaciones en sus respectivas rutas
 app.use('/api/treatments', treatmentRoutes);
@@ -90,6 +92,7 @@ app.post('/api/evaluate-cube', async (req, res) => {
 // Configurar ruta para archivos estáticos (subidas)
 const __dirname = path.resolve();
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+app.use("/emotion_captures", express.static(path.join(__dirname, "/backend/emotion_captures")));
 
 // Ruta de inicio de la API
 app.get("/", (req, res) => {
