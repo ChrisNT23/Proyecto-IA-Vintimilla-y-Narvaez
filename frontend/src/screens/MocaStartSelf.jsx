@@ -134,79 +134,111 @@ const MocaStartSelf = () => {
 
   // Captura periódica de emociones durante el test
   const startPeriodicEmotionCapture = async () => {
-    // Capturar cada 2 minutos (120000 ms)
+    console.log("📸 Iniciando captura periódica de emociones cada 20 segundos");
+    // Capturar cada 20 segundos (20000 ms)
     emotionCaptureInterval.current = setInterval(async () => {
       try {
         await captureEmotionDuringTest();
       } catch (error) {
         console.error("Error en captura periódica:", error);
       }
-    }, 120000); // 2 minutos
+    }, 20000); // 20 segundos
   };
 
-  // Capturar emoción durante el test (sin mostrar UI)
+  // Capturar emoción durante el test (sin mostrar UI) - Solo envía imagen, CNN procesa
   const captureEmotionDuringTest = async () => {
+    if (!emotionDataId) {
+      console.warn("⚠️ No hay emotionDataId, saltando captura");
+      return;
+    }
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      console.log(`📸 Capturando emoción automática (módulo: ${MODULES[currentModuleIndex]?.name || 'unknown'})`);
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          facingMode: 'user'
+        } 
+      });
       const video = document.createElement('video');
       video.srcObject = stream;
       video.autoplay = true;
+      video.muted = true;
       
       // Esperar a que el video esté listo
-      await new Promise((resolve) => {
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          stream.getTracks().forEach(track => track.stop());
+          reject(new Error('Timeout esperando video'));
+        }, 5000);
+        
         video.onloadedmetadata = () => {
+          clearTimeout(timeout);
           video.play();
-          resolve();
+          // Esperar un frame más para asegurar que hay imagen
+          setTimeout(resolve, 200);
+        };
+        
+        video.onerror = (err) => {
+          clearTimeout(timeout);
+          stream.getTracks().forEach(track => track.stop());
+          reject(err);
         };
       });
 
-      // Detectar rostro y emoción
-      const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 });
-      const result = await faceapi
-        .detectSingleFace(video, options)
-        .withFaceLandmarks()
-        .withFaceExpressions();
+      // Capturar imagen directamente (CNN procesará en el backend)
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+      const imageData = canvas.toDataURL('image/jpeg', 0.8);
 
-      if (result) {
-        // Capturar imagen
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0);
-        const imageData = canvas.toDataURL('image/jpeg', 0.8);
+      // Detener la cámara inmediatamente
+      stream.getTracks().forEach(track => track.stop());
 
-        // Obtener emoción dominante
-        const expressions = result.expressions;
-        const dominantEmotion = Object.entries(expressions).reduce((a, b) => 
-          expressions[a[0]] > expressions[b[0]] ? a : b
-        );
+      // Obtener token de autenticación
+      const token = localStorage.getItem('token') || (localStorage.getItem('userInfo') 
+        ? JSON.parse(localStorage.getItem('userInfo'))?.token 
+        : null);
 
-        // Enviar al backend
-        await fetch('/api/emotions/capture', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            patientId: id,
-            emotionDataId: emotionDataId,
-            image: imageData,
-            emotion: dominantEmotion[0],
-            confidence: (dominantEmotion[1] * 100).toFixed(2),
-            timestamp: new Date().toISOString(),
-            captureType: 'during_test',
-            currentModule: MODULES[currentModuleIndex]?.name || 'unknown'
-          })
-        });
+      // Enviar al backend - CNN procesará la imagen
+      const headers = {
+        'Content-Type': 'application/json',
+      };
 
-        console.log(`Emoción capturada: ${dominantEmotion[0]} (${(dominantEmotion[1] * 100).toFixed(2)}%)`);
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
       }
 
-      // Detener la cámara
-      stream.getTracks().forEach(track => track.stop());
+      const response = await fetch('/api/emotions/capture', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({
+          patientId: id,
+          emotionDataId: emotionDataId,
+          image: imageData,
+          // No enviamos emotion/confidence aquí - CNN los calculará
+          emotion: 'neutral', // Placeholder, CNN lo reemplazará
+          confidence: '0', // Placeholder, CNN lo reemplazará
+          timestamp: new Date().toISOString(),
+          captureType: 'during_test',
+          currentModule: MODULES[currentModuleIndex]?.name || 'unknown'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`✅ Emoción capturada automáticamente: ${data.emotion} (${data.confidence}%) - Módulo: ${MODULES[currentModuleIndex]?.name}`);
+      } else {
+        const errorData = await response.json().catch(() => ({ message: 'Error desconocido' }));
+        console.error(`❌ Error al capturar emoción: ${errorData.message}`);
+      }
     } catch (error) {
-      console.error("Error al capturar emoción durante el test:", error);
+      console.error("❌ Error al capturar emoción durante el test:", error.message);
+      // No lanzar error para que el test continúe
     }
   };
 

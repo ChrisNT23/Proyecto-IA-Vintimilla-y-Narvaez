@@ -241,6 +241,37 @@ const router = createBrowserRouter(
   )
 );
 
+// Manejador global de errores para silenciar errores de extensiones de Chrome
+window.addEventListener('error', (event) => {
+  const errorMessage = event.message || '';
+  // Silenciar errores conocidos de extensiones de Chrome
+  if (
+    errorMessage.includes('message channel') ||
+    errorMessage.includes('listener') ||
+    errorMessage.includes('channel closed') ||
+    errorMessage.includes('Extension context invalidated')
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+    return false;
+  }
+});
+
+// Manejador de promesas rechazadas no capturadas
+window.addEventListener('unhandledrejection', (event) => {
+  const errorMessage = event.reason?.message || String(event.reason) || '';
+  // Silenciar errores conocidos de extensiones de Chrome
+  if (
+    errorMessage.includes('message channel') ||
+    errorMessage.includes('listener') ||
+    errorMessage.includes('channel closed') ||
+    errorMessage.includes('Extension context invalidated')
+  ) {
+    event.preventDefault();
+    return false;
+  }
+});
+
 // Renderizado de la Aplicación
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

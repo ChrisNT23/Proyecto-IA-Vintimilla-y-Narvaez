@@ -34,6 +34,32 @@ except Exception as e:
     print(f"Error al cargar el modelo de reloj desde {MODEL_CLOCK_PATH}: {e}")
     model_clock = None
 
+# Cargar modelo para emociones (opcional, intenta cargar versión mejorada primero)
+MODEL_EMOTIONS_PATH = 'model_emotions_finetuned.h5'
+model_emotions = None
+try:
+    model_emotions = tf.keras.models.load_model(MODEL_EMOTIONS_PATH)
+    print(f"✅ Modelo de EMOCIONES cargado desde {MODEL_EMOTIONS_PATH}.")
+except Exception as e:
+    try:
+        MODEL_EMOTIONS_PATH = 'model_emotions.h5'
+        model_emotions = tf.keras.models.load_model(MODEL_EMOTIONS_PATH)
+        print(f"✅ Modelo de EMOCIONES cargado desde {MODEL_EMOTIONS_PATH}.")
+    except Exception as e2:
+        print(f"⚠️  Modelo de emociones no encontrado. CNN de emociones no disponible.")
+        model_emotions = None
+
+# Mapeo de clases de emociones
+emotion_classes = {
+    "0": "neutral",
+    "1": "happy",
+    "2": "sad",
+    "3": "angry",
+    "4": "fearful",
+    "5": "disgusted",
+    "6": "surprised"
+}
+
 img_height = 224
 img_width = 224
 
@@ -159,7 +185,102 @@ def evaluate_clock():
         print(f"Error al procesar la imagen del reloj: {e}")
         return jsonify({"error": "Error al procesar la imagen del reloj."}), 500
 
+@app.route('/api/evaluate-emotion', methods=['POST'])
+def evaluate_emotion():
+    """
+    Endpoint para evaluar emociones faciales usando CNN personalizada.
+    Método principal por defecto.
+    """
+    if model_emotions is None:
+        return jsonify({"error": "No se cargó el modelo de emociones."}), 500
 
+    data = request.get_json()
+    image_data = data.get('image', '')
+
+    if not image_data.startswith('data:image'):
+        return jsonify({"error": "No es una imagen válida."}), 400
+
+    try:
+        # Decodificar imagen
+        header, encoded = image_data.split(',', 1)
+        img_bytes = base64.b64decode(encoded)
+
+        # Procesar imagen
+        img = Image.open(io.BytesIO(img_bytes))
+        img_array = preprocess_image(img)
+
+        # Predicción
+        preds = model_emotions.predict(img_array, verbose=0)[0]
+
+        # Obtener emoción con mayor probabilidad
+        emotion_idx = int(np.argmax(preds))
+        confidence = float(preds[emotion_idx])
+
+        # Mapear índice a nombre de emoción
+        emotion_name = emotion_classes.get(str(emotion_idx), f"emotion_{emotion_idx}")
+
+        # Retornar todas las emociones con sus probabilidades
+        all_emotions = {}
+        for idx, prob in enumerate(preds):
+            emotion = emotion_classes.get(str(idx), f"emotion_{idx}")
+            all_emotions[emotion] = round(float(prob), 4)
+
+        print(f"[EMOCION CNN] Detectada: {emotion_name} ({confidence:.4f})")
+
+        return jsonify({
+            "emotion": emotion_name,
+            "confidence": round(confidence, 4),
+            "all_emotions": all_emotions
+        })
+
+    except Exception as e:
+        print(f"❌ Error al procesar emoción: {e}")
+        return jsonify({"error": f"Error al procesar la imagen de emoción: {str(e)}"}), 500
+
+@app.route('/api/extract-features', methods=['POST'])
+def extract_features():
+    """
+    Endpoint para extraer características CNN de una imagen.
+    Retorna el vector de características de la capa intermedia.
+    """
+    if model_emotions is None:
+        return jsonify({"error": "No se cargó el modelo de emociones."}), 500
+
+    data = request.get_json()
+    image_data = data.get('image', '')
+
+    if not image_data.startswith('data:image'):
+        return jsonify({"error": "No es una imagen válida."}), 400
+
+    try:
+        # Decodificar imagen
+        header, encoded = image_data.split(',', 1)
+        img_bytes = base64.b64decode(encoded)
+
+        # Procesar imagen
+        img = Image.open(io.BytesIO(img_bytes))
+        img_array = preprocess_image(img)
+
+        # Obtener características de una capa intermedia (antes de la capa de salida)
+        # Usar la capa antes de la última capa densa
+        feature_layer = model_emotions.layers[-2]  # Capa antes de la salida
+        feature_model = tf.keras.Model(inputs=model_emotions.input, outputs=feature_layer.output)
+        features = feature_model.predict(img_array, verbose=0)[0]
+
+        return jsonify({
+            "features": features.tolist(),
+            "feature_size": len(features)
+        })
+
+    except Exception as e:
+        print(f"❌ Error extrayendo características: {e}")
+        return jsonify({"error": f"Error extrayendo características: {str(e)}"}), 500
 
 if __name__ == '__main__':
+    print("\n=== Servidor de Modelos CNN ===")
+    print(f"Modelos cargados:")
+    print(f"  - Cubo: {'✅' if model_cube else '❌'}")
+    print(f"  - Reloj: {'✅' if model_clock else '❌'}")
+    print(f"  - Emociones: {'✅' if model_emotions else '❌'}")
+    print("Servidor corriendo en http://0.0.0.0:5001")
     app.run(host='0.0.0.0', port=5001, debug=True)
