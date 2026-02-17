@@ -99,23 +99,14 @@ const Header = () => {
         {/* Navegación Desktop */}
         <nav className="header-nav">
           {userInfo && userInfo.isAdmin === false && (
-            <>
-              <button 
-                className="nav-link-ghost"
-                onClick={() => navigateTo('/api/treatments/activities', 'actividades')}
-              >
-                <FaBrain className="nav-icon" />
-                <span>Actividades</span>
-              </button>
-              <button 
-                className="nav-link-ghost"
-                onClick={() => navigateTo(`/moca/patient/${myPatientId}`, 'moca')}
-                disabled={!myPatientId}
-              >
-                <FaBrain className="nav-icon" />
-                <span>MoCA</span>
-              </button>
-            </>
+            <button 
+              className="nav-link-ghost"
+              onClick={() => navigateTo(`/moca/patient/${myPatientId}`, 'moca')}
+              disabled={!myPatientId}
+            >
+              <FaBrain className="nav-icon" />
+              <span>MoCA</span>
+            </button>
           )}
           {userInfo && userInfo.isAdmin && (
             <button 

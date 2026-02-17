@@ -14,21 +14,16 @@ import {
 import '../../assets/styles/ReportsScreen.css';
 
 // Importar las imágenes
-import historialMedicoImg from '../../images/Reports/historial-medico.webp';
 import resultadosMocaImg from '../../images/Reports/resultados-moca.webp';
 import progresoPacienteImg from '../../images/Reports/progreso-paciente.webp';
-import resultadosActividadesImg from '../../images/Reports/resultados-actviidades.webp';
-import estadoAnimoImg from '../../images/Reports/estado-ánimo.webp';
-import dashboardImg from '../../images/Reports/estado-ánimo.webp'; 
+import estadoAnimoImg from '../../images/Reports/estado-ánimo.webp'; 
 
 const ReportsScreen = () => {
   const navigate = useNavigate();
 
   const reportOptions = [
-    { title: 'Historial Médico', img: historialMedicoImg, route: '/historial-medico' },
     { title: 'Resultados MOCA', img: resultadosMocaImg, route: '/moca' },
     /*{ title: 'Progreso del Paciente', img: progresoPacienteImg, route: '/progreso-paciente' },*/
-    { title: 'Resultados de Actividades', img: resultadosActividadesImg, route: '/reports/activities' },
     { title: 'Resultados de Estado de Ánimo', img: estadoAnimoImg, route: '/estado-animo' },
     { title: 'Dashboard', img: progresoPacienteImg, route: '/dashboard' },
   ];

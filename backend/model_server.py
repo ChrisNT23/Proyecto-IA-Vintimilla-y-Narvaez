@@ -11,27 +11,42 @@ import time
 app = Flask(__name__)
 CORS(app)
 
+# Usar ruta absoluta basada en el directorio del script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Carpeta para imágenes recibidas (opcional)
-RECEIVED_IMAGES_DIR = 'received_images'
+RECEIVED_IMAGES_DIR = os.path.join(BASE_DIR, 'received_images')
 if not os.path.exists(RECEIVED_IMAGES_DIR):
     os.makedirs(RECEIVED_IMAGES_DIR)
 
 # Cargar modelo para el cubo
-MODEL_CUBE_PATH = 'model_cube.h5'
+MODEL_CUBE_PATH = os.path.join(BASE_DIR, 'model_cube.h5')
 try:
-    model_cube = tf.keras.models.load_model(MODEL_CUBE_PATH)
-    print(f"Modelo de CUBO cargado correctamente desde {MODEL_CUBE_PATH}.")
+    if os.path.exists(MODEL_CUBE_PATH):
+        model_cube = tf.keras.models.load_model(MODEL_CUBE_PATH)
+        print(f"Modelo de CUBO cargado correctamente desde {MODEL_CUBE_PATH}.")
+    else:
+        print(f"ERROR: No se encontró el archivo del modelo en {MODEL_CUBE_PATH}")
+        model_cube = None
 except Exception as e:
     print(f"Error al cargar el modelo de cubo desde {MODEL_CUBE_PATH}: {e}")
+    import traceback
+    traceback.print_exc()
     model_cube = None
 
 # Cargar modelo para el reloj
-MODEL_CLOCK_PATH = 'model_clock.h5'
+MODEL_CLOCK_PATH = os.path.join(BASE_DIR, 'model_clock.h5')
 try:
-    model_clock = tf.keras.models.load_model(MODEL_CLOCK_PATH)
-    print(f"Modelo de RELOJ cargado correctamente desde {MODEL_CLOCK_PATH}.")
+    if os.path.exists(MODEL_CLOCK_PATH):
+        model_clock = tf.keras.models.load_model(MODEL_CLOCK_PATH)
+        print(f"Modelo de RELOJ cargado correctamente desde {MODEL_CLOCK_PATH}.")
+    else:
+        print(f"ERROR: No se encontró el archivo del modelo en {MODEL_CLOCK_PATH}")
+        model_clock = None
 except Exception as e:
     print(f"Error al cargar el modelo de reloj desde {MODEL_CLOCK_PATH}: {e}")
+    import traceback
+    traceback.print_exc()
     model_clock = None
 
 img_height = 224
@@ -94,8 +109,11 @@ def evaluate_cube():
         return jsonify({"score": score})
 
     except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
         print(f"Error al procesar la imagen de cubo: {e}")
-        return jsonify({"error": "Error al procesar la imagen del cubo."}), 500
+        print(f"Detalles del error:\n{error_details}")
+        return jsonify({"error": f"Error al procesar la imagen del cubo: {str(e)}"}), 500
 
 
 @app.route('/api/evaluate-clock', methods=['POST'])

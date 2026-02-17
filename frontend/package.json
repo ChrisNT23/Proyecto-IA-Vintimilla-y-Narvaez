@@ -45,10 +45,11 @@
     "yup": "^1.6.1"
   },
   "scripts": {
-    "start": "cross-env NODE_OPTIONS=--no-deprecation craco start",
-    "build": "craco build",
+    "start": "cross-env NODE_OPTIONS=\"--max-old-space-size=4096 --no-deprecation\" craco start",
+    "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" craco build",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "clean": "rimraf node_modules/.cache build .cache"
   },
   "eslintConfig": {
     "extends": [
