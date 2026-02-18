@@ -7,9 +7,16 @@ import tensorflow as tf
 from flask_cors import CORS
 import os
 import time
+import sys
 
 app = Flask(__name__)
 CORS(app)
+
+# Configurar codificación UTF-8 para Windows
+if sys.platform == 'win32':
+    import codecs
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
 
 # Usar ruta absoluta basada en el directorio del script
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -19,50 +26,143 @@ RECEIVED_IMAGES_DIR = os.path.join(BASE_DIR, 'received_images')
 if not os.path.exists(RECEIVED_IMAGES_DIR):
     os.makedirs(RECEIVED_IMAGES_DIR)
 
-# Cargar modelo para el cubo
-MODEL_CUBE_PATH = os.path.join(BASE_DIR, 'model_cube.h5')
-try:
-    if os.path.exists(MODEL_CUBE_PATH):
-        model_cube = tf.keras.models.load_model(MODEL_CUBE_PATH)
+def load_model_compatible(model_path):
+    """
+    Carga un modelo de Keras con compatibilidad hacia atrás.
+    Maneja problemas de incompatibilidad entre versiones de Keras/TensorFlow.
+    """
+    if not os.path.exists(model_path):
+        return None
+    
+    # Crear objetos personalizados para compatibilidad
+    custom_objects = {}
+    
+    # Manejar DTypePolicy (versiones antiguas de Keras usan este formato)
+    try:
+        # Intentar obtener DTypePolicy de mixed_precision
+        if hasattr(tf.keras, 'mixed_precision'):
+            try:
+                policy = tf.keras.mixed_precision.Policy('float32')
+                # Registrar el tipo de Policy como DTypePolicy para compatibilidad
+                custom_objects['DTypePolicy'] = lambda **kwargs: tf.keras.mixed_precision.Policy('float32')
+            except:
+                pass
+        
+        # Si no funciona, crear una clase compatible
+        if 'DTypePolicy' not in custom_objects:
+            class DTypePolicyCompat:
+                def __init__(self, name='float32'):
+                    self.name = name
+                
+                @classmethod
+                def from_config(cls, config):
+                    name = config.get('name', 'float32') if isinstance(config, dict) else 'float32'
+                    return cls(name=name)
+                
+                def __call__(self, *args, **kwargs):
+                    return 'float32'
+            
+            custom_objects['DTypePolicy'] = DTypePolicyCompat
+    except Exception as e:
+        # Si falla, usar una implementación mínima
+        class DTypePolicyCompat:
+            @classmethod
+            def from_config(cls, config):
+                return 'float32'
+        custom_objects['DTypePolicy'] = DTypePolicyCompat
+    
+    # Manejar InputLayer con batch_shape
+    try:
+        from tensorflow.keras.layers import InputLayer as OriginalInputLayer
+        
+        class CompatibleInputLayer(OriginalInputLayer):
+            @classmethod
+            def from_config(cls, config):
+                # Remover batch_shape si existe y convertir a input_shape
+                if isinstance(config, dict) and 'batch_shape' in config:
+                    batch_shape = config.pop('batch_shape')
+                    if batch_shape is not None and len(batch_shape) > 1:
+                        config['input_shape'] = batch_shape[1:]
+                return super().from_config(config)
+        
+        custom_objects['InputLayer'] = CompatibleInputLayer
+    except:
+        pass
+    
+    # Intentar múltiples estrategias de carga
+    strategies = [
+        # Estrategia 1: Cargar con custom_objects
+        lambda: tf.keras.models.load_model(model_path, compile=False, custom_objects=custom_objects),
+        # Estrategia 2: Cargar sin custom_objects (por si el modelo es compatible)
+        lambda: tf.keras.models.load_model(model_path, compile=False),
+        # Estrategia 3: Intentar con tf.compat.v1 para modelos muy antiguos
+        lambda: tf.compat.v1.keras.models.load_model(model_path, compile=False) if hasattr(tf.compat.v1, 'keras') else None,
+    ]
+    
+    last_error = None
+    for i, strategy in enumerate(strategies, 1):
+        try:
+            model = strategy()
+            if model is not None:
+                return model
+        except Exception as e:
+            last_error = e
+            if i < len(strategies):
+                continue  # Intentar siguiente estrategia
+    
+    # Si todas las estrategias fallaron, mostrar el error
+    if last_error:
+        error_str = str(last_error)
+        if 'DTypePolicy' in error_str or 'batch_shape' in error_str or 'Unrecognized keyword' in error_str:
+            # Error de incompatibilidad - no mostrar traceback completo
+            pass
+        else:
+            # Otro tipo de error - podría ser útil verlo
+            import traceback
+            traceback.print_exc()
+    
+    return None
+
+# Cargar modelo para el cubo (intentar versiones mejoradas primero)
+model_cube = None
+cube_model_paths = [
+    os.path.join(BASE_DIR, 'model_cube_improved_best.h5'),
+    os.path.join(BASE_DIR, 'model_cube_improved.h5'),
+    os.path.join(BASE_DIR, 'model_cube_finetuned.h5'),
+    os.path.join(BASE_DIR, 'model_cube.h5')
+]
+
+for MODEL_CUBE_PATH in cube_model_paths:
+    model_cube = load_model_compatible(MODEL_CUBE_PATH)
+    if model_cube:
         print(f"Modelo de CUBO cargado correctamente desde {MODEL_CUBE_PATH}.")
-    else:
-        print(f"ERROR: No se encontró el archivo del modelo en {MODEL_CUBE_PATH}")
-        model_cube = None
-except Exception as e:
-    print(f"Error al cargar el modelo de cubo desde {MODEL_CUBE_PATH}: {e}")
-    import traceback
-    traceback.print_exc()
-    model_cube = None
+        break
+
+if not model_cube:
+    print(f"ERROR: No se pudo cargar ningun modelo de cubo. Se intentaron:")
+    for path in cube_model_paths:
+        print(f"  - {path}")
 
 # Cargar modelo para el reloj
 MODEL_CLOCK_PATH = os.path.join(BASE_DIR, 'model_clock.h5')
-try:
-    if os.path.exists(MODEL_CLOCK_PATH):
-        model_clock = tf.keras.models.load_model(MODEL_CLOCK_PATH)
-        print(f"Modelo de RELOJ cargado correctamente desde {MODEL_CLOCK_PATH}.")
-    else:
-        print(f"ERROR: No se encontró el archivo del modelo en {MODEL_CLOCK_PATH}")
-        model_clock = None
-except Exception as e:
-    print(f"Error al cargar el modelo de reloj desde {MODEL_CLOCK_PATH}: {e}")
-    import traceback
-    traceback.print_exc()
-    model_clock = None
+model_clock = load_model_compatible(MODEL_CLOCK_PATH)
+if model_clock:
+    print(f"Modelo de RELOJ cargado correctamente desde {MODEL_CLOCK_PATH}.")
+else:
+    print(f"ERROR: No se pudo cargar el modelo de reloj desde {MODEL_CLOCK_PATH}")
 
 # Cargar modelo para emociones (opcional, intenta cargar versión mejorada primero)
-MODEL_EMOTIONS_PATH = 'model_emotions_finetuned.h5'
-model_emotions = None
-try:
-    model_emotions = tf.keras.models.load_model(MODEL_EMOTIONS_PATH)
-    print(f"✅ Modelo de EMOCIONES cargado desde {MODEL_EMOTIONS_PATH}.")
-except Exception as e:
-    try:
-        MODEL_EMOTIONS_PATH = 'model_emotions.h5'
-        model_emotions = tf.keras.models.load_model(MODEL_EMOTIONS_PATH)
-        print(f"✅ Modelo de EMOCIONES cargado desde {MODEL_EMOTIONS_PATH}.")
-    except Exception as e2:
-        print(f"⚠️  Modelo de emociones no encontrado. CNN de emociones no disponible.")
-        model_emotions = None
+MODEL_EMOTIONS_PATH = os.path.join(BASE_DIR, 'model_emotions_finetuned.h5')
+model_emotions = load_model_compatible(MODEL_EMOTIONS_PATH)
+if model_emotions:
+    print(f"Modelo de EMOCIONES cargado desde {MODEL_EMOTIONS_PATH}.")
+else:
+    MODEL_EMOTIONS_PATH = os.path.join(BASE_DIR, 'model_emotions.h5')
+    model_emotions = load_model_compatible(MODEL_EMOTIONS_PATH)
+    if model_emotions:
+        print(f"Modelo de EMOCIONES cargado desde {MODEL_EMOTIONS_PATH}.")
+    else:
+        print(f"Modelo de emociones no encontrado. CNN de emociones no disponible.")
 
 # Mapeo de clases de emociones
 emotion_classes = {
@@ -252,8 +352,8 @@ def evaluate_emotion():
         })
 
     except Exception as e:
-        print(f"❌ Error al procesar emoción: {e}")
-        return jsonify({"error": f"Error al procesar la imagen de emoción: {str(e)}"}), 500
+        print(f"Error al procesar emocion: {e}")
+        return jsonify({"error": f"Error al procesar la imagen de emocion: {str(e)}"}), 500
 
 @app.route('/api/extract-features', methods=['POST'])
 def extract_features():
@@ -291,14 +391,14 @@ def extract_features():
         })
 
     except Exception as e:
-        print(f"❌ Error extrayendo características: {e}")
-        return jsonify({"error": f"Error extrayendo características: {str(e)}"}), 500
+        print(f"Error extrayendo caracteristicas: {e}")
+        return jsonify({"error": f"Error extrayendo caracteristicas: {str(e)}"}), 500
 
 if __name__ == '__main__':
     print("\n=== Servidor de Modelos CNN ===")
     print(f"Modelos cargados:")
-    print(f"  - Cubo: {'✅' if model_cube else '❌'}")
-    print(f"  - Reloj: {'✅' if model_clock else '❌'}")
-    print(f"  - Emociones: {'✅' if model_emotions else '❌'}")
+    print(f"  - Cubo: {'OK' if model_cube else 'NO DISPONIBLE'}")
+    print(f"  - Reloj: {'OK' if model_clock else 'NO DISPONIBLE'}")
+    print(f"  - Emociones: {'OK' if model_emotions else 'NO DISPONIBLE'}")
     print("Servidor corriendo en http://0.0.0.0:5001")
     app.run(host='0.0.0.0', port=5001, debug=True)

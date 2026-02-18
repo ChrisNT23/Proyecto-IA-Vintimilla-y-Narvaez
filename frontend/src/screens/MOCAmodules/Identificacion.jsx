@@ -57,9 +57,23 @@ const Identificacion = ({ onComplete, onPrevious, isFirstModule }) => {
         setConfirmation(true);
       };
 
-      recognition.onerror = () => {
-        setListening(false);
-        alert("Error al reconocer la voz. Intente de nuevo.");
+      recognition.onerror = (event) => {
+        // Solo mostrar error si es un error real, no errores normales
+        const errorType = event.error;
+        // Errores que NO debemos mostrar: 'no-speech', 'aborted', 'audio-capture'
+        // Estos son normales cuando el usuario no habla o detiene manualmente
+        if (errorType === 'no-speech' || errorType === 'aborted' || errorType === 'audio-capture') {
+          setListening(false);
+          return;
+        }
+        // Solo mostrar error para errores reales como 'network', 'not-allowed', etc.
+        if (errorType === 'network' || errorType === 'not-allowed' || errorType === 'service-not-allowed') {
+          setListening(false);
+          alert("Error al reconocer la voz. Intente de nuevo.");
+        } else {
+          // Para otros errores, solo detener sin mostrar mensaje
+          setListening(false);
+        }
       };
 
       recognition.onend = () => {

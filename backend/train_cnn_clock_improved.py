@@ -10,6 +10,10 @@ import numpy as np
 from PIL import Image
 from cnn_models import CNNModelBuilder, create_callbacks
 
+# Configurar TensorFlow para compatibilidad
+# Desactivar mixed precision si está activado (puede causar problemas de compatibilidad)
+tf.keras.mixed_precision.set_global_policy('float32')
+
 # Configuración
 TRAIN_DIR = "data_clock/train"
 TRAIN_CSV = "data_clock/train/train_labels.csv"
@@ -161,9 +165,15 @@ if len(test_paths) > 0:
     print(f"Test Loss: {test_results[0]:.4f}")
     print(f"Test Accuracy: {test_results[1]:.4f}")
 
-# Guardar modelo
-model.save(MODEL_PATH)
-print(f"\nModelo guardado en {MODEL_PATH}")
+# Guardar modelo de manera compatible
+print("\n=== Guardando Modelo ===")
+try:
+    model.save(MODEL_PATH, save_format='h5')
+    print(f"Modelo guardado en {MODEL_PATH} (formato H5 compatible)")
+except Exception as e:
+    print(f"Error al guardar en formato H5: {e}")
+    model.save_weights(MODEL_PATH.replace('.h5', '_weights.h5'))
+    print(f"Pesos guardados en {MODEL_PATH.replace('.h5', '_weights.h5')}")
 
 # Fine-tuning opcional
 print("\n=== Fine-tuning (Opcional) ===")
@@ -192,8 +202,13 @@ fine_tune_history = model.fit(
     verbose=1
 )
 
-model.save('model_clock_finetuned.h5')
-print("Modelo fine-tuned guardado como model_clock_finetuned.h5")
+try:
+    model.save('model_clock_finetuned.h5', save_format='h5')
+    print("Modelo fine-tuned guardado como model_clock_finetuned.h5 (formato H5 compatible)")
+except Exception as e:
+    print(f"Error al guardar modelo fine-tuned: {e}")
+    model.save_weights('model_clock_finetuned_weights.h5')
+    print("Pesos del modelo fine-tuned guardados")
 
 print("\n=== Entrenamiento Completado ===")
 

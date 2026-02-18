@@ -4,6 +4,10 @@ from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.applications import MobileNetV2
 
+# Configurar TensorFlow para compatibilidad
+# Desactivar mixed precision si está activado (puede causar problemas de compatibilidad)
+tf.keras.mixed_precision.set_global_policy('float32')
+
 # Ruta de los datos de entrenamiento y validación
 base_dir = "dataClock"
 train_dir = os.path.join(base_dir, "train")
@@ -61,6 +65,12 @@ model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
 print("Iniciando el entrenamiento del modelo...")
 history = model.fit(train_ds, validation_data=val_ds, epochs=epochs)
 
-# Guardar el modelo entrenado
-model.save('clock_model.h5')
-print("Modelo guardado como clock_model.h5")
+# Guardar el modelo entrenado de manera compatible
+print("=== Guardando Modelo ===")
+try:
+    model.save('clock_model.h5', save_format='h5')
+    print("Modelo guardado como clock_model.h5 (formato H5 compatible)")
+except Exception as e:
+    print(f"Error al guardar en formato H5: {e}")
+    model.save_weights('clock_model_weights.h5')
+    print("Pesos guardados como clock_model_weights.h5")

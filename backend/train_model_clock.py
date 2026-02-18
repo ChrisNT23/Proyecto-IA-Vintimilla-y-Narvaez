@@ -5,6 +5,10 @@ import numpy as np
 from tensorflow.keras import layers, models
 from PIL import Image
 
+# Configurar TensorFlow para compatibilidad
+# Desactivar mixed precision si está activado (puede causar problemas de compatibilidad)
+tf.keras.mixed_precision.set_global_policy('float32')
+
 TRAIN_DIR = "data_clock/train"
 TRAIN_CSV = "data_clock/train/train_labels.csv"
 VAL_DIR   = "data_clock/val"
@@ -120,6 +124,15 @@ history = model.fit(
     validation_steps=val_steps
 )
 
-# Guardar el modelo
-model.save(MODEL_PATH)
-print(f"Modelo guardado en {MODEL_PATH}")
+# Guardar el modelo de manera compatible
+print("=== Guardando Modelo ===")
+try:
+    # Guardar con formato H5 explícito para compatibilidad
+    model.save(MODEL_PATH, save_format='h5')
+    print(f"Modelo guardado en {MODEL_PATH} (formato H5 compatible)")
+except Exception as e:
+    print(f"Error al guardar en formato H5: {e}")
+    # Intentar guardar solo los pesos si falla
+    weights_path = MODEL_PATH.replace('.h5', '_weights.h5')
+    model.save_weights(weights_path)
+    print(f"Pesos guardados en {weights_path}")

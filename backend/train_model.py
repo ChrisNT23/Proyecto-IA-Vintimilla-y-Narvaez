@@ -2,6 +2,10 @@ import os
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+# Configurar TensorFlow para compatibilidad
+# Desactivar mixed precision si está activado (puede causar problemas de compatibilidad)
+tf.keras.mixed_precision.set_global_policy('float32')
+
 # Parámetros para la carga de datos
 TRAIN_DIR = os.path.join('data', 'train')
 VAL_DIR = os.path.join('data', 'val')
@@ -98,9 +102,18 @@ print("=== Evaluando en Test ===")
 test_loss, test_acc = model.evaluate(test_generator)
 print(f"Loss en Test: {test_loss:.4f} - Acc en Test: {test_acc:.4f}")
 
-# Guardamos el modelo en un archivo h5
-model.save('model_cube.h5')
-print("Modelo guardado como model_cube.h5")
+# Guardamos el modelo en un archivo h5 de manera compatible
+# Usar save_format='h5' explícitamente y asegurar compatibilidad
+print("=== Guardando Modelo ===")
+try:
+    # Guardar con formato H5 explícito para compatibilidad
+    model.save('model_cube.h5', save_format='h5')
+    print("Modelo guardado como model_cube.h5 (formato H5 compatible)")
+except Exception as e:
+    print(f"Error al guardar en formato H5: {e}")
+    # Intentar guardar solo los pesos si falla
+    model.save_weights('model_cube_weights.h5')
+    print("Pesos guardados como model_cube_weights.h5")
 
 # Si quieres luego re-entrenar con fine-tuning, 
 # descongela las últimas capas del base_model y vuelve a entrenar.

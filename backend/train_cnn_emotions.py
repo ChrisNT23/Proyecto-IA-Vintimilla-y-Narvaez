@@ -9,6 +9,10 @@ import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from cnn_models import CNNModelBuilder, create_callbacks
 
+# Configurar TensorFlow para compatibilidad
+# Desactivar mixed precision si está activado (puede causar problemas de compatibilidad)
+tf.keras.mixed_precision.set_global_policy('float32')
+
 # Configuración
 # Estructura esperada: data_emotions/train/{emotion_name}/*.jpg
 # Emociones: neutral, happy, sad, angry, fearful, disgusted, surprised
@@ -125,9 +129,15 @@ print(f"Test Loss: {test_loss:.4f}")
 print(f"Test Accuracy: {test_acc:.4f}")
 print(f"Test Top-K Accuracy: {test_top_k:.4f}")
 
-# Guardar modelo
-model.save('model_emotions.h5')
-print("\nModelo guardado como model_emotions.h5")
+# Guardar modelo de manera compatible
+print("\n=== Guardando Modelo ===")
+try:
+    model.save('model_emotions.h5', save_format='h5')
+    print("Modelo guardado como model_emotions.h5 (formato H5 compatible)")
+except Exception as e:
+    print(f"Error al guardar en formato H5: {e}")
+    model.save_weights('model_emotions_weights.h5')
+    print("Pesos guardados como model_emotions_weights.h5")
 
 # Guardar mapeo de clases
 import json
@@ -161,8 +171,13 @@ fine_tune_history = model.fit(
     verbose=1
 )
 
-model.save('model_emotions_finetuned.h5')
-print("Modelo fine-tuned guardado como model_emotions_finetuned.h5")
+try:
+    model.save('model_emotions_finetuned.h5', save_format='h5')
+    print("Modelo fine-tuned guardado como model_emotions_finetuned.h5 (formato H5 compatible)")
+except Exception as e:
+    print(f"Error al guardar modelo fine-tuned: {e}")
+    model.save_weights('model_emotions_finetuned_weights.h5')
+    print("Pesos del modelo fine-tuned guardados")
 
 print("\n=== Entrenamiento Completado ===")
 print("\nPara usar este modelo en lugar de face-api.js:")
