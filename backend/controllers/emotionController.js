@@ -5,13 +5,14 @@ import EmotionData from "../models/emotionModel.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { 
-  calculateAllDerivedVariables, 
-  mapToObject 
+import {
+  calculateAllDerivedVariables,
+  mapToObject
 } from "../utils/emotionAnalysis.js";
-import { 
-  processImageWithCNN, 
-  extractCNNFeatures 
+import {
+  processImageWithCNN,
+  extractCNNFeatures,
+  processImageWithCNN as evaluateWithCNN // Alias para claridad
 } from "../services/emotionProcessingService.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -51,12 +52,12 @@ const captureEmotion = asyncHandler(async (req, res) => {
     // Intentar procesar con CNN (MÉTODO PRINCIPAL Y ÚNICO)
     console.log("🔄 Procesando imagen con CNN...");
     cnnResult = await processImageWithCNN(imagePath, image);
-    
+
     // Si CNN retorna resultados válidos
     if (cnnResult && cnnResult.dominantEmotion && !cnnResult.error) {
       console.log(`✅ CNN detectó: ${cnnResult.dominantEmotion} (${cnnResult.confidence})`);
       useCNN = true;
-      
+
       // Extraer características CNN
       try {
         cnnFeatures = await extractCNNFeatures(image);
@@ -119,13 +120,13 @@ const captureEmotion = asyncHandler(async (req, res) => {
       throw new Error("Registro de emociones no encontrado");
     }
     emotionData.captures.push(captureData);
-    
+
     // Actualizar metadatos de procesamiento
     emotionData.processingMetadata.totalFrames = emotionData.captures.length;
     emotionData.processingMetadata.processedFrames = emotionData.captures.filter(
       c => c.cnnFeatures && c.cnnFeatures.length > 0
     ).length;
-    
+
     await emotionData.save();
   } else {
     // Crear nuevo registro de emociones (captura inicial)
@@ -153,8 +154,31 @@ const captureEmotion = asyncHandler(async (req, res) => {
   };
 
   console.log("✅ Retornando respuesta al frontend:", responseData);
-  
+
   res.status(201).json(responseData);
+});
+
+// @desc    Evaluar emoción en tiempo real (Proxy a Python)
+// @route   POST /api/emotions/evaluate
+// @access  Private
+const evaluateEmotion = asyncHandler(async (req, res) => {
+  const { image } = req.body;
+  if (!image) {
+    res.status(400);
+    throw new Error("Se requiere una imagen");
+  }
+
+  try {
+    const result = await processImageWithCNN(null, image);
+    res.json({
+      emotion: result.dominantEmotion,
+      confidence: result.confidence,
+      all_emotions: mapToObject(result.emotionProbabilities)
+    });
+  } catch (error) {
+    res.status(503);
+    throw new Error(`Servidor de modelos no disponible: ${error.message}`);
+  }
 });
 
 // @desc    Obtener datos de emociones de un paciente
@@ -255,19 +279,19 @@ const getEmotionStats = asyncHandler(async (req, res) => {
     totalConfidence += capture.confidence;
   });
 
-  const avgConfidence = emotionData.captures.length > 0 
+  const avgConfidence = emotionData.captures.length > 0
     ? (totalConfidence / emotionData.captures.length).toFixed(2)
     : 0;
 
   // Emoción dominante
-  const dominantEmotion = Object.entries(emotionCounts).reduce((a, b) => 
+  const dominantEmotion = Object.entries(emotionCounts).reduce((a, b) =>
     emotionCounts[a[0]] > emotionCounts[b[0]] ? a : b
   );
 
   // Calcular variables derivadas si no están calculadas
-  if (!emotionData.derivedVariables || 
-      Object.keys(emotionData.derivedVariables).length === 0 ||
-      !emotionData.derivedVariables.emotionalVariabilityIndex) {
+  if (!emotionData.derivedVariables ||
+    Object.keys(emotionData.derivedVariables).length === 0 ||
+    !emotionData.derivedVariables.emotionalVariabilityIndex) {
     const derivedVars = calculateAllDerivedVariables(emotionData.captures);
     emotionData.derivedVariables = {
       emotionalVariabilityIndex: derivedVars.emotionalVariabilityIndex,
@@ -290,7 +314,7 @@ const getEmotionStats = asyncHandler(async (req, res) => {
     },
     avgConfidence: parseFloat(avgConfidence),
     emotionsByModule,
-    testDuration: emotionData.testEndTime 
+    testDuration: emotionData.testEndTime
       ? Math.round((new Date(emotionData.testEndTime) - new Date(emotionData.testStartTime)) / 1000 / 60)
       : null,
     // Variables derivadas
@@ -461,5 +485,6 @@ export {
   getEmotionStats,
   calculateDerivedVariables,
   processEmotionSequence,
+  evaluateEmotion,
 };
 

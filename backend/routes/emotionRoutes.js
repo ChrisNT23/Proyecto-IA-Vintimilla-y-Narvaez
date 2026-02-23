@@ -9,6 +9,7 @@ import {
   getEmotionStats,
   calculateDerivedVariables,
   processEmotionSequence,
+  evaluateEmotion,
 } from "../controllers/emotionController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -19,6 +20,7 @@ router.post("/capture", protect, captureEmotion);
 
 // Procesar secuencia de frames/video
 router.post("/process-sequence", protect, processEmotionSequence);
+router.post("/evaluate", protect, evaluateEmotion);
 
 // Obtener emociones de un paciente
 router.get("/patient/:patientId", protect, getPatientEmotions);
