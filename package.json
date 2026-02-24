@@ -13,7 +13,7 @@
     "data:import": "node backend/seeder.js",
     "data:destroy": "node backend/seeder.js -d"
   },
-  "author": "Vintimilla y Valverde",
+  "author": "Vintimilla y Narvaez",
   "license": "ISC",
   "dependencies": {
     "@emotion/react": "^11.11.1",
