@@ -8,6 +8,14 @@ from flask_cors import CORS
 import os
 import time
 import logging
+import keras
+
+# Workaround for Keras 3.x 'quantization_config' serialization bug
+@keras.saving.register_keras_serializable()
+class FixedDense(keras.layers.Dense):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('quantization_config', None)
+        super().__init__(*args, **kwargs)
 
 # Configure Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -34,7 +42,8 @@ def load_model_safely(path, name):
         logger.warning(f"Model {name} not found at {path}")
         return None
     try:
-        model = tf.keras.models.load_model(path, compile=False)
+        # Use FixedDense to handle 'quantization_config' issue in Keras 3 models
+        model = keras.models.load_model(path, compile=False, custom_objects={'Dense': FixedDense})
         logger.info(f"✅ Success: {name} model loaded from {path}")
         return model
     except Exception as e:
@@ -50,11 +59,12 @@ model_emotions = load_model_safely(MODEL_EMOTIONS_PATH, "EMOTIONS")
 EMOTION_CLASSES = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
 
 def preprocess_for_cube(img):
-    """Preprocessing matches train_model.py (rescale 1/255)"""
+    """Preprocessing aligned with MobileNetV2 training"""
     img = img.convert('RGB')
     img = img.resize((224, 224))
-    img_array = np.array(img).astype('float32') / 255.0
+    img_array = np.array(img).astype('float32')
     img_array = np.expand_dims(img_array, axis=0)
+    img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array)
     return img_array
 
 def preprocess_for_clock(img):
