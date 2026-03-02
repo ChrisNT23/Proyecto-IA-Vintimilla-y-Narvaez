@@ -1,79 +1,98 @@
 # Aplicativo Web para el Seguimiento de Pacientes con Problemas Neurodegenerativos
 
-Este repositorio contiene el código fuente del proyecto de titulación **"Aplicativo Web para el Seguimiento de Pacientes con Problemas Neurodegenerativos"**, desarrollado con el stack MERN (MongoDB, Express, React, Node.js). Este sistema está diseñado para digitalizar y optimizar el diagnóstico y tratamiento de pacientes, incluyendo funcionalidades avanzadas como la evaluación cognitiva MoCA y la asignación de actividades personalizadas.
+Este proyecto es una plataforma integral diseñada para digitalizar y optimizar el diagnóstico, seguimiento y tratamiento de pacientes con trastornos neurodegenerativos. Combina el poder del stack **MERN** (MongoDB, Express, React, Node.js) con modelos avanzados de **Inteligencia Artificial** para la evaluación cognitiva.
 
-## Funcionalidades Principales
-- Manejo de perfiles de pacientes y médicos.
-- Evaluación cognitiva mediante la prueba MoCA con inteligencia artificial.
-- Creación, Asignación de tratamientos y actividades personalizadas.
-- Recordatorios de medicamentos.
-- Dashboard para monitorear el progreso.
-- Registro y monitoreo de estados emocionales.
-- Visualización de reportes.
-- Seguridad robusta con autenticación basada en roles y cifrado de datos.
+## 🚀 Descripción del Proyecto
 
-## Requisitos Previos
+El sistema permite a médicos y cuidadores gestionar de manera eficiente la salud de los pacientes a través de:
+- **Gestión de Perfiles**: Registro detallado de historial médico y evolución.
+- **Evaluación MoCA Asistida por IA**: Uso de Redes Neuronales Convolucionales (CNN) basadas en **MobileNetV2** para calificar automáticamente dibujos de la prueba MoCA (Cubo, Reloj).
+- **Tratamientos Personalizados**: Asignación de actividades cognitivas y recordatorios de medicación.
+- **Monitoreo Emocional**: Seguimiento de estados de ánimo y bienestar.
+- **Dashboards y Reportes**: Visualización de datos y reportes automáticos en PDF.
 
-Asegúrate de tener instalados los siguientes programas en tu máquina:
-- [Node.js](https://nodejs.org) (versión 16.x o superior).
-- [MongoDB](https://www.mongodb.com) para la base de datos.
-- [Git](https://git-scm.com/) para clonar el repositorio.
+---
 
-## Pasos para Configurar el Proyecto
+## 🛠️ Dependencias y Versiones
 
-### 1. Clonar el Repositorio
+El proyecto requiere sistemas operativos compatibles (Windows/Linux/macOS) y las siguientes herramientas principales:
+
+### Entorno de Ejecución
+- **Node.js**: `v18.x` o superior.
+- **npm**: `v9.x` o superior.
+- **Python**: `3.10.x` o superior (Recomendado 3.10.11).
+- **MongoDB**: `v6.x` o superior (Local o Atlas).
+
+### Librerías de Inteligencia Artificial (Python)
+- **TensorFlow**: `>= 2.10.0`
+- **Flask**: Para el microservicio del modelo.
+- **Numpy, Pandas, Scikit-learn**: Procesamiento de datos.
+- **Pillow**: Procesamiento de imágenes.
+
+### Frameworks de Desarrollo
+- **Frontend**: React 18, Redux Toolkit, Tailwind CSS.
+- **Backend**: Express, Mongoose, Socket.io (para comunicación en tiempo real).
+
+---
+
+## 💻 Instrucciones de Ejecución
+
+Sigue estos pasos para configurar el entorno de desarrollo:
+
+### 1. Clonar el repositorio
 ```bash
-# Usar HTTPS
-[git clone https://github.com/ThyaraV/Proyecto-capstone-Vintimilla-y-Valverde.git]
-# O usar SSH
-git@github.com:ThyaraV/Proyecto-capstone-Vintimilla-y-Valverde.git
+git clone https://github.com/ChrisNT23/Proyecto-IA-Vintimilla-y-Narvaez.git
+cd Proyecto-IA-Vintimilla-y-Narvaez
 ```
 
-### 2. Navegar al Directorio del Proyecto
+### 2. Configurar el Backend de Inteligencia Artificial (Python)
+Se recomienda el uso de un entorno virtual:
 ```bash
-cd \Documents\GitHub\Proyecto-capstone-Vintimilla-y-Valverde
-```
-
-### 3. Instalar las Dependencias
-
-Ejecuta el siguiente comando en la raíz del proyecto para instalar las dependencias tanto del cliente (frontend) como del servidor (backend):
-```bash
-npm install
-```
-
-Si tienes directorios separados para frontend y backend, asegúrate de instalar las dependencias en cada uno:
-```bash
-# Instalar dependencias del backend
 cd backend
-npm install
-
-# Instalar dependencias del frontend
-cd ../frontend
-npm install
+# Crear entorno virtual
+python -m venv venv
+# Activar entorno (Windows)
+.\venv\Scripts\activate
+# Instalar requerimientos
+pip install -r requirements.txt
+cd ..
 ```
 
-### 4. Configurar las Variables de Entorno
-Crea un archivo `.env` en las carpetas del frontend y backend basándote en los archivos `.env.example` proporcionados. Configura las variables necesarias, como la URL de la base de datos y las claves secretas.
-
-Ejemplo para el backend:
+### 3. Instalar Dependencias de Node.js
+Ejecuta esto en la raíz para instalar dependencias del core, frontend y backend:
+```bash
+npm install
+cd frontend && npm install
+cd ..
 ```
-MONGO_URI=mongodb+srv://usuario:contraseña@cluster.mongodb.net/miBaseDeDatos
+
+### 4. Variables de Entorno
+Crea un archivo `.env` en la raíz (o en `backend/`) con el siguiente formato:
+```env
+MONGO_URI=mongodb://tu_conexion_de_mongo
 JWT_SECRET=tu_clave_secreta
+PORT=5000
 ```
 
-### 5. Levantar el Proyecto
-
-#### Backend y frontend
-Asegúrate de estar en la carpeta principal y ejecuta:
+### 5. Iniciar la Aplicación
+El proyecto usa `concurrently` para lanzar todos los servicios con un solo comando:
 ```bash
 npm run dev
 ```
 
-### 6. Acceso a la Aplicación
-
-Una vez que ambos servidores estén corriendo:
-- Backend: Disponible en `http://localhost:5000`
-- Frontend: Disponible en `http://localhost:3000`
+Esto iniciará simultáneamente:
+- **Backend (Node.js)**: `http://localhost:5000`
+- **Frontend (React)**: `http://localhost:3000`
+- **Model Server (Python/IA)**: Ejecutándose en segundo plano para procesar predicciones.
 
 ---
 
+## 🏗️ Arquitectura de IA (Backend Python)
+El archivo `train_model.py` implementa el ajuste fino (*fine-tuning*) de **MobileNetV2**. El entrenamiento se divide en:
+1. **Fase de Calentamiento**: Entrenamiento de la nueva cabeza de clasificación.
+2. **Fase de Fine-Tuning**: Descongelamiento de las últimas capas del modelo base para mayor precisión.
+
+Los modelos resultantes (`.h5`) son servidos a través de `model_server.py` mediante una API Flask.
+
+---
+**Desarrollado por:** ChrisNT23 - Vintimilla y Narvaez.
