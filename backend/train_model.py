@@ -1,48 +1,47 @@
 import os
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
-# Configurar TensorFlow para compatibilidad
-# Desactivar mixed precision si está activado (puede causar problemas de compatibilidad)
 tf.keras.mixed_precision.set_global_policy('float32')
 
-# Parámetros para la carga de datos
+# ==========================
+# CONFIG
+# ==========================
+
 TRAIN_DIR = os.path.join('data', 'train')
 VAL_DIR = os.path.join('data', 'val')
-TEST_DIR = os.path.join('data', 'test')  # Opcional para pruebas
+TEST_DIR = os.path.join('data', 'test')
 
 IMG_HEIGHT = 224
 IMG_WIDTH = 224
-BATCH_SIZE = 16
-EPOCHS = 10  # Ajusta según tu necesidad
+BATCH_SIZE = 32
+EPOCHS_HEAD = 15
+EPOCHS_FINE = 10
 
-# Verificar que las rutas existen
-for directory in [TRAIN_DIR, VAL_DIR, TEST_DIR]:
-    if not os.path.exists(directory):
-        print(f"Error: La carpeta {directory} no existe.")
-        exit(1)
+# ==========================
+# DATA GENERATORS
+# ==========================
 
-# Generadores de imágenes con Data Augmentation para entrenamiento
 train_datagen = ImageDataGenerator(
-    rescale=1.0/255,
-    rotation_range=20,
-    width_shift_range=0.2,
-    height_shift_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True,
+    preprocessing_function=preprocess_input,
+    rotation_range=12,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    zoom_range=0.1,
+    shear_range=0.08,
     fill_mode='nearest'
 )
 
-# Para validación y test solemos usar menos aumentos para mantener consistencia
-val_datagen = ImageDataGenerator(rescale=1.0/255)
-test_datagen = ImageDataGenerator(rescale=1.0/255)
+val_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
+test_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
 
-# Carga de datos en batch desde directorios
 train_generator = train_datagen.flow_from_directory(
     TRAIN_DIR,
     target_size=(IMG_HEIGHT, IMG_WIDTH),
     batch_size=BATCH_SIZE,
-    class_mode='binary',  # Correcto vs Incorrecto
+    class_mode='binary',
     shuffle=True
 )
 
@@ -54,7 +53,6 @@ val_generator = val_datagen.flow_from_directory(
     shuffle=False
 )
 
-# Opcional: si quieres evaluar en test
 test_generator = test_datagen.flow_from_directory(
     TEST_DIR,
     target_size=(IMG_HEIGHT, IMG_WIDTH),
@@ -63,64 +61,103 @@ test_generator = test_datagen.flow_from_directory(
     shuffle=False
 )
 
-# Carga del modelo base (MobileNetV2) sin la parte fully connected original
+# ==========================
+# MODELO BASE
+# ==========================
+
 base_model = tf.keras.applications.MobileNetV2(
     input_shape=(IMG_HEIGHT, IMG_WIDTH, 3),
-    include_top=False,  # quitamos las capas densas originales
+    include_top=False,
     weights='imagenet'
 )
 
-# Congelamos el modelo base para que no se entrene en las primeras épocas
 base_model.trainable = False
 
-# Añadimos capas densas de clasificación
 model = tf.keras.Sequential([
     base_model,
     tf.keras.layers.GlobalAveragePooling2D(),
-    tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Dense(1, activation='sigmoid')  # Binario: Correcto vs Incorrecto
+    tf.keras.layers.BatchNormalization(),
+    tf.keras.layers.Dropout(0.4),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dropout(0.3),
+    tf.keras.layers.Dense(1, activation='sigmoid')
 ])
 
-# Compilamos el modelo
+# ==========================
+# CALLBACKS
+# ==========================
+
+early_stop = EarlyStopping(
+    monitor='val_loss',
+    patience=5,
+    restore_best_weights=True
+)
+
+reduce_lr = ReduceLROnPlateau(
+    monitor='val_loss',
+    factor=0.3,
+    patience=3,
+    min_lr=1e-6
+)
+
+checkpoint = ModelCheckpoint(
+    "best_model_cube.h5",
+    monitor="val_loss",
+    save_best_only=True,
+    mode="min"
+)
+
+# ==========================
+# FASE 1 - Entrenar cabeza
+# ==========================
+
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+    optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
     loss='binary_crossentropy',
     metrics=['accuracy']
 )
 
-print("=== Iniciando Entrenamiento ===")
+print("=== FASE 1: Entrenando cabeza ===")
 
-# Entrenamiento del modelo
-history = model.fit(
+history_head = model.fit(
     train_generator,
-    epochs=EPOCHS,
-    validation_data=val_generator
+    epochs=EPOCHS_HEAD,
+    validation_data=val_generator,
+    callbacks=[early_stop, reduce_lr, checkpoint]
 )
 
-# (Opcional) Evaluación final con la carpeta de test
+# ==========================
+# FASE 2 - Fine Tuning
+# ==========================
+
+base_model.trainable = True
+
+# Congelar primeras capas
+for layer in base_model.layers[:100]:
+    layer.trainable = False
+
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5),
+    loss='binary_crossentropy',
+    metrics=['accuracy']
+)
+
+print("=== FASE 2: Fine-tuning ===")
+
+history_fine = model.fit(
+    train_generator,
+    epochs=EPOCHS_FINE,
+    validation_data=val_generator,
+    callbacks=[early_stop, reduce_lr, checkpoint]
+)
+
+# ==========================
+# EVALUACIÓN FINAL
+# ==========================
+
 print("=== Evaluando en Test ===")
 test_loss, test_acc = model.evaluate(test_generator)
 print(f"Loss en Test: {test_loss:.4f} - Acc en Test: {test_acc:.4f}")
 
-# Guardamos el modelo en un archivo h5 de manera compatible
-# Usar save_format='h5' explícitamente y asegurar compatibilidad
-print("=== Guardando Modelo ===")
-try:
-    # Guardar con formato H5 explícito para compatibilidad
-    model.save('model_cube.h5', save_format='h5')
-    print("Modelo guardado como model_cube.h5 (formato H5 compatible)")
-except Exception as e:
-    print(f"Error al guardar en formato H5: {e}")
-    # Intentar guardar solo los pesos si falla
-    model.save_weights('model_cube_weights.h5')
-    print("Pesos guardados como model_cube_weights.h5")
-
-# Si quieres luego re-entrenar con fine-tuning, 
-# descongela las últimas capas del base_model y vuelve a entrenar.
-# Por ejemplo:
-# base_model.trainable = True
-# for layer in base_model.layers[:100]:
-#     layer.trainable = False
-# model.compile(optimizer=..., loss=..., metrics=...)
-# model.fit(...)
-# model.save('model.h5')
+model.save("model_cube_final.h5", save_format="h5")
+print("Modelo final guardado correctamente.")

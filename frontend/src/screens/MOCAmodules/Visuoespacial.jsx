@@ -472,14 +472,17 @@ const CuboActivity = ({
       }
 
       const data = await response.json();
-      setCubeScore(data.score);
+      const numericScore = Number(data.score);
+      setCubeScore(numericScore);
 
-      if (data.score === 1) {
+      if (Number(data.score) === 1){
         setAlertMessage('¡Buen trabajo! El dibujo del cubo cumple los criterios establecidos.');
         setAlertVariant('success');
+        console.log("Score recibido:", data.score, typeof data.score);
       } else {
         setAlertMessage('No se cumplieron todos los criterios del cubo (0 puntos).');
         setAlertVariant('danger');
+        console.log("Score recibido:", data.score, typeof data.score);
       }
       setShowAlert(true);
       setEvaluated(true);

@@ -68,11 +68,12 @@ model_emotions = load_model_safely(MODEL_EMOTIONS_PATH, "EMOTIONS")
 EMOTION_CLASSES = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
 
 def preprocess_for_cube(img):
-    """Preprocessing matches train_model.py (rescale 1/255)"""
+    """Preprocessing aligned with MobileNetV2 training"""
     img = img.convert('RGB')
     img = img.resize((224, 224))
-    img_array = np.array(img).astype('float32') / 255.0
+    img_array = np.array(img).astype('float32')
     img_array = np.expand_dims(img_array, axis=0)
+    img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array)
     return img_array
 
 def preprocess_for_clock(img):
