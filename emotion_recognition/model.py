@@ -32,8 +32,10 @@ def build_model(num_classes=len(EMOTIONS), input_shape=(224, 224, 3)):
     # Add custom head
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
+    x = Dense(256, activation='relu')(x)
+    x = Dropout(0.4)(x)
     x = Dense(128, activation='relu')(x)
-    x = Dropout(0.5)(x)
+    x = Dropout(0.3)(x)
     predictions = Dense(num_classes, activation='softmax')(x)
     
     model = Model(inputs=base_model.input, outputs=predictions)

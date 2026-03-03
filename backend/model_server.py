@@ -8,6 +8,8 @@ from flask_cors import CORS
 import os
 import time
 import logging
+import cv2
+import mediapipe as mp
 
 # Configure Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -22,18 +24,34 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 MODEL_CUBE_PATH = os.path.join(BASE_DIR, 'model_cube.h5')
 MODEL_CLOCK_PATH = os.path.join(BASE_DIR, 'model_clock.h5')
 # Link to the newly trained emotion model
-MODEL_EMOTIONS_PATH = os.path.join(ROOT_DIR, 'models', 'best_model_final.h5')
+MODEL_EMOTIONS_PATH = os.path.join(ROOT_DIR, 'models', 'emotion_model_final.keras')
 
-# Global Model Variables
+# Global variables for models and detectors
 model_cube = None
 model_clock = None
 model_emotions = None
+face_detector = None # Changed from face_detection to face_detector (using Haar)
+
+# Initialize Robust Face Detection (OpenCV Haar Cascades)
+# This is much more reliable across Python versions than MediaPipe
+try:
+    import cv2
+    cascade_path = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+    face_detector = cv2.CascadeClassifier(cascade_path)
+    if face_detector.empty():
+        logger.warning("❌ Failed to load Haar Cascade from default path. Detection will be disabled.")
+        face_detector = None
+    else:
+        logger.info("✅ Robust Face Detection (OpenCV) initialized successfully")
+except Exception as e:
+    logger.error(f"❌ Failed to initialize face detection: {e}")
 
 def load_model_safely(path, name):
     if not os.path.exists(path):
         logger.warning(f"Model {name} not found at {path}")
         return None
     try:
+        # Avoid compile error for models with custom metrics/layers
         model = tf.keras.models.load_model(path, compile=False)
         logger.info(f"✅ Success: {name} model loaded from {path}")
         return model
@@ -67,10 +85,49 @@ def preprocess_for_clock(img):
     return img_array
 
 def preprocess_for_emotions(img):
-    """Matches the FER pipeline preprocessing"""
-    img = img.convert('RGB')
-    img = img.resize((224, 224))
+    """
+    Improved preprocessing with Face Cropping using OpenCV Haar Cascades.
+    This ensures the model only sees the face, matching training conditions.
+    """
+    global face_detector
     img_array = np.array(img)
+    
+    # Process only if detector is available
+    if face_detector is not None:
+        try:
+            # Haar requires grayscale
+            gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
+            faces = face_detector.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(50, 50))
+            
+            if len(faces) > 0:
+                # Pick the largest face found
+                (x, y, w, h) = sorted(faces, key=lambda f: f[2]*f[3], reverse=True)[0]
+                
+                # Add a small margin (20%)
+                margin_w = int(w * 0.2)
+                margin_h = int(h * 0.2)
+                img_h, img_w, _ = img_array.shape
+                
+                start_x = max(0, x - margin_w)
+                start_y = max(0, y - margin_h)
+                end_x = min(img_w, x + w + margin_w)
+                end_y = min(img_h, y + h + margin_h)
+                
+                face_img = img_array[start_y:end_y, start_x:end_x]
+                if face_img.size > 0:
+                    img = Image.fromarray(face_img).resize((224, 224))
+                else:
+                    img = img.resize((224, 224))
+            else:
+                img = img.resize((224, 224))
+        except Exception as e:
+            logger.warning(f"Detection error: {e}")
+            img = img.resize((224, 224))
+    else:
+        # Fallback if detector failed to init or is not supported
+        img = img.resize((224, 224))
+        
+    img_array = tf.keras.preprocessing.image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array)
     return img_array

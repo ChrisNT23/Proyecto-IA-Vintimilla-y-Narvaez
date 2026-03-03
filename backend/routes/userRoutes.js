@@ -22,7 +22,7 @@ import { saveUserMood, getPatientMoods, getMoodsByDate } from '../controllers/mo
 // Rutas para manejar estados de ánimo
 router.post('/mood', protect, saveUserMood);
 router.route('/:patientId/moods').get(protect, admin, getPatientMoods);
-router.route('/moods').get(protect, admin, getMoodsByDate); // Nueva ruta para obtener moods por fecha
+router.route('/moods').get(protect, getMoodsByDate); // Quitamos admin para que pacientes puedan consultar su registro hoy
 
 // Otras rutas de usuarios
 router.route('/')

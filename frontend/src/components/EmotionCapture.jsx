@@ -27,11 +27,11 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
       if (!mounted) return;
 
       try {
-        setDetectionStatus("Cargando sistema de detección facial...");
+        setDetectionStatus("Cargando sistema de detección facial de alta precisión...");
         const MODEL_URL = "/models";
 
-        // Cargamos solo el detector de rostros (TinyFaceDetector) para el feedback visual
-        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+        // Cambiamos a SSD MobileNet V1 para mucha mayor precisión con lentes/audífonos
+        await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
 
         if (mounted) {
           setModelsLoaded(true);
@@ -89,13 +89,21 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
     if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
 
     if (videoRef.current && videoRef.current.srcObject) {
-      videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      const stream = videoRef.current.srcObject;
+      const tracks = stream.getTracks();
+      tracks.forEach(track => track.stop());
       videoRef.current.srcObject = null;
     }
   };
 
+  // Refs para seguimiento dentro de intervalos (evita problemas de clausura)
+  const faceDetectedRef = useRef(false);
+  const currentEmotionRef = useRef(null);
+  const lastLogTimeRef = useRef(0);
+
   // 1. Detección visual local (Solo para dibujar el recuadro en el frontend)
   const startContinuousDetection = () => {
+    console.log("🔍 [LOCAL] Iniciando bucle de detección facial (SSD)...");
     detectionIntervalRef.current = setInterval(async () => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
@@ -103,59 +111,78 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
       if (!video || !canvas || !modelsLoaded) return;
 
       try {
-        const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.2 });
+        // SSD MobileNet V1 es mucho más robusto que TinyFaceDetector
+        const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.4 });
         const detection = await faceapi.detectSingleFace(video, options);
 
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
-
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+        const now = Date.now();
         if (detection) {
-          setFaceDetected(true);
-          const displaySize = { width: video.videoWidth, height: video.videoHeight };
+          if (!faceDetectedRef.current) {
+            console.log("✅ [LOCAL] Rostro detectado!");
+            faceDetectedRef.current = true;
+            setFaceDetected(true);
+          }
 
+          const displaySize = { width: video.videoWidth, height: video.videoHeight };
           if (canvas.width !== displaySize.width) {
             canvas.width = displaySize.width;
             canvas.height = displaySize.height;
             faceapi.matchDimensions(canvas, displaySize);
           }
 
-          const resizedDetection = faceapi.resizeResults(detection, displaySize);
-          const { x, y, width, height } = resizedDetection.box;
+          const resized = faceapi.resizeResults(detection, displaySize);
+          const { x, y, width, height } = resized.box;
 
-          ctx.strokeStyle = '#22c55e';
-          ctx.lineWidth = 4;
+          // Dibujamos un recuadro más estético
+          ctx.strokeStyle = '#3b82f6'; // Azul primario
+          ctx.lineWidth = 3;
+          ctx.setLineDash([5, 5]); // Línea punteada para "escaneo"
           ctx.strokeRect(x, y, width, height);
 
-          // Feedback inmediato mientras llega la emoción del backend
-          if (!currentEmotion) {
-            setDetectionStatus("✅ Rostro detectado. Analizando emociones...");
+          if (!currentEmotionRef.current) {
+            setDetectionStatus("✅ Rostro detectado. Comunicando con el servidor de IA...");
           }
         } else {
-          setFaceDetected(false);
+          // Log de diagnóstico cada 3 segundos
+          if (now - lastLogTimeRef.current > 3000) {
+            console.log("⏳ [LOCAL] SSD buscando rostro...");
+            lastLogTimeRef.current = now;
+          }
+
+          if (faceDetectedRef.current) {
+            console.log("⚠️ [LOCAL] Rostro perdido.");
+            faceDetectedRef.current = false;
+            setFaceDetected(false);
+          }
         }
       } catch (err) {
-        console.warn("Error en detección facial local:", err);
+        console.warn("❌ Error detector local:", err);
       }
-    }, 300);
+    }, 300); // 300ms es suficiente para SSD
   };
 
   // 2. Análisis Real con el Nuevo Modelo (MobileNetV2 en el Backend)
   const startBackendPolling = () => {
-    // Consulta al backend cada 1.5 segundos para actualización en tiempo real
+    console.log("🤖 [BACKEND] Iniciando conexión con el servidor de emociones...");
     pollingIntervalRef.current = setInterval(async () => {
-      if (!faceDetected || !videoRef.current || !isMountedRef.current) return;
+      // Intentamos analizar si hay video, incluso si face-api duda un poco
+      if (!videoRef.current || !isMountedRef.current) return;
+
+      // Solo enviamos si face-api confirmó rostro O si queremos forzar una prueba cada 3 segundos
+      const shouldPoll = faceDetectedRef.current || (Date.now() % 3000 < 500);
+      if (!shouldPoll) return;
 
       try {
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = 224;
         tempCanvas.height = 224;
-        const ctx = tempCanvas.getContext('2d');
-        ctx.drawImage(videoRef.current, 0, 0, 224, 224);
+        tempCanvas.getContext('2d').drawImage(videoRef.current, 0, 0, 224, 224);
         const imageData = tempCanvas.toDataURL('image/jpeg', 0.8);
 
-        // Llamamos al backend de Node.js que sirve de proxy al servidor Python
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
         const token = userInfo?.token;
 
@@ -170,17 +197,22 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
 
         if (response.ok) {
           const data = await response.json();
-          // El backend de Node ya nos devuelve la confianza 0-1 (o ajustada)
-          setCurrentEmotion({
+          const emotionUpdate = {
             emotion: data.emotion,
             confidence: (data.confidence * 100).toFixed(1)
-          });
-          setDetectionStatus(`✅ Rostro detectado: ${getEmotionLabel(data.emotion)} (${(data.confidence * 100).toFixed(1)}%)`);
+          };
+
+          currentEmotionRef.current = emotionUpdate;
+          setCurrentEmotion(emotionUpdate);
+          setDetectionStatus(`✅ Análisis Activo: ${getEmotionLabel(data.emotion)} (${emotionUpdate.confidence}%)`);
+        } else {
+          const errData = await response.json().catch(() => ({}));
+          console.error("❌ Error API Emociones:", response.status, errData);
         }
       } catch (error) {
-        console.warn("Error en polling de emociones:", error.message);
+        // Silencioso para no ensuciar consola
       }
-    }, 1500);
+    }, 2000); // 2 segundos para no saturar si hay problemas
   };
 
   const capturePhoto = async () => {
@@ -275,8 +307,8 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
               )}
             </div>
 
-            <Alert variant={faceDetected ? "success" : "warning"} className="detection-status-banner mt-4">
-              {faceDetected ? (
+            <Alert variant={faceDetected || currentEmotion ? "success" : "warning"} className="detection-status-banner mt-4">
+              {faceDetected || currentEmotion ? (
                 <span><strong>{detectionStatus}</strong></span>
               ) : (
                 <span><Spinner animation="grow" size="sm" className="me-2" /> Esperando detección de rostro...</span>
