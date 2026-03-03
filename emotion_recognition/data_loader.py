@@ -1,64 +1,63 @@
 import os
 import tensorflow as tf
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from .utils import setup_logging
 
 logger = setup_logging("DataLoader")
 
 def get_data_generators(data_dir, target_size=(224, 224), batch_size=32):
     """
-    Creates train, validation, and test generators.
-    
-    Args:
-        data_dir (str): Root directory containing train/test/val folders
-        target_size (tuple): Image dimensions (H, W)
-        batch_size (int): Batch size
-        
-    Returns:
-        tuple: (train_gen, val_gen, test_gen)
+    Creates optimized dataset objects for training, validation, and testing.
     """
     train_path = os.path.join(data_dir, 'train')
     val_path = os.path.join(data_dir, 'val')
     test_path = os.path.join(data_dir, 'test')
 
-    # Data Augmentation for Training
-    train_datagen = ImageDataGenerator(
-        rotation_range=15,
-        zoom_range=0.1,
-        horizontal_flip=True,
-        brightness_range=[0.8, 1.2],
-        preprocessing_function=tf.keras.applications.mobilenet_v2.preprocess_input
-    )
+    # Data Augmentation layer as part of the model or mapping
+    data_augmentation = tf.keras.Sequential([
+        tf.keras.layers.RandomFlip("horizontal"),
+        tf.keras.layers.RandomRotation(0.1),
+        tf.keras.layers.RandomZoom(0.1),
+        tf.keras.layers.RandomTranslation(0.1, 0.1),
+    ])
 
-    # Only rescaling for validation and testing
-    test_val_datagen = ImageDataGenerator(
-        preprocessing_function=tf.keras.applications.mobilenet_v2.preprocess_input
-    )
+    def preprocess(image, label):
+        image = tf.keras.applications.mobilenet_v2.preprocess_input(image)
+        return image, label
 
-    logger.info(f"Loading data from {data_dir}...")
+    logger.info(f"Loading datasets from {data_dir}...")
 
-    train_generator = train_datagen.flow_from_directory(
+    # Load datasets
+    train_ds = tf.keras.utils.image_dataset_from_directory(
         train_path,
-        target_size=target_size,
+        image_size=target_size,
         batch_size=batch_size,
-        class_mode='categorical',
-        shuffle=True
+        label_mode='categorical'
     )
 
-    val_generator = test_val_datagen.flow_from_directory(
+    val_ds = tf.keras.utils.image_dataset_from_directory(
         val_path,
-        target_size=target_size,
+        image_size=target_size,
         batch_size=batch_size,
-        class_mode='categorical',
-        shuffle=False
+        label_mode='categorical'
     )
 
-    test_generator = test_val_datagen.flow_from_directory(
+    test_ds = tf.keras.utils.image_dataset_from_directory(
         test_path,
-        target_size=target_size,
+        image_size=target_size,
         batch_size=batch_size,
-        class_mode='categorical',
+        label_mode='categorical',
         shuffle=False
     )
 
-    return train_generator, val_generator, test_generator
+    # Optimization
+    AUTOTUNE = tf.data.AUTOTUNE
+    
+    # Apply augmentation only to train
+    train_ds = train_ds.map(lambda x, y: (data_augmentation(x, training=True), y), num_parallel_calls=AUTOTUNE)
+    
+    # Preprocess all (No cache in RAM to avoid OOM)
+    train_ds = train_ds.map(preprocess, num_parallel_calls=AUTOTUNE).shuffle(500).prefetch(buffer_size=AUTOTUNE)
+    val_ds = val_ds.map(preprocess, num_parallel_calls=AUTOTUNE).prefetch(buffer_size=AUTOTUNE)
+    test_ds = test_ds.map(preprocess, num_parallel_calls=AUTOTUNE).prefetch(buffer_size=AUTOTUNE)
+
+    return train_ds, val_ds, test_ds
