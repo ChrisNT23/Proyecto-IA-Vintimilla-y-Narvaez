@@ -168,13 +168,10 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
   // 2. Análisis Real con el Nuevo Modelo (MobileNetV2 en el Backend)
   const startBackendPolling = () => {
     console.log("🤖 [BACKEND] Iniciando conexión con el servidor de emociones...");
-    pollingIntervalRef.current = setInterval(async () => {
-      // Intentamos analizar si hay video, incluso si face-api duda un poco
-      if (!videoRef.current || !isMountedRef.current) return;
 
-      // Solo enviamos si face-api confirmó rostro O si queremos forzar una prueba cada 3 segundos
-      const shouldPoll = faceDetectedRef.current || (Date.now() % 3000 < 500);
-      if (!shouldPoll) return;
+    // Función de análisis único
+    const performAnalysis = async () => {
+      if (!videoRef.current || !isMountedRef.current) return;
 
       try {
         const tempCanvas = document.createElement('canvas');
@@ -210,9 +207,15 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
           console.error("❌ Error API Emociones:", response.status, errData);
         }
       } catch (error) {
-        // Silencioso para no ensuciar consola
+        // Silencioso
       }
-    }, 2000); // 2 segundos para no saturar si hay problemas
+    };
+
+    // PRIMERA LLAMADA INMEDIATA
+    performAnalysis();
+
+    // Luego intervalo rápido de 1 segundo
+    pollingIntervalRef.current = setInterval(performAnalysis, 1000);
   };
 
   const capturePhoto = async () => {

@@ -103,7 +103,8 @@
   max-width: 350px !important;
   padding: 15px !important;
   font-size: 1.3rem !important;
-  background-color: #6cbf6c !important; /* Verde más suave */
+  background-color: #6cbf6c !important;
+  /* Verde más suave */
   border: none !important;
   border-radius: 30px !important;
   text-align: center !important;
@@ -295,8 +296,13 @@
 
 /* Keyframes para la animación de spin */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsividad */
@@ -375,7 +381,8 @@
   position: absolute;
   top: 20px;
   left: 20px;
-  font-size: 1.5rem; /* Tamaño más pequeño */
+  font-size: 1.5rem;
+  /* Tamaño más pequeño */
   color: #2c3e50;
 }
 
@@ -417,7 +424,7 @@
   border-radius: 20px;
   overflow: hidden;
   height: 40px;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .progress-bar-container .progress-bar {
@@ -427,23 +434,26 @@
 }
 
 /* Estilos para el puntaje y tiempo con diseño mejorado */
-.score-container, .time-container {
+.score-container,
+.time-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: #f8f9fa;
   padding: 10px 15px;
   border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
 }
 
-.score-container span, .time-container span {
+.score-container span,
+.time-container span {
   font-size: 1rem;
   color: #555;
 }
 
-.score-container .score, .time-container .time {
+.score-container .score,
+.time-container .time {
   font-size: 1.5rem;
   font-weight: bold;
   color: #2c3e50;
@@ -460,7 +470,7 @@
   border-radius: 20px;
   overflow: hidden;
   height: 20px;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
   margin-bottom: 20px;
 }
 
