@@ -1,41 +1,36 @@
 import tensorflow as tf
-from tensorflow.keras.applications import MobileNetV2
-from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
+from tensorflow.keras.applications import EfficientNetB0
 from tensorflow.keras.models import Model
-from .utils import setup_logging, EMOTIONS
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout, BatchNormalization
+from .utils import setup_logging
 
 logger = setup_logging("ModelBuilder")
 
-def build_model(num_classes=len(EMOTIONS), input_shape=(224, 224, 3)):
+def build_model(num_classes=7, input_shape=(224, 224, 3)):
     """
-    Builds the FER model using MobileNetV2 as a base.
-    
-    Args:
-        num_classes (int): Number of emotion classes
-        input_shape (tuple): Input image dimensions
-        
-    Returns:
-        tf.keras.Model: The compiled model
+    Builds a model using EfficientNetB0 for high-accuracy emotion recognition.
+    Optimized for RAF-DB dataset at 224x224 resolution.
     """
-    logger.info("Initializing MobileNetV2 base model...")
+    logger.info(f"Initializing EfficientNetB0 base model for RAF-DB with input shape {input_shape}...")
     
     # Load base model
-    base_model = MobileNetV2(
-        weights='imagenet',
-        include_top=False,
+    base_model = EfficientNetB0(
+        weights='imagenet', 
+        include_top=False, 
         input_shape=input_shape
     )
     
-    # Freeze the base model
+    # Freeze the base model initially for Phase 1
     base_model.trainable = False
     
-    # Add custom head
+    # Add custom classification head as requested
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
+    x = BatchNormalization()(x)
+    
     x = Dense(256, activation='relu')(x)
     x = Dropout(0.4)(x)
-    x = Dense(128, activation='relu')(x)
-    x = Dropout(0.3)(x)
+    
     predictions = Dense(num_classes, activation='softmax')(x)
     
     model = Model(inputs=base_model.input, outputs=predictions)
@@ -44,21 +39,11 @@ def build_model(num_classes=len(EMOTIONS), input_shape=(224, 224, 3)):
 
 def get_fine_tuned_model(model, base_model, num_layers_to_unfreeze=30):
     """
-    Unfreezes the last layers of the base model for fine-tuning.
-    
-    Args:
-        model (tf.keras.Model): The current model
-        base_model (tf.keras.Model): The base MobileNetV2 model
-        num_layers_to_unfreeze (int): Number of layers to unfreeze from the end
-        
-    Returns:
-        tf.keras.Model: Model ready for fine-tuning
+    Unfreezes the top layers of the base model for Phase 2 fine-tuning.
     """
-    logger.info(f"Unfreezing the last {num_layers_to_unfreeze} layers for fine-tuning...")
-    
     base_model.trainable = True
     
-    # Re-freeze everything except the last N layers
+    # Freeze all layers except the last N
     for layer in base_model.layers[:-num_layers_to_unfreeze]:
         layer.trainable = False
         

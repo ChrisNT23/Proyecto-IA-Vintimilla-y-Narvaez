@@ -130,7 +130,14 @@ def preprocess_for_emotions(img):
         
     img_array = tf.keras.preprocessing.image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
-    img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array)
+    # Robust EfficientNet preprocessing
+    try:
+        # Some TF versions prefer this path
+        img_array = tf.keras.applications.efficientnet.preprocess_input(img_array)
+    except AttributeError:
+        # Fallback for other TF installations
+        import tensorflow.keras.applications.efficientnet as efnet
+        img_array = efnet.preprocess_input(img_array)
     return img_array
 
 @app.route('/api/evaluate-cube', methods=['POST'])
@@ -202,10 +209,14 @@ def evaluate_emotion():
     try:
         data = request.get_json()
         image_data = data.get('image', '')
+        if not image_data or ',' not in image_data:
+            return jsonify({"error": "Invalid image data"}), 400
+
         header, encoded = image_data.split(',', 1)
         img_bytes = base64.b64decode(encoded)
-        img = Image.open(io.BytesIO(img_bytes))
+        img = Image.open(io.BytesIO(img_bytes)).convert('RGB')
         
+        # Preprocess and Predict
         img_array = preprocess_for_emotions(img)
         preds = model_emotions.predict(img_array, verbose=0)[0]
         
@@ -222,7 +233,9 @@ def evaluate_emotion():
             "all_emotions": all_probs
         })
     except Exception as e:
-        logger.error(f"Error evaluating emotion: {e}")
+        logger.error(f"Error in evaluate-emotion: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/extract-features', methods=['POST'])

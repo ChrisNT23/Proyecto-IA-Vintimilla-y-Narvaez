@@ -1,174 +1,222 @@
 import os
+import cv2
 import shutil
-import argparse
-import pandas as pd
-from sklearn.model_selection import train_test_split
+import numpy as np
+import logging
 from tqdm import tqdm
-import sys
+from mtcnn import MTCNN
+from sklearn.model_selection import train_test_split
 
-try:
-    from .utils import setup_logging, EMOTIONS
-except ImportError:
-    # Allow running as a standalone script if needed
-    import logging
-    EMOTIONS = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
-    def setup_logging(name):
-        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-        return logging.getLogger(name)
+# --- CONFIGURATION ---
+MAPPING = {
+    '1': 'surprise',
+    '2': 'fear',
+    '3': 'disgust',
+    '4': 'happy',
+    '5': 'sad',
+    '6': 'angry',
+    '7': 'neutral'
+}
 
-logger = setup_logging("PrepareDataset")
+EMOTIONS = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
+TARGET_SIZE = (224, 224)
 
-def setup_directories(output_dir):
+# Configure Logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("RAF-DB_Prep")
+
+def setup_directories(base_dir):
     """Creates the train/val/test directory structure."""
     splits = ['train', 'val', 'test']
     for split in splits:
         for emotion in EMOTIONS:
-            path = os.path.join(output_dir, split, emotion)
+            path = os.path.join(base_dir, split, emotion)
             os.makedirs(path, exist_ok=True)
-    logger.info(f"Directory structure created at: {output_dir}")
+    logger.info(f"✅ Directory structure created at: {base_dir}")
 
-def get_dataset_from_csv(images_dir, labels_csv):
-    """Loads dataset metadata from a CSV file."""
-    df = pd.read_csv(labels_csv)
+def align_face(img, landmarks):
+    """Aligns the face based on eye positions. Ensures types for OpenCV."""
+    left_eye = landmarks['left_eye']
+    right_eye = landmarks['right_eye']
     
-    # Common column name mapping (handle different CSV formats)
-    # Expecting 'filename' and 'label' or 'image' and 'emotion'
-    col_mapping = {
-        'image': 'filename',
-        'file': 'filename',
-        'emotion': 'label',
-        'class': 'label'
-    }
-    df = df.rename(columns=col_mapping)
+    # Calculate angle between eyes
+    dy = float(right_eye[1] - left_eye[1])
+    dx = float(right_eye[0] - left_eye[0])
+    angle = float(np.degrees(np.arctan2(dy, dx)))
     
-    if 'filename' not in df.columns or 'label' not in df.columns:
-        raise ValueError("CSV must contain 'filename' and 'label' columns.")
+    # Rotate around center of eyes
+    # OpenCV's getRotationMatrix2D on Windows requires native python floats/ints
+    center_x = float((left_eye[0] + right_eye[0]) / 2)
+    center_y = float((left_eye[1] + right_eye[1]) / 2)
+    eye_center = (center_x, center_y)
+    
+    M = cv2.getRotationMatrix2D(eye_center, angle, 1.0)
+    
+    # Apply rotation
+    aligned_img = cv2.warpAffine(img, M, (img.shape[1], img.shape[0]), flags=cv2.INTER_CUBIC)
+    return aligned_img
 
-    data = []
-    logger.info("Validating files from CSV...")
-    for _, row in tqdm(df.iterrows(), total=len(df)):
-        fname = row['filename']
-        label = str(row['label']).lower().strip()
+def process_image(img_path, detector):
+    """Detects, aligns, and crops the face. Handles non-ASCII paths and small images."""
+    try:
+        if not os.path.exists(img_path):
+            return None
+            
+        # Robust loading for Windows
+        img_array = np.fromfile(img_path, np.uint8)
+        img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
         
-        if label not in EMOTIONS:
+        if img is None:
+            return None
+            
+        # MTCNN expects RGB
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+        # FIX: To avoid 'Conv2D empty output' error, ensure image is at least 160x160
+        # This prevents MTCNN from creating empty tensors on very small RAF-DB aligned images
+        h, w = img_rgb.shape[:2]
+        if h < 160 or w < 160:
+            scale = 160 / min(h, w)
+            img_detect = cv2.resize(img_rgb, (int(w * scale), int(h * scale)))
+        else:
+            img_detect = img_rgb
+
+        # Detection with suppressed noise
+        try:
+            results = detector.detect_faces(img_detect)
+        except Exception:
+            return None
+        
+        if not results:
+            return None
+            
+        # Get result and adjust bbox if we scaled
+        result = max(results, key=lambda x: x['confidence'])
+        bbox = result['box']
+        landmarks = result['keypoints']
+        
+        # If we scaled for detection, we use the original for high-quality alignment
+        # MTCNN results on scaled image need to be scaled back
+        if h < 160 or w < 160:
+            scale = 160 / min(h, w)
+            # Re-detect on original is safer for landmarks if we can, but let's just scale landmarks
+            for key in landmarks:
+                landmarks[key] = (landmarks[key][0] / scale, landmarks[key][1] / scale)
+            bbox = [b / scale for b in bbox]
+
+        # Align based on original high-res eye positions
+        aligned_img = align_face(img_rgb, landmarks)
+        
+        # Crop
+        x, y, w, h = [int(b) for b in bbox]
+        margin_x = int(w * 0.1)
+        margin_y = int(h * 0.1)
+        
+        start_x = max(0, x - margin_x)
+        start_y = max(0, y - margin_y)
+        end_x = min(aligned_img.shape[1], x + w + margin_x)
+        end_y = min(aligned_img.shape[0], y + h + margin_y)
+        
+        face_crop = aligned_img[start_y:end_y, start_x:end_x]
+        
+        if face_crop.size == 0:
+            return None
+            
+        return cv2.resize(face_crop, TARGET_SIZE)
+        
+    except Exception:
+        return None
+
+def prepare_raf_db(input_root, output_root):
+    """Main pipeline for RAF-DB preparation."""
+    logger.info("Initializing MTCNN (this may take a moment)...")
+    try:
+        detector = MTCNN()
+    except Exception as e:
+        logger.error(f"Could not initialize MTCNN: {e}")
+        logger.info("Please ensure 'pip install mtcnn tensorflow' is correct.")
+        return
+    
+    all_data = [] 
+    stats = {emotion: 0 for emotion in EMOTIONS}
+    skipped = 0
+    total_found = 0
+    
+    subfolders = ['train', 'test']
+    
+    logger.info(f"🚀 Scanning RAF-DB in: {input_root}")
+    
+    for sub in subfolders:
+        sub_path = os.path.join(input_root, sub)
+        if not os.path.exists(sub_path):
+            logger.warning(f"Subfolder not found: {sub_path}")
             continue
             
-        img_path = os.path.join(images_dir, fname)
-        if os.path.exists(img_path):
-            data.append({'path': img_path, 'label': label})
+        for num_folder in MAPPING.keys():
+            emotion = MAPPING[num_folder]
+            class_path = os.path.join(sub_path, num_folder)
             
-    return pd.DataFrame(data)
-
-def get_dataset_from_folders(images_dir):
-    """Loads dataset metadata by traversing folders."""
-    data = []
-    logger.info(f"Scanning directories in {images_dir}...")
-    
-    for emotion in EMOTIONS:
-        emotion_dir = os.path.join(images_dir, emotion)
-        if not os.path.exists(emotion_dir):
-            # Try case-insensitive find
-            found = False
-            for d in os.listdir(images_dir):
-                if d.lower() == emotion:
-                    emotion_dir = os.path.join(images_dir, d)
-                    found = True
-                    break
-            if not found:
-                logger.warning(f"Directory for emotion '{emotion}' not found. Skipping.")
+            if not os.path.exists(class_path):
                 continue
-
-        files = [f for f in os.listdir(emotion_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
-        for f in tqdm(files, desc=f"Loading {emotion}"):
-            img_path = os.path.join(emotion_dir, f)
-            data.append({'path': img_path, 'label': emotion})
+                
+            files = [f for f in os.listdir(class_path) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
+            total_found += len(files)
             
-    return pd.DataFrame(data)
+            pbar = tqdm(files, desc=f"Processing {sub}/{emotion}", leave=False)
+            for f in pbar:
+                img_path = os.path.join(class_path, f)
+                processed = process_image(img_path, detector)
+                
+                if processed is not None:
+                    all_data.append((processed, emotion, f))
+                    stats[emotion] += 1
+                else:
+                    skipped += 1
+                
+                # Update pbar with current stats
+                if len(all_data) > 0:
+                    pbar.set_postfix({"Faces": len(all_data), "Skipped": skipped})
 
-def split_dataset(df, train_p, val_p, test_p):
-    """Performs stratified split on the dataframe."""
-    # First split: Train vs (Val + Test)
-    val_test_p = val_p + test_p
-    train_df, val_test_df = train_test_split(
-        df, 
-        test_size=val_test_p, 
-        stratify=df['label'], 
-        random_state=42
-    )
-    
-    # Second split: Val vs Test
-    relative_test_p = test_p / val_test_p
-    val_df, test_df = train_test_split(
-        val_test_df, 
-        test_size=relative_test_p, 
-        stratify=val_test_df['label'], 
-        random_state=42
-    )
-    
-    return train_df, val_df, test_df
-
-def copy_files(df, split_name, output_dir):
-    """Copies files to the target directories."""
-    logger.info(f"Copying files for {split_name} split...")
-    for _, row in tqdm(df.iterrows(), total=len(df), desc=split_name):
-        src = row['path']
-        label = row['label']
-        dst = os.path.join(output_dir, split_name, label, os.path.basename(src))
-        
-        # Avoid duplicate copy if file already exists
-        if not os.path.exists(dst):
-            shutil.copy2(src, dst)
-
-def main():
-    parser = argparse.ArgumentParser(description="Prepare FER dataset with stratified splitting.")
-    parser.add_argument("--images_dir", type=str, required=True, help="Path to original images or root folder.")
-    parser.add_argument("--labels_csv", type=str, help="Optional: Path to CSV with filename and label.")
-    parser.add_argument("--output_dir", type=str, default="prepared_data", help="Output directory for organized data.")
-    parser.add_argument("--train_split", type=float, default=0.7)
-    parser.add_argument("--val_split", type=float, default=0.15)
-    parser.add_argument("--test_split", type=float, default=0.15)
-    
-    args = parser.parse_args()
-
-    # 1. Validation
-    if not (0.99 <= (args.train_split + args.val_split + args.test_split) <= 1.01):
-        logger.error("Splits must sum to 1.0 (e.g., 0.7, 0.15, 0.15)")
+    if total_found == 0:
+        logger.error(f"No images found in {input_root}. Please check the folder structure.")
         return
 
-    # 2. Load Metadata
-    try:
-        if args.labels_csv:
-            df = get_dataset_from_csv(args.images_dir, args.labels_csv)
-        else:
-            df = get_dataset_from_folders(args.images_dir)
-    except Exception as e:
-        logger.error(f"Error loading dataset: {e}")
-        return
+    logger.info(f"📊 Finished scanning {total_found} images.")
+    logger.info(f"✅ Successfully processed {len(all_data)} faces. Skipped {skipped}.")
+    for emo, count in stats.items():
+        logger.info(f"  - {emo}: {count}")
 
-    if df.empty:
-        logger.error("No valid images or labels found. Check paths and class names.")
-        return
+    # Split: 70% Train, 15% Val, 15% Test
+    train_val, test = train_test_split(all_data, test_size=0.15, stratify=[d[1] for d in all_data], random_state=42)
+    train, val = train_test_split(train_val, test_size=0.176, stratify=[d[1] for d in train_val], random_state=42) # 0.15 / 0.85 approx 0.176
 
-    # 3. Print Initial Distribution
-    logger.info(f"Total images found: {len(df)}")
-    logger.info("\nClass Distribution:\n" + df['label'].value_counts().to_string())
+    setup_directories(output_root)
+    
+    # Save Splits
+    def save_split(data_list, split_name):
+        logger.info(f"💾 Saving {split_name} split...")
+        for img, emotion, name in tqdm(data_list, desc=split_name):
+            path = os.path.join(output_root, split_name, emotion, name)
+            # Convert back to BGR for saving
+            img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            # Robust saving for non-ASCII paths
+            _, buf = cv2.imencode(".jpg", img_bgr)
+            buf.tofile(path)
 
-    # 4. Split
-    logger.info("Splitting dataset...")
-    train_df, val_df, test_df = split_dataset(df, args.train_split, args.val_split, args.test_split)
-
-    # 5. Execute Creation and Copy
-    setup_directories(args.output_dir)
-    copy_files(train_df, 'train', args.output_dir)
-    copy_files(val_df, 'val', args.output_dir)
-    copy_files(test_df, 'test', args.output_dir)
-
-    # 6. Final Report
-    logger.info("\nFinal Dataset Split Summary:")
-    logger.info(f"Train: {len(train_df)} images")
-    logger.info(f"Val:   {len(val_df)} images")
-    logger.info(f"Test:  {len(test_df)} images")
-    logger.info("\nProcessing complete. You can now use this output directory with the training script.")
+    save_split(train, 'train')
+    save_split(val, 'val')
+    save_split(test, 'test')
+    
+    logger.info(f"📈 Final Split Counts:")
+    logger.info(f"  - Train: {len(train)}")
+    logger.info(f"  - Val:   {len(val)}")
+    logger.info(f"  - Test:  {len(test)}")
+    logger.info("✨ RAF-DB Dataset Preparation Complete!")
 
 if __name__ == "__main__":
-    main()
+    # Define paths based on project structure
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    RAF_INPUT = os.path.join(BASE_DIR, "archive (1)", "DATASET")
+    DATA_OUTPUT = os.path.join(BASE_DIR, "data")
+    
+    prepare_raf_db(RAF_INPUT, DATA_OUTPUT)

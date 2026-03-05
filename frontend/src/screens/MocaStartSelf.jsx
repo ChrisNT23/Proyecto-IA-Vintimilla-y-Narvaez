@@ -127,7 +127,7 @@ const MocaStartSelf = () => {
     setShowEmotionCapture(false);
     setTestStarted(true);
     setStartTime(new Date().toLocaleString());
-    
+
     // Iniciar captura periódica de emociones durante el test
     startPeriodicEmotionCapture();
   };
@@ -154,33 +154,33 @@ const MocaStartSelf = () => {
 
     try {
       console.log(`📸 Capturando emoción automática (módulo: ${MODULES[currentModuleIndex]?.name || 'unknown'})`);
-      
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
           width: { ideal: 640 },
           height: { ideal: 480 },
           facingMode: 'user'
-        } 
+        }
       });
       const video = document.createElement('video');
       video.srcObject = stream;
       video.autoplay = true;
       video.muted = true;
-      
+
       // Esperar a que el video esté listo
       await new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
           stream.getTracks().forEach(track => track.stop());
           reject(new Error('Timeout esperando video'));
         }, 5000);
-        
+
         video.onloadedmetadata = () => {
           clearTimeout(timeout);
           video.play();
           // Esperar un frame más para asegurar que hay imagen
           setTimeout(resolve, 200);
         };
-        
+
         video.onerror = (err) => {
           clearTimeout(timeout);
           stream.getTracks().forEach(track => track.stop());
@@ -200,8 +200,8 @@ const MocaStartSelf = () => {
       stream.getTracks().forEach(track => track.stop());
 
       // Obtener token de autenticación
-      const token = localStorage.getItem('token') || (localStorage.getItem('userInfo') 
-        ? JSON.parse(localStorage.getItem('userInfo'))?.token 
+      const token = localStorage.getItem('token') || (localStorage.getItem('userInfo')
+        ? JSON.parse(localStorage.getItem('userInfo'))?.token
         : null);
 
       // Enviar al backend - CNN procesará la imagen
@@ -247,7 +247,7 @@ const MocaStartSelf = () => {
     if (testCompleted && emotionCaptureInterval.current) {
       clearInterval(emotionCaptureInterval.current);
     }
-    
+
     return () => {
       if (emotionCaptureInterval.current) {
         clearInterval(emotionCaptureInterval.current);
@@ -618,7 +618,7 @@ const MocaStartSelf = () => {
   // Mostrar pantalla de captura de emoción
   if (showEmotionCapture) {
     return (
-      <EmotionCapture 
+      <EmotionCapture
         onCaptureComplete={handleEmotionCaptureComplete}
         patientId={id}
       />
@@ -748,7 +748,7 @@ const MocaStartSelf = () => {
                   </Row>
                 </div>
               )}
-               
+
               {isSpeakingInstructions && (
                 <div className="audio-playing">
                   <Spinner animation="border" variant="info" className="me-2" />
@@ -866,11 +866,10 @@ const MocaStartSelf = () => {
               {MODULES.map((module, index) => (
                 <span
                   key={module.id}
-                  className={`module-dot ${
-                    index < currentModuleIndex || index === selectedModuleIndex
+                  className={`module-dot ${index < currentModuleIndex || index === selectedModuleIndex
                       ? "completed"
                       : "pending"
-                  }`}
+                    }`}
                 ></span>
               ))}
             </div>
@@ -903,11 +902,10 @@ const MocaStartSelf = () => {
                     className="mb-3"
                   >
                     <Card
-                      className={`module-card ${
-                        index === currentModuleIndex || index === selectedModuleIndex
+                      className={`module-card ${index === currentModuleIndex || index === selectedModuleIndex
                           ? "active"
                           : ""
-                      }`}
+                        }`}
                       onClick={() => handleSelectModule(index)}
                       style={{ cursor: "pointer" }}
                     >
