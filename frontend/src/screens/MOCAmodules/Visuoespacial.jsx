@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Alert, Spinner, Form, Row, Col } from 'react-bootstrap';
-import { FaPlay, FaStop } from 'react-icons/fa';
+import { FaPlay, FaStop, FaUndo, FaTrash, FaArrowRight, FaExpand } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import '../../assets/styles/mocamodules.css';
 import cubo from '../../images/cubo_image.jpg';
@@ -70,7 +70,7 @@ const Visuoespacial = ({ onComplete, onPrevious, isFirstModule }) => {
   };
 
   return (
-    <div className="module-container">
+    <div className="w-100">
       {currentActivity === 0 && (
         <AlternanciaConceptualActivity
           setAlternanciaScore={setAlternanciaScore}
@@ -136,6 +136,7 @@ const AlternanciaConceptualActivity = ({
   isFirstModule,
   isAdmin,
 }) => {
+  const containerRef = useRef(null);
   const labels = ['1', 'A', '2', 'B', '3', 'C', '4', 'D', '5', 'E'];
   const svgSize = 450;
 
@@ -183,12 +184,50 @@ const AlternanciaConceptualActivity = ({
     setAlternanciaScore(null);
   };
 
+  const handleUndo = () => {
+    if (connections.length > initialConnections.length) {
+      const newConnections = connections.slice(0, -1);
+      setConnections(newConnections);
+      setAnswers(prev => prev.slice(0, -1));
+      
+      if (newConnections.length === initialConnections.length) {
+        setSelectedMarker(null);
+      } else {
+        setSelectedMarker(newConnections[newConnections.length - 1].to);
+      }
+    } else {
+      handleReset();
+    }
+  };
+
   const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
+    const svg = e.currentTarget;
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+    const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
     setMousePosition({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: svgP.x,
+      y: svgP.y,
     });
+  };
+
+  const toggleFullScreen = () => {
+    const elem = containerRef.current;
+    if (!elem) return;
+    if (!document.fullscreenElement) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
   };
 
   const evaluateSequence = () => {
@@ -213,104 +252,153 @@ const AlternanciaConceptualActivity = ({
   };
 
   return (
-    <div className="module-container">
-      {/* Título e instrucciones */}
-      <div className="d-flex align-items-center mb-2">
-        <h4 className="mb-0">Alternancia Conceptual</h4>
+    <div className="bg-white shadow-sm w-100 h-100" style={{ padding: '40px', fontFamily: 'system-ui, -apple-system, sans-serif', border: '1px solid #e0e0e0', minHeight: '600px', display: 'flex', flexDirection: 'column', borderRadius: '16px' }}>
+      {/* Header and subtitle */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 className="mb-1 fw-bold" style={{ color: '#004A7C', fontSize: '28px' }}>Alternancia Conceptual</h2>
+          <span className="text-secondary" style={{ fontSize: '15px' }}>Evaluación de funciones ejecutivas</span>
+        </div>
         <Button
-          variant="link"
+          variant="outline-primary"
           onClick={() => speakInstructions(
             "Instrucciones: Dibuje una línea alternando cifras y letras, empezando en 1, luego A, 2, B, etc., hasta E. Presione Reiniciar para comenzar de nuevo y Continuar para avanzar."
           )}
           disabled={isSpeaking}
-          className="listen-button ms-3 text-decoration-none"
+          className="d-flex align-items-center rounded-pill px-3 py-2"
+          style={{ borderColor: '#2DAAE1', color: '#2DAAE1', backgroundColor: '#fff', fontWeight: '600', fontSize: '14px' }}
         >
-          <FaPlay /> Escuchar<br />Instrucciones
+          <div className="rounded-circle d-flex align-items-center justify-content-center me-2" style={{ backgroundColor: '#2DAAE1', width: '22px', height: '22px' }}>
+            <FaPlay size={10} color="#fff" style={{ marginLeft: '2px' }} />
+          </div>
+          Escuchar Instrucciones
         </Button>
       </div>
 
-      <p>
-        “Dibuje una línea alternando entre cifras y letras, respetando el orden 
-        numérico y alfabético. Inicie en 1 y termine en E.”
-      </p>
+      {/* Instruction Card */}
+      <div className="p-4 mb-4" style={{ backgroundColor: '#fff', borderLeft: '4px solid #00A0E3', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.04)' }}>
+        <p className="mb-0 text-dark" style={{ fontSize: '16px', lineHeight: '1.5' }}>
+          Dibuje una línea alternando entre cifras y letras, respetando el orden numérico y alfabético.<br/>
+          Inicie en <strong>1</strong> y termine en <strong>E</strong>.
+        </p>
+      </div>
 
-      <div className="d-flex justify-content-center">
-        <svg
-          width={svgSize}
-          height={svgSize}
-          style={{ border: '2px solid black', backgroundColor: '#f9f9f9' }}
-          onMouseMove={handleMouseMove}
-        >
-          <defs>
-            <marker
-              id="arrowhead"
-              markerWidth="10"
-              markerHeight="7"
-              refX="10"
-              refY="3.5"
-              orient="auto"
-            >
-              <polygon points="0 0, 10 3.5, 0 7" fill="blue" />
-            </marker>
-          </defs>
+      {/* Canvas Container */}
+      <div ref={containerRef} className="p-4 mb-4 position-relative d-flex flex-column flex-grow-1" style={{ backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 2px 15px rgba(0,0,0,0.03)', minHeight: '400px' }}>
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundImage: 'radial-gradient(#E2E8F0 2px, transparent 2px)',
+          backgroundSize: '30px 30px',
+          opacity: 0.6,
+          borderRadius: '16px',
+          pointerEvents: 'none'
+        }} />
+        
+        <div className="d-flex justify-content-end mb-2 position-relative" style={{ zIndex: 10 }}>
+          <Button 
+            variant="light" 
+            size="sm" 
+            className="d-flex align-items-center bg-white rounded shadow-sm border" 
+            style={{ fontSize: '11px', fontWeight: '600', color: '#666', letterSpacing: '0.5px' }}
+            onClick={toggleFullScreen}
+          >
+            <FaExpand className="me-2" /> PANTALLA COMPLETA
+          </Button>
+        </div>
 
-          {connections.map((conn, idx) => {
-            const fromMarker = markers[conn.from];
-            const toMarker = markers[conn.to];
-            if (!fromMarker || !toMarker) return null;
-            return (
+        <div className="d-flex justify-content-center flex-grow-1 align-items-center my-4 w-100" style={{ position: 'relative', zIndex: 1 }}>
+          <svg
+            width="100%"
+            height="100%"
+            viewBox="0 0 500 500"
+            preserveAspectRatio="xMidYMid meet"
+            style={{ backgroundColor: 'transparent', maxWidth: '600px', maxHeight: '600px' }}
+            onMouseMove={handleMouseMove}
+          >
+            {connections.map((conn, idx) => {
+              const fromMarker = markers[conn.from];
+              const toMarker = markers[conn.to];
+              if (!fromMarker || !toMarker) return null;
+              return (
+                <line
+                  key={idx}
+                  x1={fromMarker.x}
+                  y1={fromMarker.y}
+                  x2={toMarker.x}
+                  y2={toMarker.y}
+                  stroke="#00A0E3"
+                  strokeWidth="2"
+                  strokeDasharray="6,4"
+                />
+              );
+            })}
+
+            {selectedMarker !== null && mousePosition && (
               <line
-                key={idx}
-                x1={fromMarker.x}
-                y1={fromMarker.y}
-                x2={toMarker.x}
-                y2={toMarker.y}
-                stroke="blue"
+                x1={markers[selectedMarker].x}
+                y1={markers[selectedMarker].y}
+                x2={mousePosition.x}
+                y2={mousePosition.y}
+                stroke="#00A0E3"
                 strokeWidth="2"
-                strokeDasharray={conn.dashed ? '5,5' : '0'}
-                markerEnd="url(#arrowhead)"
+                strokeDasharray="6,4"
               />
-            );
-          })}
+            )}
 
-          {selectedMarker !== null && mousePosition && (
-            <line
-              x1={markers[selectedMarker].x}
-              y1={markers[selectedMarker].y}
-              x2={mousePosition.x}
-              y2={mousePosition.y}
-              stroke="gray"
-              strokeWidth="1"
-              strokeDasharray="5,5"
-            />
-          )}
+            {markers.map((marker, idx) => {
+              const isConnected = connections.some(c => c.from === idx || c.to === idx) || selectedMarker === idx;
 
-          {markers.map((marker, idx) => (
-            <g
-              key={idx}
-              onClick={() => handleMarkerClick(idx)}
-              style={{ cursor: 'pointer' }}
-            >
-              <circle
-                cx={marker.x}
-                cy={marker.y}
-                r="30"
-                fill="white"
-                stroke="black"
-                strokeWidth="2"
-              />
-              <text
-                x={marker.x}
-                y={marker.y + 8}
-                textAnchor="middle"
-                fontSize="24"
-                fill="black"
-              >
-                {marker.label}
-              </text>
-            </g>
-          ))}
-        </svg>
+              return (
+                <g
+                  key={idx}
+                  onClick={() => handleMarkerClick(idx)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <circle
+                    cx={marker.x}
+                    cy={marker.y}
+                    r="22"
+                    fill={isConnected ? '#2DAAE1' : 'white'}
+                    stroke="#2DAAE1"
+                    strokeWidth="1.5"
+                  />
+                  <text
+                    x={marker.x}
+                    y={marker.y + 5}
+                    textAnchor="middle"
+                    fontSize="14"
+                    fontWeight="bold"
+                    fill={isConnected ? 'white' : '#2DAAE1'}
+                  >
+                    {marker.label}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+
+        {/* Canvas controls */}
+        <div className="d-flex justify-content-center gap-4 mt-4 pt-3" style={{ position: 'relative', zIndex: 50, borderTop: '1px solid #F0F0F0' }}>
+          <Button 
+            variant="light" 
+            className="rounded-circle shadow-sm bg-white border d-flex justify-content-center align-items-center p-0" 
+            style={{ width: '50px', height: '50px' }}
+            onClick={handleUndo}
+            title="Deshacer (Atrás)"
+          >
+            <FaUndo style={{ display: 'block', width: '20px', height: '20px', color: '#6c757d' }} />
+          </Button>
+          <Button 
+            variant="light" 
+            className="rounded-circle shadow-sm bg-white border d-flex justify-content-center align-items-center p-0" 
+            style={{ width: '50px', height: '50px' }}
+            onClick={handleReset}
+            title="Borrar (Reiniciar)"
+          >
+            <FaTrash style={{ display: 'block', width: '20px', height: '20px', color: '#dc3545' }} />
+          </Button>
+        </div>
       </div>
 
       {isAdmin && (
@@ -324,27 +412,15 @@ const AlternanciaConceptualActivity = ({
         </div>
       )}
 
-      <Row className="mt-4">
-        {isAdmin && (
-          <Col xs="auto">
-            <Button
-              variant="warning"
-              onClick={handleReset}
-              className="me-2"
-            >
-              Reiniciar
-            </Button>
-          </Col>
-        )}
-        <Col className="d-flex justify-content-end">
-          <Button
-            variant="success"
-            onClick={handleContinue}
-          >
-            Continuar
-          </Button>
-        </Col>
-      </Row>
+      <div className="d-flex justify-content-end mt-4">
+        <Button
+          onClick={handleContinue}
+          className="d-flex align-items-center px-4 py-2 rounded-3 shadow-sm"
+          style={{ backgroundColor: '#217FE5', border: 'none', fontWeight: '500', fontSize: '15px' }}
+        >
+          Continuar <FaArrowRight className="ms-2" />
+        </Button>
+      </div>
     </div>
   );
 };

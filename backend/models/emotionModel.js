@@ -12,6 +12,11 @@ const emotionCaptureSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
+    // Campo legible para reportes: "happy (40.1%)"
+    emotionLabel: {
+      type: String,
+      default: null,
+    },
     timestamp: {
       type: Date,
       required: true,
