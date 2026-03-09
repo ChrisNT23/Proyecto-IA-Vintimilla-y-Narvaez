@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Spinner, Alert } from "react-bootstrap";
 import * as faceapi from "face-api.js";
+import { FaPlay, FaStepForward, FaChartBar, FaCircle, FaDesktop } from 'react-icons/fa';
 import "../assets/styles/EmotionCapture.css";
 
 const EmotionCapture = ({ onCaptureComplete, patientId }) => {
@@ -11,6 +12,8 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
   const [faceDetected, setFaceDetected] = useState(false);
   const [currentEmotion, setCurrentEmotion] = useState(null);
   const [modelsLoaded, setModelsLoaded] = useState(false);
+  const [backendError, setBackendError] = useState(false); 
+  const [detectedBox, setDetectedBox] = useState(null);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -34,6 +37,7 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
         await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
 
         if (mounted) {
+          modelsLoadedRef.current = true; // Actualizar ref ANTES de cualquier await
           setModelsLoaded(true);
           setIsLoading(false);
           setDetectionStatus("Sistema listo. Iniciando cámara...");
@@ -100,6 +104,7 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
   const faceDetectedRef = useRef(false);
   const currentEmotionRef = useRef(null);
   const lastLogTimeRef = useRef(0);
+  const modelsLoadedRef = useRef(false); // <-- Ref para evitar stale closure con modelsLoaded
 
   // 1. Detección visual local (Solo para dibujar el recuadro en el frontend)
   const startContinuousDetection = () => {
@@ -108,7 +113,7 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
 
-      if (!video || !canvas || !modelsLoaded) return;
+      if (!video || !canvas || !modelsLoadedRef.current) return;
 
       try {
         // SSD MobileNet V1 es mucho más robusto que TinyFaceDetector
@@ -127,21 +132,18 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
             setFaceDetected(true);
           }
 
-          const displaySize = { width: video.videoWidth, height: video.videoHeight };
-          if (canvas.width !== displaySize.width) {
-            canvas.width = displaySize.width;
-            canvas.height = displaySize.height;
-            faceapi.matchDimensions(canvas, displaySize);
-          }
+          const displaySize = { width: video.clientWidth, height: video.clientHeight };
 
           const resized = faceapi.resizeResults(detection, displaySize);
-          const { x, y, width, height } = resized.box;
+          const rawX = resized.box.x;
+          const y = resized.box.y;
+          const width = resized.box.width;
+          const height = resized.box.height;
 
-          // Dibujamos un recuadro más estético
-          ctx.strokeStyle = '#3b82f6'; // Azul primario
-          ctx.lineWidth = 3;
-          ctx.setLineDash([5, 5]); // Línea punteada para "escaneo"
-          ctx.strokeRect(x, y, width, height);
+          // Invertir X por el transform: scaleX(-1) del video feed
+          const x = displaySize.width - rawX - width;
+
+          setDetectedBox({ x, y, width, height });
 
           if (!currentEmotionRef.current) {
             setDetectionStatus("✅ Rostro detectado. Comunicando con el servidor de IA...");
@@ -157,6 +159,7 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
             console.log("⚠️ [LOCAL] Rostro perdido.");
             faceDetectedRef.current = false;
             setFaceDetected(false);
+            setDetectedBox(null);
           }
         }
       } catch (err) {
@@ -205,9 +208,11 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
         } else {
           const errData = await response.json().catch(() => ({}));
           console.error("❌ Error API Emociones:", response.status, errData);
+          setBackendError(true);
         }
       } catch (error) {
-        // Silencioso
+        console.warn("⚠️ Servidor de emociones no disponible:", error.message);
+        setBackendError(true);
       }
     };
 
@@ -219,7 +224,9 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
   };
 
   const capturePhoto = async () => {
-    if (!faceDetected || !currentEmotion) return;
+    if (!faceDetected) return;
+    // If backend never responded, use a neutral fallback
+    const emotionToUse = currentEmotion || { emotion: 'neutral', confidence: '0.0' };
 
     try {
       const canvas = document.createElement('canvas');
@@ -232,8 +239,8 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
       const requestData = {
         patientId,
         image: imageData,
-        emotion: currentEmotion.emotion,
-        confidence: currentEmotion.confidence,
+        emotion: emotionToUse.emotion,
+        confidence: emotionToUse.confidence,
         timestamp: new Date().toISOString(),
         captureType: 'initial'
       };
@@ -280,69 +287,128 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
 
   return (
     <div className="emotion-capture-container">
-      <div className="emotion-capture-card">
-        <h2 className="emotion-capture-title">Captura de Estado Emocional</h2>
-        <p className="emotion-capture-subtitle">
-          Detección inteligente con el nuevo modelo <strong>MobileNetV2</strong>
+      <div className="d-flex flex-column align-items-center mb-4">
+        <h2 className="emotion-capture-title-light">Detección de Estado Emocional</h2>
+        <p className="emotion-capture-subtitle-light">
+          Posicione el rostro del paciente frente a la cámara para iniciar el análisis.
         </p>
+      </div>
 
+      <div className="emotion-card-light">
         {isLoading ? (
           <div className="loading-container p-4 text-center">
             <Spinner animation="border" variant="primary" />
-            <p className="mt-2">Conectando con el servidor de inteligencia artificial...</p>
+            <p className="mt-2 text-muted">Conectando con el servidor de inteligencia artificial...</p>
           </div>
         ) : (
           <>
-            <div className="video-container shadow-lg rounded overflow-hidden">
-              <video ref={videoRef} autoPlay muted playsInline className="video-feed" />
-              <canvas ref={canvasRef} className="video-canvas" />
+            <div className="video-section">
+              <div className="live-badge">
+                <FaCircle color="#10b981" size={10} className="me-2 pulse-dot" /> Sistema en vivo
+              </div>
+              
+              <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', lineHeight: 0 }}>
+                <video ref={videoRef} autoPlay muted playsInline className="video-feed" />
+                <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-              {currentEmotion && (
-                <div className="emotion-overlay-premium">
-                  <div className="emotion-badge-modern">
-                    <span className="emotion-emoji-large">{getEmotionEmoji(currentEmotion.emotion)}</span>
-                    <div className="emotion-info-text">
-                      <div className="emotion-name">{getEmotionLabel(currentEmotion.emotion)}</div>
-                      <div className="emotion-conf">{currentEmotion.confidence}% de confianza</div>
+                {detectedBox && (
+                  <div 
+                    className="custom-bounding-box" 
+                    style={{ 
+                      left: `${detectedBox.x}px`, 
+                      top: `${detectedBox.y}px`, 
+                      width: `${detectedBox.width}px`, 
+                      height: `${detectedBox.height}px` 
+                    }}
+                  >
+                    <div className="detection-active-pill">
+                      <FaDesktop size={12} className="me-1" /> DETECCIÓN ACTIVA
                     </div>
+                    {/* El emotion pill se movió a la sección de abajo por recomendación */}
                   </div>
+                )}
+              </div>
+            </div>
+
+            <div className="info-section">
+              {backendError && (
+                <div className="alert alert-warning m-3 text-center" style={{fontSize: '14px', borderRadius: '8px'}}>
+                  ⚠️ El servidor de análisis emocional no está disponible.
                 </div>
               )}
-            </div>
-
-            <Alert variant={faceDetected || currentEmotion ? "success" : "warning"} className="detection-status-banner mt-4">
-              {faceDetected || currentEmotion ? (
-                <span><strong>{detectionStatus}</strong></span>
+              
+              {!currentEmotion && !backendError ? (
+                <div className="text-center text-muted m-4 d-flex align-items-center justify-content-center">
+                  <Spinner animation="grow" variant="primary" size="sm" className="me-2" /> 
+                  Esperando detección y análisis del rostro...
+                </div>
               ) : (
-                <span><Spinner animation="grow" size="sm" className="me-2" /> Esperando detección de rostro...</span>
+                currentEmotion && (
+                  <div className="analysis-banner-modern d-flex flex-column flex-md-row justify-content-between align-items-md-center px-4 py-3">
+                    <div className="d-flex align-items-center mb-3 mb-md-0">
+                      <div className="icon-container-blue">
+                        <FaChartBar size={18} color="#fff" />
+                      </div>
+                      <div className="ms-3">
+                        <div className="analysis-title d-flex align-items-center">
+                          Análisis Activo: 
+                          <span className="ms-2 me-2" style={{ fontSize: '1.3rem' }}>{getEmotionEmoji(currentEmotion.emotion)}</span>
+                          <span className="text-primary">{getEmotionLabel(currentEmotion.emotion)} ({currentEmotion.confidence}%)</span>
+                        </div>
+                        <div className="analysis-subtitle">
+                          Confianza del modelo basada en 48 puntos faciales.
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="confidence-meter ms-md-4" style={{width: '200px'}}>
+                      <div className="d-flex justify-content-between mb-1">
+                        <span className="conf-label text-muted" style={{fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px'}}>NIVEL DE CONFIANZA</span>
+                        <span className="conf-value text-primary fw-bold" style={{fontSize: '12px'}}>{currentEmotion.confidence}%</span>
+                      </div>
+                      <div className="progress" style={{ height: '6px', borderRadius: '4px', backgroundColor: '#e2e8f0' }}>
+                        <div 
+                          className="progress-bar bg-primary" 
+                          role="progressbar" 
+                          style={{ width: `${currentEmotion.confidence}%`, borderRadius: '4px' }}
+                          aria-valuenow={currentEmotion.confidence} 
+                          aria-valuemin="0" 
+                          aria-valuemax="100"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                )
               )}
-            </Alert>
-
-            <div className="capture-actions mt-4 d-flex gap-3 justify-content-center">
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={capturePhoto}
-                disabled={!faceDetected || !currentEmotion}
-                className="btn-capture-moca"
-              >
-                Capturar y Comenzar Test
-              </Button>
-              <Button
-                variant="outline-secondary"
-                size="lg"
-                onClick={() => onCaptureComplete({ skipped: true })}
-                className="btn-skip-moca"
-              >
-                Saltar
-              </Button>
-            </div>
-
-            <div className="tips-section mt-4 text-muted">
-              <small>💡 Tu estado emocional ayuda a contextualizar mejor los resultados del test MoCA.</small>
             </div>
           </>
         )}
+      </div>
+
+      {!isLoading && (
+        <div className="capture-actions mt-4 d-flex gap-3 justify-content-center">
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={capturePhoto}
+            disabled={!faceDetected}
+            className="btn-capture-moca d-flex align-items-center"
+          >
+            <FaPlay className="me-2" size={14} /> Capturar y Comenzar Test
+          </Button>
+          <Button
+            variant="light"
+            size="lg"
+            onClick={() => onCaptureComplete({ skipped: true })}
+            className="btn-skip-moca d-flex align-items-center bg-white text-dark shadow-sm border"
+          >
+            <FaStepForward className="me-2" size={14} /> Saltar
+          </Button>
+        </div>
+      )}
+
+      <div className="tips-section mt-5 text-muted text-center" style={{fontSize: '13px'}}>
+        © 2024 MoCA Cognitive Assessment Platform. Todos los derechos reservados.
       </div>
     </div>
   );

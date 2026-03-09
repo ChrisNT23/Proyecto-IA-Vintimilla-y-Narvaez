@@ -791,18 +791,22 @@ const MocaStartSelf = () => {
         // Contenido de la prueba
         <>
           <div ref={moduleRef} className="module-view">
-            <h3 className="module-title">
-              {MODULES[currentModuleIndex].icon}{" "}
-              {MODULES[currentModuleIndex].name}
-            </h3>
-            <Button
-              variant="link"
-              onClick={toggleFullScreen}
-              className="fullscreen-button"
-            >
-              {document.fullscreenElement ? <FaCompress /> : <FaExpand />} Pantalla
-              Completa
-            </Button>
+            {currentModuleIndex !== 0 && (
+              <>
+                <h3 className="module-title">
+                  {MODULES[currentModuleIndex].icon}{" "}
+                  {MODULES[currentModuleIndex].name}
+                </h3>
+                <Button
+                  variant="link"
+                  onClick={toggleFullScreen}
+                  className="fullscreen-button"
+                >
+                  {document.fullscreenElement ? <FaCompress /> : <FaExpand />} Pantalla
+                  Completa
+                </Button>
+              </>
+            )}
 
             {isAdmin && (
               <Button
@@ -815,7 +819,7 @@ const MocaStartSelf = () => {
               </Button>
             )}
 
-            <div className="module-container border p-4 mb-4">
+            <div className={`${currentModuleIndex !== 0 ? 'module-container border p-4' : 'pt-2'} mb-4`}>
               <Row>
                 <Col>
                   <CurrentModuleComponent

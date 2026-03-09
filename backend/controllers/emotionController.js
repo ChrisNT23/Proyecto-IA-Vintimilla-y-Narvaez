@@ -1,5 +1,3 @@
-// backend/controllers/emotionController.js
-
 import asyncHandler from "../middleware/asyncHandler.js";
 import EmotionData from "../models/emotionModel.js";
 import fs from "fs";
@@ -10,9 +8,8 @@ import {
   mapToObject
 } from "../utils/emotionAnalysis.js";
 import {
-  processImageWithCNN,
+  processImageWithCNN,  // Aún usado en processEmotionSequence
   extractCNNFeatures,
-  processImageWithCNN as evaluateWithCNN // Alias para claridad
 } from "../services/emotionProcessingService.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -28,57 +25,40 @@ if (!fs.existsSync(EMOTIONS_DIR)) {
 // @route   POST /api/emotions/capture
 // @access  Private
 const captureEmotion = asyncHandler(async (req, res) => {
-  const { patientId, emotionDataId, image, emotion, confidence, timestamp, captureType, currentModule } = req.body;
+  const {
+    patientId,
+    emotionDataId,
+    image,
+    emotion,       // Emoción ya evaluada por /api/emotions/evaluate (ej: "happy")
+    confidence,    // Confianza ya evaluada (ej: "40.1")
+    timestamp,
+    captureType,
+    currentModule,
+  } = req.body;
 
   if (!patientId || !image || !emotion || !confidence || !timestamp || !captureType) {
     res.status(400);
     throw new Error("Faltan datos requeridos");
   }
 
-  // Decodificar y guardar la imagen
+  // --- 1. Guardar imagen en disco ---
   const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
   const imageBuffer = Buffer.from(base64Data, "base64");
   const imageFilename = `${patientId}_${Date.now()}.jpg`;
   const imagePath = path.join(EMOTIONS_DIR, imageFilename);
-
   fs.writeFileSync(imagePath, imageBuffer);
 
-  // Procesar imagen con CNN (MÉTODO ÚNICO - NO HAY FALLBACK)
-  let cnnResult = null;
-  let cnnFeatures = [];
-  let useCNN = false;
+  console.log(`✅ Imagen guardada en disco: ${imageFilename}`);
 
-  try {
-    // Intentar procesar con CNN (MÉTODO PRINCIPAL Y ÚNICO)
-    console.log("🔄 Procesando imagen con CNN...");
-    cnnResult = await processImageWithCNN(imagePath, image);
+  // --- 2. Preparar datos de la captura usando la emoción YA EVALUADA ---
+  // No se vuelve a llamar al CNN. La emoción viene del servicio /evaluate
+  // que el usuario ya vio en pantalla (ej: "Feliz 40.1%")
+  const confidenceNum = parseFloat(confidence);
+  const emotionLabel = `${emotion} (${confidenceNum.toFixed(1)}%)`; // "happy (40.1%)"
 
-    // Si CNN retorna resultados válidos
-    if (cnnResult && cnnResult.dominantEmotion && !cnnResult.error) {
-      console.log(`✅ CNN detectó: ${cnnResult.dominantEmotion} (${cnnResult.confidence})`);
-      useCNN = true;
+  console.log(`🎭 Guardando emoción evaluada: ${emotionLabel}`);
 
-      // Extraer características CNN
-      try {
-        cnnFeatures = await extractCNNFeatures(image);
-        console.log(`✅ Características CNN extraídas: ${cnnFeatures.length} features`);
-      } catch (error) {
-        console.warn("⚠️ Error extrayendo características CNN:", error.message);
-      }
-    } else {
-      // CNN no retornó resultados válidos
-      console.error("❌ CNN no retornó resultados válidos");
-      throw new Error("CNN no retornó resultados válidos");
-    }
-  } catch (error) {
-    // Error al procesar con CNN - NO HAY FALLBACK
-    console.error(`❌ Error procesando con CNN: ${error.message}`);
-    console.error("❌ CNN es requerido. No se puede procesar sin CNN.");
-    res.status(503);
-    throw new Error(`CNN no disponible: ${error.message}. El servidor de modelos debe estar corriendo en http://localhost:5001`);
-  }
-
-  // Determinar frame index si es durante el test
+  // --- 3. Determinar frame index si es captura durante el test ---
   let frameIndex = null;
   if (emotionDataId) {
     const existingData = await EmotionData.findById(emotionDataId);
@@ -87,46 +67,32 @@ const captureEmotion = asyncHandler(async (req, res) => {
     }
   }
 
-  // Determinar emoción y confianza final (SOLO CNN - NO HAY FALLBACK)
-  if (!useCNN || !cnnResult?.dominantEmotion) {
-    res.status(503);
-    throw new Error("CNN es requerido para procesar emociones. El servidor de modelos debe estar corriendo.");
-  }
-
-  const finalEmotion = cnnResult.dominantEmotion;
-  const finalConfidence = cnnResult.confidence * 100;
-
   const captureData = {
-    emotion: finalEmotion,
-    confidence: finalConfidence,
+    emotion: emotion,
+    confidence: confidenceNum,
+    emotionLabel: emotionLabel,           // "happy (40.1%)" — para reportes
     timestamp: new Date(timestamp),
     captureType,
     currentModule: currentModule || null,
-    imageUrl: `/emotion_captures/${imageFilename}`,
-    emotionProbabilities: cnnResult?.emotionProbabilities || new Map(),
-    cnnFeatures: cnnFeatures,
+    imageUrl: `/emotion_captures/${imageFilename}`, // URL para usar en <img src="...">
+    emotionProbabilities: {},
+    cnnFeatures: [],
     frameIndex: frameIndex,
-    // Metadatos sobre qué método se usó (siempre CNN ahora)
     detectionMethod: 'cnn',
   };
 
+  // --- 4. Guardar en MongoDB ---
   let emotionData;
 
   if (emotionDataId) {
-    // Agregar captura a un registro existente
+    // Agregar captura a un registro existente (capturas durante el test)
     emotionData = await EmotionData.findById(emotionDataId);
     if (!emotionData) {
       res.status(404);
       throw new Error("Registro de emociones no encontrado");
     }
     emotionData.captures.push(captureData);
-
-    // Actualizar metadatos de procesamiento
     emotionData.processingMetadata.totalFrames = emotionData.captures.length;
-    emotionData.processingMetadata.processedFrames = emotionData.captures.filter(
-      c => c.cnnFeatures && c.cnnFeatures.length > 0
-    ).length;
-
     await emotionData.save();
   } else {
     // Crear nuevo registro de emociones (captura inicial)
@@ -136,26 +102,27 @@ const captureEmotion = asyncHandler(async (req, res) => {
       testStartTime: new Date(timestamp),
       processingMetadata: {
         totalFrames: 1,
-        processedFrames: cnnFeatures.length > 0 ? 1 : 0,
+        processedFrames: 1,
         cnnModel: process.env.CNN_MODEL_NAME || 'emotion_cnn',
         processingDate: new Date(),
       },
     });
   }
 
-  const responseData = {
+  const lastCapture = emotionData.captures[emotionData.captures.length - 1];
+
+  console.log(`✅ Emoción guardada en BD: ${emotionLabel} | imageUrl: /emotion_captures/${imageFilename}`);
+
+  res.status(201).json({
     success: true,
     emotionDataId: emotionData._id.toString(),
-    captureId: emotionData.captures[emotionData.captures.length - 1]._id.toString(),
+    captureId: lastCapture._id.toString(),
     message: "Emoción capturada exitosamente",
-    detectionMethod: 'cnn', // Siempre CNN
-    emotion: finalEmotion,
-    confidence: finalConfidence,
-  };
-
-  console.log("✅ Retornando respuesta al frontend:", responseData);
-
-  res.status(201).json(responseData);
+    emotion: emotion,
+    confidence: confidenceNum,
+    emotionLabel: emotionLabel,
+    imageUrl: `/emotion_captures/${imageFilename}`,
+  });
 });
 
 // @desc    Evaluar emoción en tiempo real (Proxy a Python)
