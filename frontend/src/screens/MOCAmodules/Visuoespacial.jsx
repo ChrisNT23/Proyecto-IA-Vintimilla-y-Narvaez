@@ -203,6 +203,7 @@ const AlternanciaConceptualActivity = ({
     const calculatedScore = isCorrect ? 1 : 0;
     setScore(calculatedScore);
     setAlternanciaScore(calculatedScore);
+    console.log("Score recibido:", calculatedScore, typeof calculatedScore);
   };
 
   const handleContinue = () => {

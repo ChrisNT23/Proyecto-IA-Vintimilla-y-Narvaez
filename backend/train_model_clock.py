@@ -1,65 +1,65 @@
 import os
 import csv
-import tensorflow as tf
 import numpy as np
-from tensorflow.keras import layers, models
+import tensorflow as tf
+from tensorflow.keras import layers
 from PIL import Image
 
-TRAIN_DIR = "data_clock/train"
-TRAIN_CSV = "data_clock/train/train_labels.csv"
+# ===============================
+# CONFIGURACIÓN
+# ===============================
+
+TRAIN_DIR = "data_clock/train_aug"
+TRAIN_CSV = "data_clock/train_aug/train_labels.csv"
+
 VAL_DIR   = "data_clock/val"
 VAL_CSV   = "data_clock/val/val_labels.csv"
 
-MODEL_PATH = "model_clock.h5"
+MODEL_PATH = "model_clock.keras"
 
 IMG_HEIGHT = 224
 IMG_WIDTH = 224
-BATCH_SIZE = 16
-EPOCHS = 10
+BATCH_SIZE = 32
+EPOCHS_PHASE1 = 10
+EPOCHS_PHASE2 = 20
+
+# ===============================
+# CARGA DE DATOS
+# ===============================
 
 def load_data_from_csv(base_dir, csv_path):
-    """
-    Carga rutas de imágenes y etiquetas multi-output (contorno, numeros, agujas).
-    Las imágenes se asumen en subcarpetas 'correct/' o 'incorrect/'.
-    """
     images = []
     labels = []
+
     with open(csv_path, 'r', newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            filename = row['filename']  # p.ej. "correct/reloj_01.jpg" o "incorrect/reloj_10.jpg"
+            filename = row['filename']
             contorno = int(row['contorno'])
             numeros  = int(row['numeros'])
             agujas   = int(row['agujas'])
-            
-            # Ruta final = base_dir + "/" + filename (p.ej. data_clock/train/correct/reloj_01.jpg)
+
             img_path = os.path.join(base_dir, filename)
+
             if os.path.exists(img_path):
                 images.append(img_path)
                 labels.append([contorno, numeros, agujas])
-            else:
-                print(f"Advertencia: la imagen {img_path} no existe.")
-    
+
     return images, np.array(labels, dtype="float32")
 
+
 def preprocess_image(path):
-    """
-    Lee la imagen, la redimensiona y la normaliza como MobileNetV2.
-    """
     img = Image.open(path).convert('RGB')
     img = img.resize((IMG_WIDTH, IMG_HEIGHT))
     img_array = np.array(img)
-    # Preprocesamiento de MobileNetV2 (normalización y escalado)
     img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array)
     return img_array
 
+
 def data_generator(paths, labels, batch_size):
-    """
-    Generador Python que yield batches de imágenes y etiquetas multi-output.
-    """
     dataset_size = len(paths)
     indices = np.arange(dataset_size)
-    
+
     while True:
         np.random.shuffle(indices)
         for start in range(0, dataset_size, batch_size):
@@ -67,59 +67,209 @@ def data_generator(paths, labels, batch_size):
             batch_indices = indices[start:end]
 
             batch_images = []
-            batch_labels = []
+            contornos = []
+            numeros = []
+            agujas = []
+
             for i in batch_indices:
                 img_array = preprocess_image(paths[i])
                 batch_images.append(img_array)
-                batch_labels.append(labels[i])
-            
-            yield (np.array(batch_images), np.array(batch_labels))
 
+                contornos.append(labels[i][0])
+                numeros.append(labels[i][1])
+                agujas.append(labels[i][2])
 
-# Cargar datos de entrenamiento y validación
+            yield (
+                np.array(batch_images),
+                {
+                    "contorno": np.array(contornos),
+                    "numeros": np.array(numeros),
+                    "agujas": np.array(agujas)
+                }
+            )
+
+# ===============================
+# PREPARAR DATASET
+# ===============================
+
 train_paths, train_labels = load_data_from_csv(TRAIN_DIR, TRAIN_CSV)
-val_paths, val_labels     = load_data_from_csv(VAL_DIR,   VAL_CSV)
+val_paths, val_labels     = load_data_from_csv(VAL_DIR, VAL_CSV)
 
-# Definir pasos por época
-train_steps = len(train_paths) // BATCH_SIZE
-val_steps   = len(val_paths)   // BATCH_SIZE
+train_steps = int(np.ceil(len(train_paths) / BATCH_SIZE))
+val_steps   = int(np.ceil(len(val_paths) / BATCH_SIZE))
 
-# Definir generadores
 train_gen = data_generator(train_paths, train_labels, BATCH_SIZE)
-val_gen   = data_generator(val_paths,   val_labels,   BATCH_SIZE)
+val_gen   = data_generator(val_paths, val_labels, BATCH_SIZE)
 
-# Crear el modelo base (MobileNetV2) sin la parte fully connected
+print("Train imágenes:", len(train_paths))
+print("Val imágenes:", len(val_paths))
+
+# ===============================
+# DATA AUGMENTATION ONLINE
+# ===============================
+
+data_augmentation = tf.keras.Sequential([
+    layers.RandomRotation(0.05),
+    layers.RandomZoom(0.1),
+    layers.RandomTranslation(0.05, 0.05),
+])
+
+# ===============================
+# MODELO BASE
+# ===============================
+
 base_model = tf.keras.applications.MobileNetV2(
     input_shape=(IMG_HEIGHT, IMG_WIDTH, 3),
     include_top=False,
     weights='imagenet'
 )
-base_model.trainable = False  # Congelar el modelo base en un inicio
 
-# Añadir capas densas de clasificación multi-output (3 salidas: contorno, numeros, agujas)
-model = tf.keras.Sequential([
-    base_model,
-    layers.GlobalAveragePooling2D(),
-    layers.Dropout(0.2),
-    layers.Dense(3, activation="sigmoid")  # 3 salidas
-])
+# ===============================
+# FASE 1 — ENTRENAR HEAD
+# ===============================
+
+base_model.trainable = False
+
+inputs = tf.keras.Input(shape=(IMG_HEIGHT, IMG_WIDTH, 3))
+x = data_augmentation(inputs)
+x = base_model(x, training=False)
+x = layers.GlobalAveragePooling2D()(x)
+x = layers.BatchNormalization()(x)
+x = layers.Dropout(0.4)(x)
+
+out_contorno = layers.Dense(
+    1,
+    activation="sigmoid",
+    kernel_regularizer=tf.keras.regularizers.l2(0.001),
+    name="contorno"
+)(x)
+
+out_numeros = layers.Dense(
+    1,
+    activation="sigmoid",
+    kernel_regularizer=tf.keras.regularizers.l2(0.001),
+    name="numeros"
+)(x)
+
+out_agujas = layers.Dense(
+    1,
+    activation="sigmoid",
+    kernel_regularizer=tf.keras.regularizers.l2(0.001),
+    name="agujas"
+)(x)
+
+model = tf.keras.Model(
+    inputs=inputs,
+    outputs=[out_contorno, out_numeros, out_agujas]
+)
 
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
-    loss="binary_crossentropy",  # Para cada salida (contorno, numeros, agujas)
-    metrics=["accuracy"]
+    optimizer=tf.keras.optimizers.Adam(1e-3),
+    loss={
+        "contorno": "binary_crossentropy",
+        "numeros": "binary_crossentropy",
+        "agujas": "binary_crossentropy"
+    },
+    metrics={
+        "contorno": [
+            tf.keras.metrics.BinaryAccuracy(),
+            tf.keras.metrics.Precision(),
+            tf.keras.metrics.Recall()
+        ],
+        "numeros": [
+            tf.keras.metrics.BinaryAccuracy(),
+            tf.keras.metrics.Precision(),
+            tf.keras.metrics.Recall()
+        ],
+        "agujas": [
+            tf.keras.metrics.BinaryAccuracy(),
+            tf.keras.metrics.Precision(),
+            tf.keras.metrics.Recall()
+        ]
+    }
 )
 
-print("=== Iniciando Entrenamiento (Reloj) ===")
+print("\n=== FASE 1: Entrenando HEAD ===")
 
-history = model.fit(
+callbacks = [
+    tf.keras.callbacks.EarlyStopping(
+        monitor="val_loss",
+        patience=5,
+        restore_best_weights=True
+    ),
+    tf.keras.callbacks.ReduceLROnPlateau(
+        monitor="val_loss",
+        factor=0.5,
+        patience=3,
+        verbose=1
+    ),
+    tf.keras.callbacks.ModelCheckpoint(
+        "best_model_clock.keras",
+        monitor="val_loss",
+        save_best_only=True,
+        verbose=1
+    )
+]
+
+model.fit(
     train_gen,
     steps_per_epoch=train_steps,
-    epochs=EPOCHS,
+    epochs=EPOCHS_PHASE1,
     validation_data=val_gen,
-    validation_steps=val_steps
+    validation_steps=val_steps,
+    callbacks=callbacks
 )
 
-# Guardar el modelo
+# ===============================
+# FASE 2 — FINE TUNING
+# ===============================
+
+print("\n=== FASE 2: Fine-Tuning ===")
+
+base_model.trainable = True
+
+# Descongelar solo últimas 20 capas
+for layer in base_model.layers[:-20]:
+    layer.trainable = False
+
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(1e-4),
+    loss={
+        "contorno": "binary_crossentropy",
+        "numeros": "binary_crossentropy",
+        "agujas": "binary_crossentropy"
+    },
+    metrics={
+        "contorno": [
+            tf.keras.metrics.BinaryAccuracy(),
+            tf.keras.metrics.Precision(),
+            tf.keras.metrics.Recall()
+        ],
+        "numeros": [
+            tf.keras.metrics.BinaryAccuracy(),
+            tf.keras.metrics.Precision(),
+            tf.keras.metrics.Recall()
+        ],
+        "agujas": [
+            tf.keras.metrics.BinaryAccuracy(),
+            tf.keras.metrics.Precision(),
+            tf.keras.metrics.Recall()
+        ]
+    }
+)
+
+model.fit(
+    train_gen,
+    steps_per_epoch=train_steps,
+    epochs=EPOCHS_PHASE2,
+    validation_data=val_gen,
+    validation_steps=val_steps,
+    callbacks=callbacks
+)
+
+# ===============================
+# GUARDAR MODELO FINAL
+# ===============================
+
 model.save(MODEL_PATH)
-print(f"Modelo guardado en {MODEL_PATH}")
+print(f"\nModelo final guardado en {MODEL_PATH}")
