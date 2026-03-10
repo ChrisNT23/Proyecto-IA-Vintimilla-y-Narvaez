@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Row, Col, Form, Alert, Spinner } from "react-bootstrap";
-import { FaPlay, FaStop, FaMicrophone } from "react-icons/fa";
+import { FaPlay, FaStop, FaMicrophone, FaArrowRight, FaPlus, FaTimes } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import '../../assets/styles/mocamodules.css';
 
@@ -19,6 +19,7 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
   const STAGE_FINAL = 5;
 
   const [stage, setStage] = useState(STAGE_FIRST_READ);
+  const [started, setStarted] = useState(false); // ← controla si ya arrancó
   const [responses, setResponses] = useState([]);
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState("");
@@ -74,7 +75,9 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
     };
   }, []);
 
+  // Solo ejecuta el TTS cuando el usuario ya hizo clic en "Empezar"
   useEffect(() => {
+    if (!started) return;
     const executeStageActions = async () => {
       if (stage === STAGE_FIRST_READ || stage === STAGE_SECOND_READ) {
         let instructions;
@@ -91,7 +94,7 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
     };
     executeStageActions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stage]);
+  }, [stage, started]);
 
   const speakText = (text) => {
     return new Promise((resolve) => {
@@ -152,6 +155,11 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
     }
   };
 
+  // Arrancar la evaluación
+  const handleStart = () => {
+    setStarted(true);
+  };
+
   const handleStartRecall = () => {
     if (!recognitionSupported) {
       alert("El reconocimiento de voz no está disponible en su navegador.");
@@ -206,6 +214,10 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
     }
   };
 
+  const handleRemoveWord = (index) => {
+    setResponses((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleNoMoreWords = () => {
     if (stage === STAGE_FIRST_RECALL) {
       setStage(STAGE_SECOND_READ);
@@ -228,160 +240,232 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
     onComplete(score, { responses: uniqueResponses });
   };
 
-  return (
-    <div className="module-container">
-      {/* Título e instrucciones */}
-      <div className="d-flex align-items-center mb-2">
-        <h4 className="mb-0">Memoria</h4>
-        <Button
-          variant="link"
-          onClick={handleSpeakInstructions}
-          disabled={isSpeakingLocal}
-          className="listen-button ms-3 text-decoration-none"
-        >
-          <FaPlay /> Escuchar<br />Instrucciones
-        </Button>
-      </div>
-
-      {stage === STAGE_FIRST_READ || stage === STAGE_SECOND_READ ? (
-        <div className="text-center mt-3">
-          <Spinner animation="grow" variant="primary" />
-          <p className="mt-3">
-            {stage === STAGE_FIRST_READ
-              ? "Ésta es una prueba de memoria. Se leerá una lista de palabras..."
-              : "Repetiré la lista. Intente recordarlas..."}
-          </p>
+  // ─── PANTALLA INTRO (antes de empezar) ───────────────────────────────────
+  if (!started) {
+    return (
+      <div className="mem-intro-wrapper">
+        {/* Título */}
+        <div className="mem-intro-title-block">
+          <h1 className="mem-intro-title">Memoria</h1>
+          <p className="mem-intro-subtitle">Memoria de Trabajo y Retención Digital</p>
         </div>
-      ) : null}
 
-      {(stage === STAGE_FIRST_RECALL || stage === STAGE_SECOND_RECALL) && !message && (
-        <div className="text-center mt-3">
-          <p>Dígame todas las palabras que recuerde.</p>
-          {listening ? (
-            <div>
-              <Spinner animation="grow" variant="primary" />
-              <p className="mt-2">Escuchando...</p>
-              <Button
-                className="activity-button"
-                variant="danger"
-                onClick={handleStopListening}
-              >
-                Detener
-              </Button>
+        {/* Card de instrucciones */}
+        <div className="mem-intro-card">
+          {/* Columna izquierda: icono */}
+          <div className="mem-intro-icon-col">
+            <div className="mem-intro-icon-person">
+              <svg width="60" height="70" viewBox="0 0 60 70" fill="none">
+                <circle cx="28" cy="18" r="14" fill="#2563eb" opacity="0.85" />
+                <path d="M4 60 C4 42 52 42 52 60" stroke="#2563eb" strokeWidth="5" strokeLinecap="round" fill="none" opacity="0.85" />
+                {/* Sound waves */}
+                <path d="M40 22 Q46 28 40 34" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+                <path d="M45 18 Q55 28 45 38" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.5" />
+              </svg>
             </div>
-          ) : (
-            <Button
-              className="activity-button d-flex align-items-center justify-content-center mx-auto mb-3"
-              onClick={handleStartRecall}
-              disabled={!recognitionSupported}
-            >
-              <FaMicrophone className="me-2" />
-              Hablar
-            </Button>
-          )}
-
-          {showButtons && (
-            <div className="mt-3">
-              <Alert variant="secondary">
-                <p>¿Es correcta su palabra?</p>
-                <strong>{transcript}</strong>
-              </Alert>
-              <Row>
-                <Col className="d-flex justify-content-start">
-                  <Button
-                    className="activity-button me-3"
-                    variant="warning"
-                    onClick={handleRetry}
-                  >
-                    Reintentar
-                  </Button>
-                </Col>
-                <Col className="d-flex justify-content-end">
-                  <Button
-                    className="activity-button"
-                    variant="success"
-                    onClick={handleConfirmWord}
-                  >
-                    Sí
-                  </Button>
-                </Col>
-              </Row>
-            </div>
-          )}
-
-          <Form
-            onSubmit={(e) => e.preventDefault()}
-            className="mt-3 d-flex flex-column align-items-center"
-          >
-            <Form.Control
-              type="text"
-              placeholder="Escriba una o varias palabras separadas por comas"
-              value={manualWords}
-              onChange={(e) => setManualWords(e.target.value.toUpperCase())}
-              onKeyPress={handleManualKeyPress}
-              style={{ maxWidth: "350px" }}
-            />
-            <Button
-              className="activity-button mt-2"
-              variant="success"
-              onClick={handleAddManualWords}
-            >
-              Agregar
-            </Button>
-          </Form>
-
-          <div className="mt-3">
-            <p>Palabras recordadas:</p>
-            <ul>
-              {responses.map((word, index) => (
-                <li key={index}>{word}</li>
+            <div className="mem-intro-waveform">
+              {[3, 7, 5, 9, 6, 4, 8, 5, 3, 7].map((h, i) => (
+                <div key={i} className="mem-intro-wave-bar" style={{ height: `${h * 4}px` }} />
               ))}
-            </ul>
+            </div>
           </div>
 
-          <Button
-            className="activity-button mt-3 mx-auto d-block"
-            variant="secondary"
-            onClick={handleNoMoreWords}
-          >
-            No recuerdo más
-          </Button>
+          {/* Columna derecha: texto */}
+          <div className="mem-intro-content-col">
+            <div className="mem-intro-step-badge">
+              <span className="mem-intro-step-num">1</span>
+              <h2 className="mem-intro-step-title">Escuche con atención</h2>
+            </div>
+            <p className="mem-intro-desc">
+              A continuación, se presentará una{" "}
+              <span className="mem-intro-highlight">serie de palabras</span>. Su
+              tarea es recordarlas y repetirlas cuando se le indique.
+            </p>
+            <div className="mem-intro-tip">
+              <span className="mem-intro-tip-icon">ℹ️</span>
+              <span className="mem-intro-tip-text">
+                Asegúrese de estar en un lugar tranquilo, con el volumen adecuado y sin interrupciones externas.
+              </span>
+            </div>
+            <button
+              className="mem-intro-listen-btn"
+              onClick={handleSpeakInstructions}
+              disabled={isSpeakingLocal}
+            >
+              <span className="mem-intro-listen-icon">
+                {isSpeakingLocal ? <FaStop size={14} /> : <FaPlay size={14} />}
+              </span>
+              {isSpeakingLocal ? "Reproduciendo..." : "Escuchar Instrucciones"}
+            </button>
+          </div>
         </div>
-      )}
 
-      {stage === STAGE_FINAL && (
-        <div className="text-center mt-3">
-          {message && <Alert variant="info">{message}</Alert>}
-          <Button
-            className="continue-button"
-            variant="success"
-            onClick={handleNext}
-          >
-            Continuar
-          </Button>
-        </div>
-      )}
+        {/* Botón Empezar */}
+        <button className="mem-intro-start-btn" onClick={handleStart}>
+          Empezar Evaluación <FaArrowRight className="ms-2" />
+        </button>
 
-      {/* Botón de Regresar y Continuar */}
-      <div className="d-flex justify-content-between mt-4">
+        {/* Botón admin */}
         {isAdmin && (
-          <Button
-            className="back-button"
-            variant="secondary"
+          <button
+            className="mem-intro-back-btn"
             onClick={onPrevious}
             disabled={isFirstModule}
           >
             Regresar
-          </Button>
+          </button>
         )}
-        <Button
-          className="continue-button"
-          variant="success"
-          onClick={handleNext}
-        >
-          Continuar
-        </Button>
       </div>
+    );
+  }
+
+  // ─── PANTALLA LEYENDO PALABRAS ────────────────────────────────────────────
+  if (stage === STAGE_FIRST_READ || stage === STAGE_SECOND_READ) {
+    return (
+      <div className="mem-reading-wrapper">
+        <div className="mem-reading-card">
+          <div className="mem-reading-spinner-wrap">
+            <Spinner animation="border" style={{ color: "#2563eb", width: "3rem", height: "3rem" }} />
+          </div>
+          <h3 className="mem-reading-title">
+            {stage === STAGE_FIRST_READ ? "Escuche con atención" : "Escuche nuevamente"}
+          </h3>
+          <p className="mem-reading-desc">
+            {stage === STAGE_FIRST_READ
+              ? "Se está leyendo la lista de palabras. Préstele atención para poder recordarlas."
+              : "Repasando la lista de palabras..."}
+          </p>
+          <div className="mem-reading-waves">
+            {[4, 8, 6, 10, 7, 5, 9, 6, 4, 8].map((h, i) => (
+              <div key={i} className="mem-reading-wave-bar" style={{ animationDelay: `${i * 0.1}s`, height: `${h * 4}px` }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── PANTALLA RECALL ──────────────────────────────────────────────────────
+  if ((stage === STAGE_FIRST_RECALL || stage === STAGE_SECOND_RECALL) && !message) {
+    return (
+      <div className="mem-recall-wrapper">
+        <div className="mem-recall-card">
+          <h2 className="mem-recall-title">Dígame todas las palabras que recuerde</h2>
+          <p className="mem-recall-subtitle">Puede usar el micrófono o escribir las palabras manualmente.</p>
+
+          {/* Micrófono */}
+          {!showButtons && (
+            <div className="mem-recall-mic-section">
+              {listening ? (
+                <>
+                  <button className="mem-recall-mic-btn mem-recall-mic-active" onClick={handleStopListening}>
+                    <FaMicrophone size={28} color="#fff" />
+                  </button>
+                  <p className="mem-recall-mic-label">ESCUCHANDO...</p>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="mem-recall-mic-btn"
+                    onClick={handleStartRecall}
+                    disabled={!recognitionSupported}
+                  >
+                    <FaMicrophone size={28} color="#fff" />
+                  </button>
+                  <p className="mem-recall-mic-label">TOCAR PARA HABLAR</p>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Confirmación voz */}
+          {showButtons && (
+            <div className="mem-recall-confirm">
+              <div className="mem-recall-confirm-bubble">
+                <p className="mem-recall-confirm-q">¿Es correcta la palabra escuchada?</p>
+                <p className="mem-recall-confirm-word">"{transcript}"</p>
+              </div>
+              <div className="mem-recall-confirm-actions">
+                <button className="mem-recall-retry-btn" onClick={handleRetry}>
+                  Reintentar
+                </button>
+                <button className="mem-recall-yes-btn" onClick={handleConfirmWord}>
+                  Sí, agregar
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Input manual */}
+          <div className="mem-recall-input-row">
+            <div className="mem-recall-input-wrap">
+              <span className="mem-recall-input-icon">✏️</span>
+              <input
+                type="text"
+                className="mem-recall-input"
+                placeholder="Escribir palabra..."
+                value={manualWords}
+                onChange={(e) => setManualWords(e.target.value.toUpperCase())}
+                onKeyPress={handleManualKeyPress}
+              />
+            </div>
+            <button className="mem-recall-add-btn" onClick={handleAddManualWords}>
+              <FaPlus className="me-1" size={13} /> Agregar
+            </button>
+          </div>
+
+          {/* Palabras registradas */}
+          <div className="mem-recall-words-section">
+            <p className="mem-recall-words-label">PALABRAS REGISTRADAS</p>
+            <div className="mem-recall-chips">
+              {responses.map((word, i) => (
+                <span key={i} className="mem-recall-chip">
+                  {word}
+                  <button className="mem-recall-chip-remove" onClick={() => handleRemoveWord(i)}>
+                    <FaTimes size={11} />
+                  </button>
+                </span>
+              ))}
+              {responses.length < 5 && (
+                <span className="mem-recall-chip-placeholder">Esperando más palabras...</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Botones inferiores */}
+        <div className="mem-recall-footer">
+          <button className="mem-recall-no-more-btn" onClick={handleNoMoreWords}>
+            ❓ No recuerdo más-Repetir palabras
+          </button>
+          <button className="mem-recall-continue-btn" onClick={handleNext}>
+            Continuar <FaArrowRight className="ms-2" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── PANTALLA FINAL ───────────────────────────────────────────────────────
+  return (
+    <div className="mem-final-wrapper">
+      {message && (
+        <div className="mem-final-card">
+          <div className="mem-final-icon">✅</div>
+          <h3 className="mem-final-title">¡Bien hecho!</h3>
+          <p className="mem-final-message">{message}</p>
+          <button className="mem-recall-continue-btn" onClick={handleNext}>
+            Continuar <FaArrowRight className="ms-2" />
+          </button>
+        </div>
+      )}
+      {!message && (
+        <div className="mem-final-card">
+          <button className="mem-recall-continue-btn" onClick={handleNext}>
+            Continuar <FaArrowRight className="ms-2" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
