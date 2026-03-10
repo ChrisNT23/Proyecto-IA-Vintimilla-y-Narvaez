@@ -77,6 +77,9 @@ const MocaStartSelf = () => {
 
   const moduleRef = useRef(null);
   const emotionCaptureInterval = useRef(null);
+  // Ref que siempre apunta al módulo actual (soluciona bug de closure en setInterval)
+  const currentModuleIndexRef = useRef(0);
+  const emotionDataIdRef = useRef(null);
 
   const [
     updatePatient,
@@ -101,6 +104,15 @@ const MocaStartSelf = () => {
     }
     return () => clearInterval(interval);
   }, [testStarted]);
+
+  // Sincronizar refs con los estados (para usarlos dentro de setInterval sin closure)
+  useEffect(() => {
+    currentModuleIndexRef.current = currentModuleIndex;
+  }, [currentModuleIndex]);
+
+  useEffect(() => {
+    emotionDataIdRef.current = emotionDataId;
+  }, [emotionDataId]);
 
   // Formatear tiempo
   const formatTime = (seconds) => {
@@ -133,54 +145,55 @@ const MocaStartSelf = () => {
   };
 
   // Captura periódica de emociones durante el test
-  const startPeriodicEmotionCapture = async () => {
+  const startPeriodicEmotionCapture = () => {
     console.log("📸 Iniciando captura periódica de emociones cada 20 segundos");
-    // Capturar cada 20 segundos (20000 ms)
     emotionCaptureInterval.current = setInterval(async () => {
       try {
-        await captureEmotionDuringTest();
+        // Usa el ref (no el estado) para evitar el bug de closure
+        await captureEmotionDuringTest('during_test', currentModuleIndexRef.current);
       } catch (error) {
         console.error("Error en captura periódica:", error);
       }
-    }, 20000); // 20 segundos
+    }, 20000);
   };
 
-  // Capturar emoción durante el test (sin mostrar UI) - Solo envía imagen, CNN procesa
-  const captureEmotionDuringTest = async () => {
-    if (!emotionDataId) {
+  /**
+   * Captura una foto del paciente y la envía al backend con CNN.
+   * @param {string} captureType  - 'during_test' | 'module_transition'
+   * @param {number} moduleIndex  - Índice del módulo actual (0-7)
+   */
+  const captureEmotionDuringTest = async (captureType = 'during_test', moduleIndex = null) => {
+    // Usar ref para obtener el emotionDataId actualizado (evita cierre obsoleto)
+    const currentEmotionDataId = emotionDataIdRef.current;
+    const resolvedModuleIndex = moduleIndex !== null ? moduleIndex : currentModuleIndexRef.current;
+    const moduleName = MODULES[resolvedModuleIndex]?.name || 'unknown';
+
+    if (!currentEmotionDataId) {
       console.warn("⚠️ No hay emotionDataId, saltando captura");
       return;
     }
 
     try {
-      console.log(`📸 Capturando emoción automática (módulo: ${MODULES[currentModuleIndex]?.name || 'unknown'})`);
+      console.log(`📸 Capturando emoción [${captureType}] - Módulo ${resolvedModuleIndex}: ${moduleName}`);
 
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-          facingMode: 'user'
-        }
+        video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' }
       });
       const video = document.createElement('video');
       video.srcObject = stream;
       video.autoplay = true;
       video.muted = true;
 
-      // Esperar a que el video esté listo
       await new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
           stream.getTracks().forEach(track => track.stop());
           reject(new Error('Timeout esperando video'));
         }, 5000);
-
         video.onloadedmetadata = () => {
           clearTimeout(timeout);
           video.play();
-          // Esperar un frame más para asegurar que hay imagen
           setTimeout(resolve, 200);
         };
-
         video.onerror = (err) => {
           clearTimeout(timeout);
           stream.getTracks().forEach(track => track.stop());
@@ -188,57 +201,70 @@ const MocaStartSelf = () => {
         };
       });
 
-      // Capturar imagen directamente (CNN procesará en el backend)
       const canvas = document.createElement('canvas');
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0);
+      canvas.getContext('2d').drawImage(video, 0, 0);
       const imageData = canvas.toDataURL('image/jpeg', 0.8);
-
-      // Detener la cámara inmediatamente
       stream.getTracks().forEach(track => track.stop());
 
-      // Obtener token de autenticación
-      const token = localStorage.getItem('token') || (localStorage.getItem('userInfo')
-        ? JSON.parse(localStorage.getItem('userInfo'))?.token
-        : null);
+      // 1. Evaluar emoción con CNN antes de guardar
+      let detectedEmotion = 'neutral';
+      let detectedConfidence = '0';
+      try {
+        const userInfo = localStorage.getItem('userInfo');
+        const token = localStorage.getItem('token') ||
+          (userInfo ? JSON.parse(userInfo)?.token : null);
+        const evalHeaders = { 'Content-Type': 'application/json' };
+        if (token) evalHeaders['Authorization'] = `Bearer ${token}`;
 
-      // Enviar al backend - CNN procesará la imagen
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        const evalRes = await fetch('/api/emotions/evaluate', {
+          method: 'POST',
+          headers: evalHeaders,
+          body: JSON.stringify({ image: imageData }),
+        });
+        if (evalRes.ok) {
+          const evalData = await evalRes.json();
+          detectedEmotion = evalData.emotion || 'neutral';
+          detectedConfidence = String(evalData.confidence || '0');
+        }
+      } catch (evalErr) {
+        console.warn('⚠️ CNN no disponible, guardando con emoción neutral:', evalErr.message);
       }
+
+      // 2. Guardar captura en BD con ID de módulo correcto
+      const userInfo = localStorage.getItem('userInfo');
+      const token = localStorage.getItem('token') ||
+        (userInfo ? JSON.parse(userInfo)?.token : null);
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
 
       const response = await fetch('/api/emotions/capture', {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify({
           patientId: id,
-          emotionDataId: emotionDataId,
+          emotionDataId: currentEmotionDataId,
           image: imageData,
-          // No enviamos emotion/confidence aquí - CNN los calculará
-          emotion: 'neutral', // Placeholder, CNN lo reemplazará
-          confidence: '0', // Placeholder, CNN lo reemplazará
+          emotion: detectedEmotion,
+          confidence: detectedConfidence,
           timestamp: new Date().toISOString(),
-          captureType: 'during_test',
-          currentModule: MODULES[currentModuleIndex]?.name || 'unknown'
-        })
+          captureType,
+          currentModule: moduleName,
+          moduleIndex: resolvedModuleIndex,
+        }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log(`✅ Emoción capturada automáticamente: ${data.emotion} (${data.confidence}%) - Módulo: ${MODULES[currentModuleIndex]?.name}`);
+        console.log(`✅ Emoción guardada [${captureType}]: ${data.emotion} (${data.confidence}%) - Módulo ${resolvedModuleIndex}: ${moduleName}`);
       } else {
-        const errorData = await response.json().catch(() => ({ message: 'Error desconocido' }));
-        console.error(`❌ Error al capturar emoción: ${errorData.message}`);
+        const errData = await response.json().catch(() => ({ message: 'Error desconocido' }));
+        console.error(`❌ Error al guardar emoción: ${errData.message}`);
       }
     } catch (error) {
-      console.error("❌ Error al capturar emoción durante el test:", error.message);
-      // No lanzar error para que el test continúe
+      console.error('❌ Error al capturar emoción durante el test:', error.message);
+      // No lanzar error — el test debe continuar aunque falle la captura
     }
   };
 
@@ -262,7 +288,12 @@ const MocaStartSelf = () => {
    * - activityScores: datos adicionales del módulo (respuestas, puntajes parciales, etc.)
    *    Se puede incluir forceFinish: true desde el módulo de Orientación para forzar guardado inmediato.
    */
-  const handleCompleteModule = (moduleId, moduleScore, activityScores) => {
+  const handleCompleteModule = async (moduleId, moduleScore, activityScores) => {
+    // 📸 Snapshot emocional al completar el módulo (fire-and-forget, no bloquea)
+    captureEmotionDuringTest('module_transition', moduleId).catch((err) =>
+      console.warn('⚠️ No se pudo capturar emoción en transición de módulo:', err.message)
+    );
+
     // Guardar el puntaje de este módulo en moduleScores
     setModuleScores((prevModuleScores) => ({
       ...prevModuleScores,
@@ -284,7 +315,6 @@ const MocaStartSelf = () => {
 
     // Si el módulo de Orientación manda forceFinish => Guardar de inmediato
     if (activityScores?.forceFinish) {
-      // Marcamos la prueba como terminada
       setTestCompleted(true);
       handleSaveResults(newCurrentScore, {
         ...individualScores,
@@ -344,6 +374,7 @@ const MocaStartSelf = () => {
       modulesData: finalIndividualScores,
       totalScore: adjustedScore,
       hasLessThan12YearsOfEducation,
+      emotionDataId: emotionDataIdRef.current || null, // Vincula las capturas emocionales al test
     };
 
     try {
@@ -871,8 +902,8 @@ const MocaStartSelf = () => {
                 <span
                   key={module.id}
                   className={`module-dot ${index < currentModuleIndex || index === selectedModuleIndex
-                      ? "completed"
-                      : "pending"
+                    ? "completed"
+                    : "pending"
                     }`}
                 ></span>
               ))}
@@ -907,8 +938,8 @@ const MocaStartSelf = () => {
                   >
                     <Card
                       className={`module-card ${index === currentModuleIndex || index === selectedModuleIndex
-                          ? "active"
-                          : ""
+                        ? "active"
+                        : ""
                         }`}
                       onClick={() => handleSelectModule(index)}
                       style={{ cursor: "pointer" }}

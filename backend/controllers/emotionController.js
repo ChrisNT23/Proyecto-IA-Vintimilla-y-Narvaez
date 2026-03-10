@@ -29,11 +29,12 @@ const captureEmotion = asyncHandler(async (req, res) => {
     patientId,
     emotionDataId,
     image,
-    emotion,       // Emoción ya evaluada por /api/emotions/evaluate (ej: "happy")
-    confidence,    // Confianza ya evaluada (ej: "40.1")
+    emotion,
+    confidence,
     timestamp,
     captureType,
     currentModule,
+    moduleIndex,   // índice numérico del módulo (0-7)
   } = req.body;
 
   if (!patientId || !image || !emotion || !confidence || !timestamp || !captureType) {
@@ -50,15 +51,13 @@ const captureEmotion = asyncHandler(async (req, res) => {
 
   console.log(`✅ Imagen guardada en disco: ${imageFilename}`);
 
-  // --- 2. Preparar datos de la captura usando la emoción YA EVALUADA ---
-  // No se vuelve a llamar al CNN. La emoción viene del servicio /evaluate
-  // que el usuario ya vio en pantalla (ej: "Feliz 40.1%")
+  // --- 2. Preparar datos de la captura ---
   const confidenceNum = parseFloat(confidence);
-  const emotionLabel = `${emotion} (${confidenceNum.toFixed(1)}%)`; // "happy (40.1%)"
+  const emotionLabel = `${emotion} (${confidenceNum.toFixed(1)}%)`;
 
-  console.log(`🎭 Guardando emoción evaluada: ${emotionLabel}`);
+  console.log(`🎭 Guardando emoción evaluada: ${emotionLabel} | módulo: ${currentModule || 'N/A'} [${moduleIndex ?? '-'}]`);
 
-  // --- 3. Determinar frame index si es captura durante el test ---
+  // --- 3. Determinar frame index ---
   let frameIndex = null;
   if (emotionDataId) {
     const existingData = await EmotionData.findById(emotionDataId);
@@ -68,16 +67,17 @@ const captureEmotion = asyncHandler(async (req, res) => {
   }
 
   const captureData = {
-    emotion: emotion,
+    emotion,
     confidence: confidenceNum,
-    emotionLabel: emotionLabel,           // "happy (40.1%)" — para reportes
+    emotionLabel,
     timestamp: new Date(timestamp),
     captureType,
     currentModule: currentModule || null,
-    imageUrl: `/emotion_captures/${imageFilename}`, // URL para usar en <img src="...">
+    moduleIndex: moduleIndex !== undefined && moduleIndex !== null ? Number(moduleIndex) : null,
+    imageUrl: `/emotion_captures/${imageFilename}`,
     emotionProbabilities: {},
     cnnFeatures: [],
-    frameIndex: frameIndex,
+    frameIndex,
     detectionMethod: 'cnn',
   };
 
@@ -85,7 +85,6 @@ const captureEmotion = asyncHandler(async (req, res) => {
   let emotionData;
 
   if (emotionDataId) {
-    // Agregar captura a un registro existente (capturas durante el test)
     emotionData = await EmotionData.findById(emotionDataId);
     if (!emotionData) {
       res.status(404);
@@ -93,10 +92,8 @@ const captureEmotion = asyncHandler(async (req, res) => {
     }
     emotionData.captures.push(captureData);
     emotionData.processingMetadata.totalFrames = emotionData.captures.length;
-    await emotionData.save();
   } else {
-    // Crear nuevo registro de emociones (captura inicial)
-    emotionData = await EmotionData.create({
+    emotionData = new EmotionData({
       patient: patientId,
       captures: [captureData],
       testStartTime: new Date(timestamp),
@@ -109,6 +106,25 @@ const captureEmotion = asyncHandler(async (req, res) => {
     });
   }
 
+  // --- 5. Recalcular moduleSummaries tras cada captura ---
+  if (currentModule) {
+    const moduleCaps = emotionData.captures.filter(c => c.currentModule === currentModule);
+    const emotionCount = {};
+    let totalConf = 0;
+    moduleCaps.forEach(c => {
+      emotionCount[c.emotion] = (emotionCount[c.emotion] || 0) + 1;
+      totalConf += c.confidence;
+    });
+    const dominant = Object.entries(emotionCount).sort((a, b) => b[1] - a[1])[0]?.[0] || emotion;
+    emotionData.moduleSummaries.set(currentModule, {
+      dominantEmotion: dominant,
+      avgConfidence: parseFloat((totalConf / moduleCaps.length).toFixed(2)),
+      captureCount: moduleCaps.length,
+    });
+  }
+
+  await emotionData.save();
+
   const lastCapture = emotionData.captures[emotionData.captures.length - 1];
 
   console.log(`✅ Emoción guardada en BD: ${emotionLabel} | imageUrl: /emotion_captures/${imageFilename}`);
@@ -118,9 +134,9 @@ const captureEmotion = asyncHandler(async (req, res) => {
     emotionDataId: emotionData._id.toString(),
     captureId: lastCapture._id.toString(),
     message: "Emoción capturada exitosamente",
-    emotion: emotion,
+    emotion,
     confidence: confidenceNum,
-    emotionLabel: emotionLabel,
+    emotionLabel,
     imageUrl: `/emotion_captures/${imageFilename}`,
   });
 });
