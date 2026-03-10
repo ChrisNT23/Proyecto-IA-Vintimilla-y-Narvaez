@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Row, Col, Image, Alert, Form, Spinner } from "react-bootstrap";
-import { FaPlay, FaStop, FaMicrophone } from "react-icons/fa";
+import { FaPlay, FaStop, FaMicrophone, FaVolumeUp, FaCheckCircle, FaRedo } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import '../../assets/styles/mocamodules.css';
 
@@ -216,128 +216,128 @@ const Identificacion = ({ onComplete, onPrevious, isFirstModule }) => {
   }, [listening]);
 
   return (
-    <div className="module-container">
-      {/* Título e instrucciones */}
-      <div className="d-flex align-items-center mb-2">
-        <h4 className="mb-0">Identificación de Animales</h4>
-        <Button
-          variant="link"
-          onClick={handleSpeakInstructions}
-          disabled={isSpeakingLocal}
-          className="listen-button ms-3 text-decoration-none"
-        >
-          <FaPlay /> Escuchar<br />Instrucciones
-        </Button>
+    <div className="identificacion-container">
+      {/* Header */}
+      <div className="mb-4 w-100">
+        <h2 className="mb-1 fw-bold" style={{ color: '#004A7C', fontSize: '26px' }}>Identificación de Animales</h2>
+        <span className="text-secondary" style={{ fontSize: '15px' }}>Nombre el animal mostrado en la imagen a continuación.</span>
       </div>
 
-      <Row className="justify-content-center mt-3">
-        <Col md={6} className="text-center">
-          <Image
-            src={animals[currentAnimalIndex].image}
-            alt={`Animal ${currentAnimalIndex + 1}`}
-            fluid
-            style={{ maxHeight: "300px" }}
-          />
-          <p>Nombre el animal mostrado en la imagen.</p>
+      {/* Imagen del animal */}
+      <div className="identificacion-image-wrapper">
+        <img
+          src={animals[currentAnimalIndex].image}
+          alt={`Animal ${currentAnimalIndex + 1}`}
+          className="identificacion-animal-img"
+        />
+      </div>
 
-          {useVoice && !confirmation && (
-            <div className="text-center mb-3">
-              {listening ? (
-                <div>
-                  <Spinner animation="grow" variant="primary" />
-                  <p className="mt-2">Escuchando...</p>
-                  <Button
-                    variant="danger"
-                    onClick={handleStop}
-                    className="activity-button"
-                  >
-                    Detener
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  className="activity-button d-flex align-items-center justify-content-center mx-auto mb-3"
-                  onClick={handleListen}
-                  disabled={!useVoice}
-                >
-                  <FaMicrophone className="me-2" />
-                  Hablar
-                </Button>
-              )}
+      {/* Sección de respuesta */}
+      <div className="identificacion-answer-section">
+
+        {/* Estado: Escuchando */}
+        {useVoice && listening && (
+          <div className="identificacion-listening-state">
+            <div className="identificacion-pulse-ring"></div>
+            <Spinner animation="grow" size="sm" className="me-2" style={{ color: "#2563eb" }} />
+            <span className="identificacion-listening-text">Escuchando...</span>
+            <button
+              className="identificacion-stop-btn"
+              onClick={handleStop}
+            >
+              <FaStop className="me-2" />
+              Detener
+            </button>
+          </div>
+        )}
+
+        {/* Botón principal Hablar Respuesta */}
+        {useVoice && !listening && !confirmation && (
+          <button
+            className="identificacion-speak-btn"
+            onClick={handleListen}
+            disabled={!useVoice}
+          >
+            <FaMicrophone className="me-2" />
+            Hablar Respuesta
+          </button>
+        )}
+
+        {/* Separador */}
+        {!listening && !confirmation && (
+          <div className="identificacion-divider">
+            <span className="identificacion-divider-line"></span>
+            <span className="identificacion-divider-text">O ESCRIBE AQUÍ</span>
+            <span className="identificacion-divider-line"></span>
+          </div>
+        )}
+
+        {/* Input de texto */}
+        {!listening && !confirmation && (
+          <Form onSubmit={(e) => e.preventDefault()} className="w-100">
+            <input
+              type="text"
+              className="identificacion-input"
+              placeholder="Ej: Camello"
+              value={manualInput}
+              onChange={(e) => setManualInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+            />
+            <button
+              className="identificacion-confirm-btn"
+              onClick={handleConfirm}
+              disabled={!manualInput.trim()}
+            >
+              Confirmar Respuesta
+              <FaCheckCircle className="ms-2" />
+            </button>
+          </Form>
+        )}
+
+        {/* Confirmación de voz */}
+        {confirmation && (
+          <div className="identificacion-confirmation">
+            <div className="identificacion-confirmation-bubble">
+              <p className="identificacion-confirmation-question">¿Es correcta su respuesta?</p>
+              <p className="identificacion-confirmation-answer">"{transcript || manualInput}"</p>
             </div>
-          )}
-
-          {!listening && !confirmation && (
-            <Form onSubmit={(e) => e.preventDefault()} className="mt-3">
-              <Form.Group>
-                <Form.Control
-                  type="text"
-                  placeholder="Escriba aquí su respuesta"
-                  value={manualInput}
-                  onChange={(e) => setManualInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                />
-              </Form.Group>
-              <Button
-                className="continue-button me-2 mt-2"
-                onClick={handleConfirm}
-                disabled={!manualInput.trim()}
+            <div className="identificacion-confirmation-actions">
+              <button
+                className="identificacion-retry-btn"
+                onClick={handleRetry}
               >
+                <FaRedo className="me-2" />
+                Reintentar
+              </button>
+              <button
+                className="identificacion-yes-btn"
+                onClick={handleConfirm}
+              >
+                <FaCheckCircle className="me-2" />
                 Confirmar
-              </Button>
-            </Form>
-          )}
-
-          {confirmation && (
-            <div className="mt-3">
-              <Alert variant="secondary">
-                <p>¿Es correcta su respuesta?</p>
-                <strong>"{transcript || manualInput}"</strong>
-              </Alert>
-              <Row>
-                <Col className="d-flex justify-content-start">
-                  <Button
-                    className="activity-button me-3"
-                    variant="warning"
-                    onClick={handleRetry}
-                  >
-                    Reintentar
-                  </Button>
-                </Col>
-                <Col className="d-flex justify-content-end">
-                  <Button
-                    className="activity-button"
-                    variant="success"
-                    onClick={handleConfirm}
-                  >
-                    Sí
-                  </Button>
-                </Col>
-              </Row>
+              </button>
             </div>
-          )}
-        </Col>
-      </Row>
+          </div>
+        )}
+      </div>
 
-      {/* Botón de Regresar y Continuar */}
-      <div className="d-flex justify-content-between mt-4">
+      {/* Botón Siguiente Pregunta - siempre visible para avanzar a la siguiente fase */}
+      <div className="identificacion-nav">
         {isAdmin && (
-          <Button
-            className="back-button"
-            variant="secondary"
+          <button
+            className="identificacion-back-btn"
             onClick={onPrevious}
             disabled={isFirstModule}
           >
             Regresar
-          </Button>
+          </button>
         )}
-        <Button
-          className="continue-button"
-          variant="success"
+        <button
+          className="identificacion-siguiente-btn"
           onClick={handleNext}
         >
-          Continuar
-        </Button>
+          Siguiente Pregunta <span className="identificacion-siguiente-arrow">→</span>
+        </button>
       </div>
     </div>
   );

@@ -233,18 +233,13 @@
 /* Mejora del estilo del contenedor de módulos */
 .module-container {
   background-color: #ffffff !important;
-  border: 1px solid #e0e0e0 !important;
   border-radius: 16px !important;
   padding: 25px !important;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05) !important;
   margin-bottom: 25px !important;
-  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
 }
 
-.module-container:hover {
-  transform: translateY(-5px) !important;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1) !important;
-}
+
 
 .module-title {
   font-weight: 600 !important;

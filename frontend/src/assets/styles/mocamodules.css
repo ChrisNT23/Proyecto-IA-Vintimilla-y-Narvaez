@@ -2,7 +2,7 @@
 
 /* Botón de escuchar instrucciones con color amarillo suave */
 .listen-button {
-  background-color: #fff3cd; 
+  background-color: #fff3cd;
   color: #856404;
   border: none;
   border-radius: 0.3rem;
@@ -50,10 +50,7 @@
   transform: translateY(-2px);
 }
 
-/* Botón de continuar manteniendo estilos existentes */
-.continue-button {
-  /* Mantener estilos existentes */
-}
+
 
 /* Estilos para los botones de actividad */
 .activity-button {
@@ -78,4 +75,1075 @@
 .activity-button:hover {
   background-color: #0056b3;
   transform: translateY(-2px);
+}
+
+/* ============================================================
+   IDENTIFICACIÓN DE ANIMALES — Rediseño moderno
+   ============================================================ */
+
+/* Contenedor principal */
+.identificacion-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0 0 1rem 0;
+}
+
+/* Header: título + subtítulo */
+.identificacion-header {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.identificacion-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 0.3rem;
+  letter-spacing: -0.3px;
+}
+
+.identificacion-subtitle {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Imagen del animal con botón superpuesto */
+.identificacion-image-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.identificacion-animal-img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Botón Escuchar Instrucción — superpuesto sobre la imagen */
+.identificacion-listen-overlay {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  color: #2563eb;
+  border: none;
+  border-radius: 50px;
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.identificacion-listen-overlay:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+}
+
+.identificacion-listen-overlay:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Sección de respuesta */
+.identificacion-answer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  gap: 0.75rem;
+}
+
+/* Estado: escuchando */
+.identificacion-listening-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem;
+  background: #eff6ff;
+  border-radius: 14px;
+  width: 100%;
+}
+
+.identificacion-listening-text {
+  font-size: 0.95rem;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* Botón Hablar Respuesta */
+.identificacion-speak-btn {
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
+  transition: all 0.2s ease;
+  letter-spacing: 0.2px;
+}
+
+.identificacion-speak-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+}
+
+.identificacion-speak-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Botón Detener */
+.identificacion-stop-btn {
+  margin-top: 0.3rem;
+  padding: 0.5rem 1.2rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.identificacion-stop-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* Separador "O ESCRIBE AQUÍ" */
+.identificacion-divider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.75rem;
+  margin: 0.1rem 0;
+}
+
+.identificacion-divider-line {
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.identificacion-divider-text {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+/* Input de texto */
+.identificacion-input {
+  width: 100%;
+  padding: 0.85rem 1.1rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.97rem;
+  color: #1f2937;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 0.65rem;
+}
+
+.identificacion-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.identificacion-input::placeholder {
+  color: #b0b7c3;
+}
+
+/* Botón Confirmar Respuesta */
+.identificacion-confirm-btn {
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  background: #111827;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.2px;
+}
+
+.identificacion-confirm-btn:hover {
+  background: #1f2937;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.identificacion-confirm-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  background: #6b7280;
+}
+
+/* Panel de confirmación de voz */
+.identificacion-confirmation {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.identificacion-confirmation-bubble {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  text-align: center;
+}
+
+.identificacion-confirmation-question {
+  font-size: 0.88rem;
+  color: #6b7280;
+  margin-bottom: 0.35rem;
+}
+
+.identificacion-confirmation-answer {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.identificacion-confirmation-actions {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.identificacion-retry-btn {
+  flex: 1;
+  padding: 0.75rem;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1.5px solid #fde68a;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.identificacion-retry-btn:hover {
+  background: #fde68a;
+  transform: translateY(-1px);
+}
+
+.identificacion-yes-btn {
+  flex: 1;
+  padding: 0.75rem;
+  background: #dcfce7;
+  color: #166534;
+  border: 1.5px solid #86efac;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.identificacion-yes-btn:hover {
+  background: #bbf7d0;
+  transform: translateY(-1px);
+}
+
+/* Navegación - botones al lado derecho */
+.identificacion-nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  max-width: 700px;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  gap: 0.75rem;
+}
+
+.identificacion-back-btn {
+  padding: 0.6rem 1.4rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.identificacion-back-btn:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.identificacion-back-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.identificacion-next-btn {
+  padding: 0.6rem 1.4rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.identificacion-next-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+/* Botón "Siguiente Pregunta" - fondo azul, texto blanco */
+.identificacion-siguiente-btn {
+  padding: 0.65rem 1.5rem;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.identificacion-siguiente-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
+.identificacion-siguiente-arrow {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* Animación del anillo de pulso al escuchar */
+.identificacion-pulse-ring {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #2563eb;
+  animation: identificacion-pulse 1.4s ease-in-out infinite;
+  display: inline-block;
+}
+
+@keyframes identificacion-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+}
+
+/* =====================================================
+   MÓDULO MEMORIA — Pantalla Intro (Imagen 1)
+   ===================================================== */
+
+.mem-intro-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 1rem 2rem;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.mem-intro-title-block {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.mem-intro-title {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: #1e2a3a;
+  margin-bottom: 0.3rem;
+}
+
+.mem-intro-subtitle {
+  font-size: 1rem;
+  color: #6b7280;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Card instrucciones */
+.mem-intro-card {
+  display: flex;
+  gap: 2rem;
+  background: #fff;
+  border-radius: 18px;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+  max-width: 760px;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.mem-intro-icon-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-width: 90px;
+}
+
+.mem-intro-waveform {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 40px;
+}
+
+.mem-intro-wave-bar {
+  width: 4px;
+  background: #2563eb;
+  border-radius: 2px;
+  opacity: 0.4;
+}
+
+.mem-intro-content-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  flex: 1;
+}
+
+.mem-intro-step-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mem-intro-step-num {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.mem-intro-step-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1e2a3a;
+  margin: 0;
+}
+
+.mem-intro-desc {
+  font-size: 1rem;
+  color: #374151;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.mem-intro-highlight {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.mem-intro-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: #fefce8;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+}
+
+.mem-intro-tip-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.mem-intro-tip-text {
+  font-size: 0.87rem;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+.mem-intro-listen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  align-self: flex-start;
+}
+
+.mem-intro-listen-btn:hover {
+  background: #1d4ed8;
+}
+
+.mem-intro-listen-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mem-intro-listen-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+}
+
+/* Botón Empezar */
+.mem-intro-start-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #1e2a3a;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 2.2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 4px 14px rgba(30, 42, 58, 0.25);
+}
+
+.mem-intro-start-btn:hover {
+  background: #2d3f55;
+  transform: translateY(-1px);
+}
+
+.mem-intro-back-btn {
+  margin-top: 1rem;
+  background: none;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.5rem 1.2rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mem-intro-back-btn:hover {
+  background: #f3f4f6;
+}
+
+/* =====================================================
+   MÓDULO MEMORIA — Leyendo palabras (animación)
+   ===================================================== */
+
+.mem-reading-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 2rem 1rem;
+}
+
+.mem-reading-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+  padding: 3rem 2.5rem;
+  max-width: 560px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.mem-reading-spinner-wrap {
+  margin-bottom: 0.5rem;
+}
+
+.mem-reading-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e2a3a;
+  margin: 0;
+}
+
+.mem-reading-desc {
+  color: #6b7280;
+  font-size: 0.97rem;
+  margin: 0;
+}
+
+.mem-reading-waves {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 48px;
+  margin-top: 0.5rem;
+}
+
+.mem-reading-wave-bar {
+  width: 5px;
+  background: #2563eb;
+  border-radius: 3px;
+  animation: mem-wave-bounce 1s ease-in-out infinite alternate;
+}
+
+@keyframes mem-wave-bounce {
+  0% {
+    transform: scaleY(0.3);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* =====================================================
+   MÓDULO MEMORIA — Recall (Imagen 2)
+   ===================================================== */
+
+.mem-recall-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 1.5rem;
+  padding: 0.5rem 1rem 1.5rem;
+}
+
+.mem-recall-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+  padding: 2.5rem 2rem;
+  max-width: 700px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.mem-recall-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #1e2a3a;
+  text-align: center;
+  margin: 0;
+}
+
+.mem-recall-subtitle {
+  font-size: 0.95rem;
+  color: #6b7280;
+  text-align: center;
+  margin: 0;
+}
+
+/* Sección micrófono */
+.mem-recall-mic-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.mem-recall-mic-btn {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #2563eb;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.mem-recall-mic-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 26px rgba(37, 99, 235, 0.45);
+}
+
+.mem-recall-mic-btn:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.mem-recall-mic-active {
+  background: #dc2626;
+  animation: mem-mic-pulse 1.2s ease-in-out infinite;
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+}
+
+@keyframes mem-mic-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 6px 32px rgba(220, 38, 38, 0.7);
+  }
+}
+
+.mem-recall-mic-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #2563eb;
+  margin: 0;
+}
+
+/* Confirmación de palabra */
+.mem-recall-confirm {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 440px;
+}
+
+.mem-recall-confirm-q {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.mem-recall-confirm-word {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e2a3a;
+  margin: 0;
+}
+
+.mem-recall-confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.mem-recall-retry-btn {
+  padding: 0.55rem 1.2rem;
+  background: #f3f4f6;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  color: #374151;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mem-recall-retry-btn:hover {
+  background: #e5e7eb;
+}
+
+.mem-recall-yes-btn {
+  padding: 0.55rem 1.4rem;
+  background: #2563eb;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.mem-recall-yes-btn:hover {
+  background: #1d4ed8;
+}
+
+/* Input manual */
+.mem-recall-input-row {
+  display: flex;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 520px;
+}
+
+.mem-recall-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0 0.9rem;
+  background: #fff;
+}
+
+.mem-recall-input-icon {
+  font-size: 0.95rem;
+  opacity: 0.6;
+}
+
+.mem-recall-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  padding: 0.65rem 0;
+  background: transparent;
+  color: #1e2a3a;
+}
+
+.mem-recall-add-btn {
+  display: inline-flex;
+  align-items: center;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 1.2rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.mem-recall-add-btn:hover {
+  background: #1d4ed8;
+}
+
+/* Chips de palabras */
+.mem-recall-words-section {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.mem-recall-words-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #9ca3af;
+  text-align: center;
+  margin: 0;
+}
+
+.mem-recall-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.mem-recall-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #fff;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 20px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
+.mem-recall-chip-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+
+.mem-recall-chip-remove:hover {
+  color: #dc2626;
+}
+
+.mem-recall-chip-placeholder {
+  border: 1.5px dashed #d1d5db;
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  font-size: 0.88rem;
+  color: #9ca3af;
+}
+
+/* Footer recall */
+.mem-recall-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 700px;
+  padding: 0 0.5rem;
+}
+
+.mem-recall-no-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #f3f4f6;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 50px;
+  padding: 0.6rem 1.3rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mem-recall-no-more-btn:hover {
+  background: #e5e7eb;
+}
+
+.mem-recall-continue-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #1e2a3a;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1.8rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(30, 42, 58, 0.2);
+  transition: background 0.2s, transform 0.15s;
+}
+
+.mem-recall-continue-btn:hover {
+  background: #2d3f55;
+  transform: translateY(-1px);
+}
+
+/* =====================================================
+   MÓDULO MEMORIA — Pantalla Final
+   ===================================================== */
+
+.mem-final-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 2rem 1rem;
+}
+
+.mem-final-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+  padding: 3rem 2.5rem;
+  max-width: 500px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.mem-final-icon {
+  font-size: 3rem;
+}
+
+.mem-final-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e2a3a;
+  margin: 0;
+}
+
+.mem-final-message {
+  color: #4b5563;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
 }
