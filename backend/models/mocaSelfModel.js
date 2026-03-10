@@ -24,6 +24,13 @@ const mocaSelfSchema = new mongoose.Schema(
 
     // Fecha de creación de la prueba
     testDate: { type: Date, default: Date.now },
+
+    // Referencia al registro de emociones capturado durante el test
+    emotionData: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'EmotionData',
+      default: null,
+    },
   },
   { timestamps: true }
 );

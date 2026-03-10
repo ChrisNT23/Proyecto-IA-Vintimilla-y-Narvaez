@@ -12,7 +12,7 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
   const [faceDetected, setFaceDetected] = useState(false);
   const [currentEmotion, setCurrentEmotion] = useState(null);
   const [modelsLoaded, setModelsLoaded] = useState(false);
-  const [backendError, setBackendError] = useState(false); 
+  const [backendError, setBackendError] = useState(false);
   const [detectedBox, setDetectedBox] = useState(null);
 
   const videoRef = useRef(null);
@@ -290,7 +290,7 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
       <div className="d-flex flex-column align-items-center mb-4">
         <h2 className="emotion-capture-title-light">Detección de Estado Emocional</h2>
         <p className="emotion-capture-subtitle-light">
-          Posicione el rostro del paciente frente a la cámara para iniciar el análisis.
+          Posicione su rostro frente a la cámara para iniciar el análisis.
         </p>
       </div>
 
@@ -306,19 +306,19 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
               <div className="live-badge">
                 <FaCircle color="#10b981" size={10} className="me-2 pulse-dot" /> Sistema en vivo
               </div>
-              
+
               <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', lineHeight: 0 }}>
                 <video ref={videoRef} autoPlay muted playsInline className="video-feed" />
                 <canvas ref={canvasRef} style={{ display: 'none' }} />
 
                 {detectedBox && (
-                  <div 
-                    className="custom-bounding-box" 
-                    style={{ 
-                      left: `${detectedBox.x}px`, 
-                      top: `${detectedBox.y}px`, 
-                      width: `${detectedBox.width}px`, 
-                      height: `${detectedBox.height}px` 
+                  <div
+                    className="custom-bounding-box"
+                    style={{
+                      left: `${detectedBox.x}px`,
+                      top: `${detectedBox.y}px`,
+                      width: `${detectedBox.width}px`,
+                      height: `${detectedBox.height}px`
                     }}
                   >
                     <div className="detection-active-pill">
@@ -332,14 +332,14 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
 
             <div className="info-section">
               {backendError && (
-                <div className="alert alert-warning m-3 text-center" style={{fontSize: '14px', borderRadius: '8px'}}>
+                <div className="alert alert-warning m-3 text-center" style={{ fontSize: '14px', borderRadius: '8px' }}>
                   ⚠️ El servidor de análisis emocional no está disponible.
                 </div>
               )}
-              
+
               {!currentEmotion && !backendError ? (
                 <div className="text-center text-muted m-4 d-flex align-items-center justify-content-center">
-                  <Spinner animation="grow" variant="primary" size="sm" className="me-2" /> 
+                  <Spinner animation="grow" variant="primary" size="sm" className="me-2" />
                   Esperando detección y análisis del rostro...
                 </div>
               ) : (
@@ -351,7 +351,7 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
                       </div>
                       <div className="ms-3">
                         <div className="analysis-title d-flex align-items-center">
-                          Análisis Activo: 
+                          Análisis Activo:
                           <span className="ms-2 me-2" style={{ fontSize: '1.3rem' }}>{getEmotionEmoji(currentEmotion.emotion)}</span>
                           <span className="text-primary">{getEmotionLabel(currentEmotion.emotion)} ({currentEmotion.confidence}%)</span>
                         </div>
@@ -360,19 +360,19 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
                         </div>
                       </div>
                     </div>
-                    
-                    <div className="confidence-meter ms-md-4" style={{width: '200px'}}>
+
+                    <div className="confidence-meter ms-md-4" style={{ width: '200px' }}>
                       <div className="d-flex justify-content-between mb-1">
-                        <span className="conf-label text-muted" style={{fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px'}}>NIVEL DE CONFIANZA</span>
-                        <span className="conf-value text-primary fw-bold" style={{fontSize: '12px'}}>{currentEmotion.confidence}%</span>
+                        <span className="conf-label text-muted" style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px' }}>NIVEL DE CONFIANZA</span>
+                        <span className="conf-value text-primary fw-bold" style={{ fontSize: '12px' }}>{currentEmotion.confidence}%</span>
                       </div>
                       <div className="progress" style={{ height: '6px', borderRadius: '4px', backgroundColor: '#e2e8f0' }}>
-                        <div 
-                          className="progress-bar bg-primary" 
-                          role="progressbar" 
+                        <div
+                          className="progress-bar bg-primary"
+                          role="progressbar"
                           style={{ width: `${currentEmotion.confidence}%`, borderRadius: '4px' }}
-                          aria-valuenow={currentEmotion.confidence} 
-                          aria-valuemin="0" 
+                          aria-valuenow={currentEmotion.confidence}
+                          aria-valuemin="0"
                           aria-valuemax="100"
                         ></div>
                       </div>
@@ -407,7 +407,7 @@ const EmotionCapture = ({ onCaptureComplete, patientId }) => {
         </div>
       )}
 
-      <div className="tips-section mt-5 text-muted text-center" style={{fontSize: '13px'}}>
+      <div className="tips-section mt-5 text-muted text-center" style={{ fontSize: '13px' }}>
         © 2024 MoCA Cognitive Assessment Platform. Todos los derechos reservados.
       </div>
     </div>

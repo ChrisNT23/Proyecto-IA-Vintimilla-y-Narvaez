@@ -23,11 +23,16 @@ const emotionCaptureSchema = mongoose.Schema(
     },
     captureType: {
       type: String,
-      enum: ['initial', 'during_test'],
+      enum: ['initial', 'during_test', 'module_transition'],
       required: true,
     },
     currentModule: {
       type: String,
+      default: null,
+    },
+    // Índice numérico del módulo (0-7) donde se capturó la emoción
+    moduleIndex: {
+      type: Number,
       default: null,
     },
     imageUrl: {
@@ -137,6 +142,20 @@ const emotionDataSchema = mongoose.Schema(
         type: Date,
         default: null,
       },
+    },
+    // Resumen emocional por módulo (calculado automáticamente)
+    // Clave: nombre del módulo, valor: { dominantEmotion, avgConfidence, captureCount }
+    moduleSummaries: {
+      type: Map,
+      of: new mongoose.Schema(
+        {
+          dominantEmotion: { type: String, default: null },
+          avgConfidence: { type: Number, default: 0 },
+          captureCount: { type: Number, default: 0 },
+        },
+        { _id: false }
+      ),
+      default: {},
     },
   },
   {
