@@ -141,14 +141,14 @@ const AlternanciaConceptualActivity = ({
   const svgSize = 450;
 
   const fixedMarkers = [
-    { label: '1', x: 50,  y: 225 },
+    { label: '1', x: 50, y: 225 },
     { label: 'A', x: 150, y: 50 },
     { label: '2', x: 300, y: 225 },
     { label: 'B', x: 400, y: 50 },
     { label: '3', x: 400, y: 400 },
     { label: 'C', x: 300, y: 350 },
     { label: '4', x: 150, y: 400 },
-    { label: 'D', x: 50,  y: 350 },
+    { label: 'D', x: 50, y: 350 },
     { label: '5', x: 200, y: 275 },
     { label: 'E', x: 250, y: 125 },
   ];
@@ -189,7 +189,7 @@ const AlternanciaConceptualActivity = ({
       const newConnections = connections.slice(0, -1);
       setConnections(newConnections);
       setAnswers(prev => prev.slice(0, -1));
-      
+
       if (newConnections.length === initialConnections.length) {
         setSelectedMarker(null);
       } else {
@@ -279,7 +279,7 @@ const AlternanciaConceptualActivity = ({
       {/* Instruction Card */}
       <div className="p-4 mb-4" style={{ backgroundColor: '#fff', borderLeft: '4px solid #00A0E3', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.04)' }}>
         <p className="mb-0 text-dark" style={{ fontSize: '16px', lineHeight: '1.5' }}>
-          Dibuje una línea alternando entre cifras y letras, respetando el orden numérico y alfabético.<br/>
+          Dibuje una línea alternando entre cifras y letras, respetando el orden numérico y alfabético.<br />
           Inicie en <strong>1</strong> y termine en <strong>E</strong>.
         </p>
       </div>
@@ -294,12 +294,12 @@ const AlternanciaConceptualActivity = ({
           borderRadius: '16px',
           pointerEvents: 'none'
         }} />
-        
+
         <div className="d-flex justify-content-end mb-2 position-relative" style={{ zIndex: 10 }}>
-          <Button 
-            variant="light" 
-            size="sm" 
-            className="d-flex align-items-center bg-white rounded shadow-sm border" 
+          <Button
+            variant="light"
+            size="sm"
+            className="d-flex align-items-center bg-white rounded shadow-sm border"
             style={{ fontSize: '11px', fontWeight: '600', color: '#666', letterSpacing: '0.5px' }}
             onClick={toggleFullScreen}
           >
@@ -381,18 +381,18 @@ const AlternanciaConceptualActivity = ({
 
         {/* Canvas controls */}
         <div className="d-flex justify-content-center gap-4 mt-4 pt-3" style={{ position: 'relative', zIndex: 50, borderTop: '1px solid #F0F0F0' }}>
-          <Button 
-            variant="light" 
-            className="rounded-circle shadow-sm bg-white border d-flex justify-content-center align-items-center p-0" 
+          <Button
+            variant="light"
+            className="rounded-circle shadow-sm bg-white border d-flex justify-content-center align-items-center p-0"
             style={{ width: '50px', height: '50px' }}
             onClick={handleUndo}
             title="Deshacer (Atrás)"
           >
             <FaUndo style={{ display: 'block', width: '20px', height: '20px', color: '#6c757d' }} />
           </Button>
-          <Button 
-            variant="light" 
-            className="rounded-circle shadow-sm bg-white border d-flex justify-content-center align-items-center p-0" 
+          <Button
+            variant="light"
+            className="rounded-circle shadow-sm bg-white border d-flex justify-content-center align-items-center p-0"
             style={{ width: '50px', height: '50px' }}
             onClick={handleReset}
             title="Borrar (Reiniciar)"
@@ -552,7 +552,7 @@ const CuboActivity = ({
       const numericScore = Number(data.score);
       setCubeScore(numericScore);
 
-      if (Number(data.score) === 1){
+      if (Number(data.score) === 1) {
         setAlertMessage('¡Buen trabajo! El dibujo del cubo cumple los criterios establecidos.');
         setAlertVariant('success');
         console.log("Score recibido:", data.score, typeof data.score);

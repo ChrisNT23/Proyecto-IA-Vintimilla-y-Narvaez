@@ -1,5 +1,5 @@
 @echo off
 REM Script para iniciar el servidor Python en Windows
-cd backend
-python model_server.py
+call "%~dp0venv\Scripts\activate.bat"
+python "%~dp0model_server.py"
 

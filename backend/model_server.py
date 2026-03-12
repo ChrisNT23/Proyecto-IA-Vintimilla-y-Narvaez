@@ -22,7 +22,7 @@ CORS(app)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 MODEL_CUBE_PATH = os.path.join(BASE_DIR, 'model_cube.h5')
-MODEL_CLOCK_PATH = os.path.join(BASE_DIR, 'model_clock.h5')
+MODEL_CLOCK_PATH = os.path.join(BASE_DIR, 'model_clock.keras')
 # Link to the newly trained emotion model
 MODEL_EMOTIONS_PATH = os.path.join(ROOT_DIR, 'models', 'emotion_model_final.keras')
 
@@ -61,7 +61,13 @@ def load_model_safely(path, name):
 
 # Initial Load
 model_cube = load_model_safely(MODEL_CUBE_PATH, "CUBE")
-model_clock = load_model_safely(MODEL_CLOCK_PATH, "CLOCK")
+model_clock = tf.keras.models.load_model(
+    os.path.join(BASE_DIR, 'model_clock.keras'),
+    compile=False
+)
+
+print("Loaded model outputs:", model_clock.outputs)
+print("Output count:", len(model_clock.outputs))
 model_emotions = load_model_safely(MODEL_EMOTIONS_PATH, "EMOTIONS")
 
 # FER Classes
@@ -174,31 +180,57 @@ def evaluate_cube():
 def evaluate_clock():
     if model_clock is None:
         return jsonify({"error": "Clock model not loaded"}), 500
-    
+
     try:
         data = request.get_json()
         image_data = data.get('image', '')
+
+        if not image_data or ',' not in image_data:
+            return jsonify({"error": "Invalid image data"}), 400
+
         header, encoded = image_data.split(',', 1)
         img_bytes = base64.b64decode(encoded)
-        img = Image.open(io.BytesIO(img_bytes))
-        
+        img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+
         img_array = preprocess_for_clock(img)
         preds = model_clock.predict(img_array, verbose=0)
-        
-        # Assuming multi-label output [circle, numbers, hands]
-        p_contorno = 1 if float(preds[0][0]) >= 0.5 else 0
-        p_numeros  = 1 if float(preds[0][1]) >= 0.5 else 0
-        p_agujas   = 1 if float(preds[0][2]) >= 0.5 else 0
-        
+        print(type(preds))
+        print(len(preds))
+        print(preds)
+        print([p.shape for p in preds])
+        # Cada salida es independiente: contorno, numeros, agujas
+        prob_contorno = float(np.squeeze(preds[0]))
+        prob_numeros  = float(np.squeeze(preds[1]))
+        prob_agujas   = float(np.squeeze(preds[2]))
+
+        p_contorno = 1 if prob_contorno >= 0.8 else 0
+        p_numeros  = 1 if prob_numeros  >= 0.9 else 0
+        p_agujas   = 1 if prob_agujas   >= 0.9 else 0
+
         total = p_contorno + p_numeros + p_agujas
-        logger.info(f"[CLOCK] Result: {total}/3")
-        
+
+        logger.info(
+            f"[CLOCK] contorno={prob_contorno:.4f}, numeros={prob_numeros:.4f}, agujas={prob_agujas:.4f} -> total={total}"
+        )
+
         return jsonify({
             "score": total,
-            "detail": {"contorno": p_contorno, "numeros": p_numeros, "agujas": p_agujas}
+            "detail": {
+                "contorno": p_contorno,
+                "numeros": p_numeros,
+                "agujas": p_agujas
+            },
+            "probabilities": {
+                "contorno": round(prob_contorno, 4),
+                "numeros": round(prob_numeros, 4),
+                "agujas": round(prob_agujas, 4)
+            }
         })
+
     except Exception as e:
-        logger.error(f"Error evaluating clock: {e}")
+        logger.error(f"Clock evaluation error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/evaluate-emotion', methods=['POST'])

@@ -228,8 +228,8 @@ print("\n=== FASE 2: Fine-Tuning ===")
 
 base_model.trainable = True
 
-# Descongelar solo últimas 20 capas
-for layer in base_model.layers[:-20]:
+# Descongelar solo últimas 30 capas
+for layer in base_model.layers[:-30]:
     layer.trainable = False
 
 model.compile(

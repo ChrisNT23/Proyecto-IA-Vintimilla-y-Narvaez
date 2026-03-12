@@ -264,124 +264,124 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
       {/* Mostrando lectura de secuencia */}
       {(stage === STAGE_FIRST_SEQUENCE_READ ||
         stage === STAGE_SECOND_SEQUENCE_READ) && (
-        <div className="text-center mt-3">
-          <Spinner animation="grow" variant="primary" />
-          <p className="mt-3">
-            {stage === STAGE_FIRST_SEQUENCE_READ
-              ? "Le leeré una serie de números, repítalos en el mismo orden."
-              : "Le leeré otra serie de números, repítalos en orden inverso."}
-          </p>
-        </div>
-      )}
+          <div className="text-center mt-3">
+            <Spinner animation="grow" variant="primary" />
+            <p className="mt-3">
+              {stage === STAGE_FIRST_SEQUENCE_READ
+                ? "Le leeré una serie de números, repítalos en el mismo orden."
+                : "Le leeré otra serie de números, repítalos en orden inverso."}
+            </p>
+          </div>
+        )}
 
       {/* Usuario repite secuencia */}
       {(stage === STAGE_FIRST_SEQUENCE_RECALL ||
         stage === STAGE_SECOND_SEQUENCE_RECALL) && !message && (
-        <div className="text-center mt-3">
-          <p>
-            {stage === STAGE_FIRST_SEQUENCE_RECALL
-              ? "Repita los números en el mismo orden."
-              : "Repita los números en orden inverso."}
-          </p>
-          {listening ? (
-            <div>
-              <Spinner animation="grow" variant="primary" />
-              <p className="mt-2">Escuchando...</p>
+          <div className="text-center mt-3">
+            <p>
+              {stage === STAGE_FIRST_SEQUENCE_RECALL
+                ? "Repita los números en el mismo orden."
+                : "Repita los números en orden inverso."}
+            </p>
+            {listening ? (
+              <div>
+                <Spinner animation="grow" variant="primary" />
+                <p className="mt-2">Escuchando...</p>
+                <Button
+                  className="activity-button"
+                  variant="danger"
+                  onClick={handleStopListening}
+                >
+                  Detener
+                </Button>
+              </div>
+            ) : (
               <Button
-                className="activity-button"
-                variant="danger"
-                onClick={handleStopListening}
+                className="activity-button d-flex align-items-center justify-content-center mx-auto mb-3"
+                onClick={handleStartRecall}
+                disabled={!recognitionSupported}
               >
-                Detener
+                <FaMicrophone className="me-2" />
+                Hablar
               </Button>
-            </div>
-          ) : (
-            <Button
-              className="activity-button d-flex align-items-center justify-content-center mx-auto mb-3"
-              onClick={handleStartRecall}
-              disabled={!recognitionSupported}
-            >
-              <FaMicrophone className="me-2" />
-              Hablar
-            </Button>
-          )}
+            )}
 
-          {showButtons && (
+            {showButtons && (
+              <div className="mt-3">
+                <Alert variant="secondary">
+                  <p>¿Es correcta su respuesta?</p>
+                  <strong>{transcript}</strong>
+                </Alert>
+                <Row>
+                  <Col className="d-flex justify-content-start">
+                    <Button
+                      className="activity-button me-3"
+                      variant="warning"
+                      onClick={() => {
+                        setTranscript("");
+                        setShowButtons(false);
+                        handleStartRecall();
+                      }}
+                    >
+                      Reintentar
+                    </Button>
+                  </Col>
+                  <Col className="d-flex justify-content-end">
+                    <Button
+                      className="activity-button"
+                      variant="success"
+                      onClick={handleConfirmResponse}
+                    >
+                      Sí
+                    </Button>
+                  </Col>
+                </Row>
+              </div>
+            )}
+
+            {/* Entrada manual */}
+            <Form
+              onSubmit={(e) => e.preventDefault()}
+              className="mt-3 d-flex flex-column align-items-center"
+            >
+              <Form.Control
+                type="text"
+                placeholder="Escriba los números separados por espacios o comas"
+                value={manualInputValue}
+                onChange={(e) => setManualInputValue(e.target.value)}
+                onKeyPress={handleManualKeyPress}
+                style={{ maxWidth: "350px" }}
+              />
+              <Button
+                className="activity-button mt-2"
+                variant="success"
+                onClick={handleAddManualSequence}
+              >
+                Agregar
+              </Button>
+            </Form>
+
             <div className="mt-3">
-              <Alert variant="secondary">
-                <p>¿Es correcta su respuesta?</p>
-                <strong>{transcript}</strong>
-              </Alert>
-              <Row>
-                <Col className="d-flex justify-content-start">
-                  <Button
-                    className="activity-button me-3"
-                    variant="warning"
-                    onClick={() => {
-                      setTranscript("");
-                      setShowButtons(false);
-                      handleStartRecall();
-                    }}
-                  >
-                    Reintentar
-                  </Button>
-                </Col>
-                <Col className="d-flex justify-content-end">
-                  <Button
-                    className="activity-button"
-                    variant="success"
-                    onClick={handleConfirmResponse}
-                  >
-                    Sí
-                  </Button>
-                </Col>
-              </Row>
+              <p>Números recordados:</p>
+              <ul>
+                {(stage === STAGE_FIRST_SEQUENCE_RECALL
+                  ? responses.first
+                  : responses.second
+                ).map((number, index) => (
+                  <li key={index}>{number}</li>
+                ))}
+              </ul>
             </div>
-          )}
 
-          {/* Entrada manual */}
-          <Form
-            onSubmit={(e) => e.preventDefault()}
-            className="mt-3 d-flex flex-column align-items-center"
-          >
-            <Form.Control
-              type="text"
-              placeholder="Escriba los números separados por espacios o comas"
-              value={manualInputValue}
-              onChange={(e) => setManualInputValue(e.target.value)}
-              onKeyPress={handleManualKeyPress}
-              style={{ maxWidth: "350px" }}
-            />
             <Button
-              className="activity-button mt-2"
-              variant="success"
-              onClick={handleAddManualSequence}
+              className="activity-button mt-3 mx-auto d-block"
+              variant="secondary"
+              onClick={handleNoMoreWords}
             >
-              Agregar
+              No recuerdo más
             </Button>
-          </Form>
-
-          <div className="mt-3">
-            <p>Números recordados:</p>
-            <ul>
-              {(stage === STAGE_FIRST_SEQUENCE_RECALL
-                ? responses.first
-                : responses.second
-              ).map((number, index) => (
-                <li key={index}>{number}</li>
-              ))}
-            </ul>
           </div>
-
-          <Button
-            className="activity-button mt-3 mx-auto d-block"
-            variant="secondary"
-            onClick={handleNoMoreWords}
-          >
-            No recuerdo más
-          </Button>
-        </div>
-      )}
+        )}
 
       {/* Final */}
       {stage === STAGE_FINAL && (
