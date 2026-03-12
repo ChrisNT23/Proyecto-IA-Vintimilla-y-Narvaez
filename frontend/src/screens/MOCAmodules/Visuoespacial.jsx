@@ -4,10 +4,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button, Alert, Spinner, Form, Row, Col } from 'react-bootstrap';
 import { FaPlay, FaStop, FaUndo, FaTrash, FaArrowRight, FaExpand } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
+import { buildMocaResult } from './helpers/mocaResultBuilder';
 import '../../assets/styles/mocamodules.css';
 import cubo from '../../images/cubo_image.jpg';
 
-const Visuoespacial = ({ onComplete, onPrevious, isFirstModule }) => {
+const Visuoespacial = ({ onComplete, onPrevious, isFirstModule, patientId }) => {
   const userInfo = useSelector((state) => state.auth.userInfo);
   const isAdmin = userInfo?.isAdmin || false;
 
@@ -43,14 +44,20 @@ const Visuoespacial = ({ onComplete, onPrevious, isFirstModule }) => {
   const handleNext = () => {
     if (currentActivity < 2) {
       setCurrentActivity(currentActivity + 1);
-    } else {
       const totalScore =
         (alternanciaScore || 0) + (cubeScore || 0) + (clockScore || 0);
+
+      const standardResults = [
+        buildMocaResult("Alternancia Conceptual", alternanciaScore),
+        buildMocaResult("Cubo", cubeScore),
+        buildMocaResult("Reloj", clockScore)
+      ];
 
       onComplete(totalScore, {
         alternancia: alternanciaScore,
         cube: cubeScore,
         clock: clockScore,
+        standardResults
       });
     }
   };
@@ -80,6 +87,8 @@ const Visuoespacial = ({ onComplete, onPrevious, isFirstModule }) => {
           speakInstructions={speakInstructions}
           isFirstModule={isFirstModule}
           isAdmin={isAdmin}
+          patientId={patientId}
+          userInfo={userInfo}
         />
       )}
       {currentActivity === 1 && (
@@ -135,6 +144,8 @@ const AlternanciaConceptualActivity = ({
   speakInstructions,
   isFirstModule,
   isAdmin,
+  patientId,
+  userInfo,
 }) => {
   const containerRef = useRef(null);
   const labels = ['1', 'A', '2', 'B', '3', 'C', '4', 'D', '5', 'E'];
@@ -160,16 +171,31 @@ const AlternanciaConceptualActivity = ({
 
   const [markers] = useState(fixedMarkers);
   const [connections, setConnections] = useState(initialConnections);
-  const [selectedMarker, setSelectedMarker] = useState(null);
+  const [selectedMarker, setSelectedMarker] = useState(2); // Iniciar en el punto '2' ya conectado
   const [mousePosition, setMousePosition] = useState(null);
   const [score, setScore] = useState(null);
   const [answers, setAnswers] = useState([]);
 
+  // Estados para la integración con el servicio
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertVariant, setAlertVariant] = useState('success');
+
   const handleMarkerClick = (index) => {
     if (selectedMarker !== null && selectedMarker !== index) {
-      setConnections((prev) => [...prev, { from: selectedMarker, to: index, dashed: false }]);
+      // Evitar agregar conexiones duplicadas
+      const exists = connections.some(c => 
+        (c.from === selectedMarker && c.to === index) || 
+        (c.from === index && c.to === selectedMarker)
+      );
+      
+      if (!exists) {
+        setConnections((prev) => [...prev, { from: selectedMarker, to: index, dashed: false }]);
+        setAnswers((prev) => [...prev, `${markers[selectedMarker].label}-${markers[index].label}`]);
+      }
       setSelectedMarker(index);
-      setAnswers((prev) => [...prev, `${markers[selectedMarker].label}-${markers[index].label}`]);
     } else {
       setSelectedMarker(index);
     }
@@ -177,11 +203,14 @@ const AlternanciaConceptualActivity = ({
 
   const handleReset = () => {
     setConnections(initialConnections);
-    setSelectedMarker(null);
+    setSelectedMarker(2); // Resetear a la posición inicial '2'
     setMousePosition(null);
     setScore(null);
     setAnswers([]);
     setAlternanciaScore(null);
+    setShowAlert(false);
+    setError(null);
+    setIsLoading(false);
   };
 
   const handleUndo = () => {
@@ -230,24 +259,60 @@ const AlternanciaConceptualActivity = ({
     }
   };
 
-  const evaluateSequence = () => {
-    const correctSequence = ['1', 'A', '2', 'B', '3', 'C', '4', 'D', '5', 'E'];
+  const evaluateSequence = async () => {
+    setIsLoading(true);
+    setError(null);
+
     const userSequence = connections.map((conn) => markers[conn.from]?.label);
-    userSequence.push(markers[connections[connections.length - 1]?.to]?.label);
+    const lastPoint = markers[connections[connections.length - 1]?.to]?.label;
+    if (lastPoint) userSequence.push(lastPoint);
 
-    const isCorrect =
-      correctSequence.length === userSequence.length &&
-      correctSequence.every((label, index) => label === userSequence[index]);
+    try {
+      const response = await fetch('/api/evaluate-alternancia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          sequence: userSequence,
+          userId: patientId || userInfo?._id,
+          module: 'Visuoespacial',
+          subtest: 'Alternancia Conceptual'
+        })
+      });
 
-    const calculatedScore = isCorrect ? 1 : 0;
-    setScore(calculatedScore);
-    setAlternanciaScore(calculatedScore);
-    console.log("Score recibido:", calculatedScore, typeof calculatedScore);
+      if (!response.ok) {
+        throw new Error(`Error en la petición: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("Secuencia enviada:", userSequence);
+      console.log("Respuesta completa del servidor:", data);
+
+      const numericScore = Number(data.score);
+      setScore(numericScore);
+      setAlternanciaScore(numericScore);
+
+      if (numericScore === 1) {
+        setAlertMessage('¡Excelente! La secuencia es correcta.');
+        setAlertVariant('success');
+      } else {
+        setAlertMessage('La secuencia no es correcta.');
+        setAlertVariant('danger');
+      }
+      setShowAlert(true);
+    } catch (err) {
+      console.error("Error al evaluar secuencia:", err);
+      setError("Hubo un problema al conectar con el servicio de evaluación.");
+      setAlertMessage("Error al evaluar la secuencia. Intenta nuevamente.");
+      setAlertVariant('danger');
+      setShowAlert(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleContinue = () => {
-    if (score === null) {
-      evaluateSequence();
+  const handleContinue = async () => {
+    if (score === null && !error) {
+      await evaluateSequence();
     }
     handleNext();
   };
@@ -400,6 +465,24 @@ const AlternanciaConceptualActivity = ({
             <FaTrash style={{ display: 'block', width: '20px', height: '20px', color: '#dc3545' }} />
           </Button>
         </div>
+
+        {showAlert && (
+          <Alert
+            variant={alertVariant}
+            onClose={() => setShowAlert(false)}
+            dismissible
+            className="mt-3 text-center position-relative"
+            style={{ zIndex: 10 }}
+          >
+            {alertMessage}
+          </Alert>
+        )}
+
+        {error && (
+          <Alert variant="danger" className="mt-3 text-center position-relative" style={{ zIndex: 10 }}>
+            {error}
+          </Alert>
+        )}
       </div>
 
       {isAdmin && (
@@ -416,10 +499,18 @@ const AlternanciaConceptualActivity = ({
       <div className="d-flex justify-content-end mt-4">
         <Button
           onClick={handleContinue}
+          disabled={isLoading}
           className="d-flex align-items-center px-4 py-2 rounded-3 shadow-sm"
           style={{ backgroundColor: '#217FE5', border: 'none', fontWeight: '500', fontSize: '15px' }}
         >
-          Continuar <FaArrowRight className="ms-2" />
+          {isLoading ? (
+            <>
+              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+              Evaluando...
+            </>
+          ) : (
+            <>Continuar <FaArrowRight className="ms-2" /></>
+          )}
         </Button>
       </div>
     </div>
