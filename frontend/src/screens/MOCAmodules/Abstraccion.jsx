@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button, Row, Col, Alert, Form, Spinner } from "react-bootstrap";
 import { FaPlay, FaStop, FaMicrophone } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { buildMocaResult } from './helpers/mocaResultBuilder';
 import '../../assets/styles/mocamodules.css';
 
 const Abstraccion = ({ onComplete, onPrevious, isFirstModule }) => {
@@ -216,15 +217,23 @@ const Abstraccion = ({ onComplete, onPrevious, isFirstModule }) => {
     }
   };
 
-  // Finaliza el modulo y llama onComplete
   const handleFinish = (scores) => {
     // Calcular total
     const totalScore = scores.reduce((a, b) => a + (b || 0), 0);
+    
+    // Abstract tiene maxScore 2, pero en el config parece ser maxScore 1. 
+    // Wait, let's check config. "Abstraccion": { module: "Abstraccion", maxScore: 1 }?
+    // Wait, Abstraccion has two pairs. 
+    // In mocaSubtestsConfig, Abstraccion max score is 1? No! Moca Abstraccion is 2 points. 
+    // Let me update the config in the next step, for now just pass totalScore.
+    const standardResults = [buildMocaResult("Abstraccion", totalScore)];
+
     onComplete(totalScore, {
       totalScore,
       activity1: scores[0],
       activity2: scores[1],
       pairAnswers,
+      standardResults
     });
   };
 

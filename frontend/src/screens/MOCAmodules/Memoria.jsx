@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button, Row, Col, Form, Alert, Spinner } from "react-bootstrap";
 import { FaPlay, FaStop, FaMicrophone, FaArrowRight, FaPlus, FaTimes } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { buildMocaResult } from './helpers/mocaResultBuilder';
 import '../../assets/styles/mocamodules.css';
 
 const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
@@ -237,7 +238,10 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
         score++;
       }
     });
-    onComplete(score, { responses: uniqueResponses });
+
+    const standardResults = [buildMocaResult("Memoria", score)];
+
+    onComplete(score, { responses: uniqueResponses, standardResults });
   };
 
   // ─── PANTALLA INTRO (antes de empezar) ───────────────────────────────────

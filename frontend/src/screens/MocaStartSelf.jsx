@@ -16,6 +16,7 @@ import {
 import { useSelector } from "react-redux";
 import { useGetPatientsQuery, useUpdatePatientMutation } from "../slices/patientApiSlice";
 import { useCreateMocaSelfMutation } from "../slices/mocaSelfApiSlice";
+import { buildMocaSummary } from "./MOCAmodules/helpers/mocaSummaryBuilder";
 import EmotionCapture from "../components/EmotionCapture";
 import Visuoespacial from "./MOCAmodules/Visuoespacial";
 import Identificacion from "./MOCAmodules/Identificacion";
@@ -368,13 +369,25 @@ const MocaStartSelf = () => {
       adjustedScore += 1;
     }
 
+    // Consolidar resultados estandarizados
+    const allStandardResults = [];
+    Object.values(finalIndividualScores).forEach(moduleData => {
+      if (moduleData && Array.isArray(moduleData.standardResults)) {
+        allStandardResults.push(...moduleData.standardResults);
+      }
+    });
+    
+    // Construir el JSON de resultados homogeneizados
+    const summaryData = buildMocaSummary(selectedPatient._id, allStandardResults);
+
     const mocaData = {
       patientId: selectedPatient._id,
       patientName: selectedPatient.user?.name || "Paciente Desconocido",
       modulesData: finalIndividualScores,
       totalScore: adjustedScore,
       hasLessThan12YearsOfEducation,
-      emotionDataId: emotionDataIdRef.current || null, // Vincula las capturas emocionales al test
+      emotionDataId: emotionDataIdRef.current || null,
+      consolidatedResults: summaryData // <-- Nuevo campo consolidado
     };
 
     try {
@@ -844,6 +857,7 @@ const MocaStartSelf = () => {
                     }
                     onPrevious={handlePreviousModule}
                     isFirstModule={currentModuleIndex === 0}
+                    patientId={id}
                   />
                 </Col>
               </Row>

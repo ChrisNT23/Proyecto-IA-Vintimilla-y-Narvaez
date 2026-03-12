@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button, Row, Col, Image, Alert, Form, Spinner } from "react-bootstrap";
 import { FaPlay, FaStop, FaMicrophone, FaVolumeUp, FaCheckCircle, FaRedo } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { buildMocaResult } from './helpers/mocaResultBuilder';
 import '../../assets/styles/mocamodules.css';
 
 const Identificacion = ({ onComplete, onPrevious, isFirstModule }) => {
@@ -195,7 +196,16 @@ const Identificacion = ({ onComplete, onPrevious, isFirstModule }) => {
         totalScore += scores[animal.id];
       }
     });
-    onComplete(totalScore, scores);
+
+    const standardResults = [
+      buildMocaResult("Identificacion", totalScore)
+    ];
+
+    onComplete(totalScore, {
+      ...scores,
+      totalScore,
+      standardResults
+    });
   };
 
   const handlePreviousAnimal = () => {

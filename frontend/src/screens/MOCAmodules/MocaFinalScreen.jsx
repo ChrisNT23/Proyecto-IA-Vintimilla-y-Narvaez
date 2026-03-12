@@ -41,6 +41,20 @@ const MocaFinalScreen = () => {
     navigate("/"); // Ajusta la ruta según tu aplicación
   };
 
+  // Agrupar resultados por módulo (debe ir antes de los retornos tempranos)
+  const groupedResults = React.useMemo(() => {
+    if (!mocaRecord || !Array.isArray(mocaRecord.consolidatedResults)) return {};
+    
+    return mocaRecord.consolidatedResults.reduce((acc, result) => {
+      const { module } = result;
+      if (!acc[module]) {
+        acc[module] = [];
+      }
+      acc[module].push(result);
+      return acc;
+    }, {});
+  }, [mocaRecord]);
+
   // Manejo de estados nulos o indefinidos en mocaRecord
   if (isLoading) {
     return (
@@ -78,41 +92,9 @@ const MocaFinalScreen = () => {
     );
   }
 
-  // Mapeo de módulos y actividades con nombres descriptivos y puntajes máximos
-  const moduleActivityMapping = {
-    "Visuoespacial/Ejecutivo": {
-      diagram: { displayName: "Diagrama", maxScore: 1 },
-      cube: { displayName: "Cubo", maxScore: 1 },
-      clock: { displayName: "Reloj", maxScore: 3 },
-    },
-    "Denominacion": {
-      leon: { displayName: "León", maxScore: 1 },
-      rinoceronte: { displayName: "Rinoceronte", maxScore: 1 },
-      camello: { displayName: "Camello", maxScore: 1 },
-    },
-    "Memoria/Atencion": {
-      memory: { displayName: "Memoria", maxScore: 1 },
-      digitsForward: { displayName: "Dígitos Directo", maxScore: 1 },
-      digitsBackward: { displayName: "Dígitos Inverso", maxScore: 1 },
-      letterTap: { displayName: "Letra A", maxScore: 1 },
-      serialSubtraction: { displayName: "Sustracción 7s", maxScore: 3 },
-    },
-    "Lenguaje": {
-      sentence1: { displayName: "Frase 1", maxScore: 1 },
-      sentence2: { displayName: "Frase 2", maxScore: 1 },
-      wordsF: { displayName: "Palabras con F", maxScore: 1 },
-    },
-    "Abstraccion": {
-      similarity1: { displayName: "Tren - Bicicleta", maxScore: 1 },
-      similarity2: { displayName: "Reloj - Regla", maxScore: 1 },
-    },
-    "RecuerdoDiferido": {
-      delayedRecall: { displayName: "Recuerdo Diferido", maxScore: 5 },
-    },
-    "Orientacion": {
-      orientation: { displayName: "Orientación", maxScore: 6 },
-    },
-  };
+  // Mapeo omitido. Se usará consolidatedResults directamente en la medida de lo posible.
+  // Sin embargo, para mantener el gráfico y la estructura de la UI lo más parecido posible,
+  // agruparemos los resultados consolidados por módulo.
 
   // Función para capitalizar la primera letra
   const capitalizeFirstLetter = (string) => {
@@ -145,113 +127,20 @@ const MocaFinalScreen = () => {
     return "danger";                            // Rojo
   };
 
-  // Función para formatear la respuesta adecuadamente
-  const formatResponse = (response) => {
-    if (Array.isArray(response)) {
-      // Si es un arreglo, renderizar una lista
-      return (
-        <ul>
-          {response.map((item, index) => (
-            <li key={index}>
-              {typeof item === "object" && item !== null 
-                ? Object.entries(item).map(([key, val], idx) => (
-                    <span key={idx}>
-                      {capitalizeFirstLetter(key)}: {val}
-                      <br />
-                    </span>
-                  ))
-                : item}
-            </li>
-          ))}
-        </ul>
-      );
-    } else if (typeof response === "object" && response !== null) {
-      // Si es un objeto, renderizar una tabla anidada o una lista de pares clave-valor
-      return (
-        <Table striped bordered hover size="sm">
-          <tbody>
-            {Object.entries(response).map(([key, value], index) => (
-              <tr key={index}>
-                <td><strong>{capitalizeFirstLetter(key)}</strong></td>
-                <td>
-                  {Array.isArray(value)
-                    ? formatResponse(value)
-                    : typeof value === "object" && value !== null
-                    ? formatResponse(value)
-                    : value !== null && value !== undefined
-                    ? value.toString()
-                    : "-"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      );
-    } else {
-      // Si es un valor primitivo, renderizarlo directamente
-      return response !== null && response !== undefined ? response.toString() : "-";
-    }
-  };
+  // Función para renderizar detalles de cada módulo en el Accordion usando consolidatedResults
+  const renderModuleDetails = (moduleName, results) => {
+    if (!results || results.length === 0) return null;
 
-  // Función para renderizar detalles de cada módulo en el Accordion
-  const renderModuleDetails = (moduleName, data) => {
-    const activities = moduleActivityMapping[moduleName];
-
-    if (!activities) {
-      // Si no hay actividades para este módulo, mostrar tabla con puntajes de 0 y sin gráfico
-      return (
-        <Accordion.Item eventKey={moduleName} key={moduleName}>
-          <Accordion.Header>{capitalizeFirstLetter(moduleName)}</Accordion.Header>
-          <Accordion.Body>
-            <Table striped bordered hover responsive>
-              <thead>
-                <tr>
-                  <th>Actividad</th>
-                  <th>Puntaje</th>
-                  <th>Respuesta</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>-</td>
-                  <td>
-                    <Badge bg="danger">
-                      0 / 0
-                    </Badge>
-                  </td>
-                  <td>-</td>
-                </tr>
-              </tbody>
-            </Table>
-            {/* No se muestra el gráfico de pastel */}
-          </Accordion.Body>
-        </Accordion.Item>
-      );
-    }
-
-    // Preparar datos para el gráfico de pastel
-    let obtainedTotal = 0;
-    let maxTotal = 0;
-
-    Object.entries(activities).forEach(([key, info]) => {
-      const activityData = data[key];
-      if (activityData !== undefined && activityData !== null) {
-        if (typeof activityData === "number") {
-          obtainedTotal += activityData;
-        } else if (typeof activityData === "object") {
-          obtainedTotal += activityData.activityScore || 0;
-        }
-      }
-      maxTotal += info.maxScore;
-    });
+    // Calcular totales del módulo
+    const moduleTotalScore = results.reduce((sum, r) => sum + (r.score || 0), 0);
+    const moduleMaxScore = results.reduce((sum, r) => sum + (r.maxScore || 1), 0);
 
     const pieData = [
-      { name: "Obtenido", value: obtainedTotal },
-      { name: "Restante", value: maxTotal - obtainedTotal },
+      { name: "Obtenido", value: moduleTotalScore },
+      { name: "Restante", value: moduleMaxScore - moduleTotalScore },
     ];
 
-    // Verificar si hay actividades para mostrar el gráfico
-    const showPieChart = maxTotal > 0;
+    const showPieChart = moduleMaxScore > 0;
 
     return (
       <Accordion.Item eventKey={moduleName} key={moduleName}>
@@ -264,134 +153,33 @@ const MocaFinalScreen = () => {
                   <tr>
                     <th>Actividad</th>
                     <th>Puntaje</th>
-                    <th>Respuesta</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.entries(activities).map(([activityKey, info], index) => {
-                    const { displayName, maxScore } = info;
-                    const activityData = data[activityKey];
-
-                    let obtainedScore = "-";
-                    let response = "-";
-
-                    if (activityData !== undefined && activityData !== null) {
-                      if (typeof activityData === "number") {
-                        obtainedScore = activityData;
-                      } else if (typeof activityData === "object") {
-                        if ("activityScore" in activityData) {
-                          obtainedScore = activityData.activityScore !== null && activityData.activityScore !== undefined
-                            ? activityData.activityScore
-                            : "-";
-                        } else if ("score" in activityData) {
-                          obtainedScore = activityData.score !== null && activityData.score !== undefined
-                            ? activityData.score
-                            : "-";
-                        }
-                      }
-
-                      // Extraer respuestas según estructura
-                      if (activityData && typeof activityData === "object") {
-                        if ("phraseAnswers" in activityData && Array.isArray(activityData.phraseAnswers)) {
-                          response = (
-                            <ul>
-                              {activityData.phraseAnswers.map((ans, idx) => (
-                                <li key={idx}>
-                                  {ans.phraseIndex !== undefined ? `Frase ${ans.phraseIndex + 1}: ` : ""}
-                                  {ans.response}
-                                </li>
-                              ))}
-                            </ul>
-                          );
-                        } else if ("words" in activityData && Array.isArray(activityData.words)) {
-                          response = activityData.words.length > 0 ? activityData.words.join(", ") : "-";
-                        } else if ("pairAnswers" in activityData) {
-                          if (Array.isArray(activityData.pairAnswers)) {
-                            response = (
-                              <ul>
-                                {activityData.pairAnswers.map((ans, idx) => (
-                                  <li key={idx}>
-                                    {ans.pairIndex !== undefined ? `Pares ${ans.pairIndex + 1}: ` : ""}
-                                    {ans.input} {ans.correct !== undefined ? (ans.correct ? "✓" : "✗") : ""}
-                                  </li>
-                                ))}
-                              </ul>
-                            );
-                          } else if (typeof activityData.pairAnswers === "object" && activityData.pairAnswers !== null) {
-                            response = formatResponse(activityData.pairAnswers);
-                          }
-                        } else if ("responses" in activityData && Array.isArray(activityData.responses)) {
-                          response = (
-                            <ul>
-                              {activityData.responses.map((resp, idx) => (
-                                <li key={idx}>{resp}</li>
-                              ))}
-                            </ul>
-                          );
-                        } else if ("multipleChoiceAnswers" in activityData && typeof activityData.multipleChoiceAnswers === "object") {
-                          response = (
-                            <ul>
-                              {Object.entries(activityData.multipleChoiceAnswers).map(([key, val], idx) => (
-                                <li key={idx}>{`${capitalizeFirstLetter(key)}: ${val}`}</li>
-                              ))}
-                            </ul>
-                          );
-                        } else if ("date" in activityData && typeof activityData.date === "object") {
-                          const { day, month, year } = activityData.date;
-                          response = `${day}/${month}/${year}`;
-                        } else if ("spontaneousAnswers" in activityData && Array.isArray(activityData.spontaneousAnswers)) {
-                          response = (
-                            <ul>
-                              {activityData.spontaneousAnswers.length > 0 
-                                ? activityData.spontaneousAnswers.map((ans, idx) => (
-                                    <li key={idx}>{ans}</li>
-                                  )) 
-                                : "-"}
-                            </ul>
-                          );
-                        } else {
-                          response = formatResponse(activityData);
-                        }
-                      }
-                    }
-
-                    // Determinar el color del puntaje
-                    const scoreColor = obtainedScore !== "-" ? getScoreColor(obtainedScore, maxScore) : "secondary";
-
+                  {results.map((result, idx) => {
+                    const scoreColor = getScoreColor(result.score, result.maxScore);
                     return (
-                      <tr key={activityKey}>
-                        <td>{displayName}</td>
+                      <tr key={idx}>
+                        <td>{result.subtest}</td>
                         <td>
                           <Badge bg={scoreColor}>
-                            {obtainedScore} / {maxScore}
+                            {result.score} / {result.maxScore}
                           </Badge>
                         </td>
-                        <td>{response}</td>
                       </tr>
                     );
                   })}
-                  {/* Mostrar la fila de total dentro del Accordion */}
-                  {("total" in data || "totalScore" in data || "spontaneousScore" in data) && (
-                    <tr>
-                      <td><strong>Total</strong></td>
-                      <td>
-                        <Badge bg="primary">
-                          {data.total !== undefined
-                            ? data.total
-                            : data.totalScore !== undefined
-                            ? data.totalScore
-                            : data.spontaneousScore !== undefined
-                            ? data.spontaneousScore
-                            : "-"} / {activities ? Object.values(activities).reduce((acc, curr) => acc + curr.maxScore, 0) : 0}
-                        </Badge>
-                      </td>
-                      <td></td>
-                    </tr>
-                  )}
+                  <tr>
+                    <td><strong>Total</strong></td>
+                    <td>
+                      <Badge bg="primary">
+                        {moduleTotalScore} / {moduleMaxScore}
+                      </Badge>
+                    </td>
+                  </tr>
                 </tbody>
               </Table>
             </Col>
-            {/* Mostrar gráfico solo si hay actividades */}
             {showPieChart && (
               <Col md={4} className="text-center">
                 <PieChart width={200} height={200}>
@@ -487,27 +275,17 @@ const MocaFinalScreen = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.entries(mocaRecord.modulesData).map(([moduleName, data], index) => {
-                    const activities = moduleActivityMapping[moduleName];
-                    if (!activities) return null; // Ignorar módulos sin mapeo
-
-                    // Calcular puntaje máximo por módulo
-                    const maxTotal = Object.values(activities).reduce((acc, curr) => acc + curr.maxScore, 0);
-
-                    // Obtener puntaje obtenido
-                    const obtainedTotal = data.total !== undefined ? data.total : 
-                                          data.totalScore !== undefined ? data.totalScore : 
-                                          data.spontaneousScore !== undefined ? data.spontaneousScore : 0;
-
-                    // Determinar el color del puntaje total
-                    const scoreColor = getTotalScoreColor(obtainedTotal, maxTotal);
+                  {Object.entries(groupedResults).map(([moduleName, results], index) => {
+                    const moduleTotalScore = results.reduce((sum, r) => sum + (r.score || 0), 0);
+                    const moduleMaxScore = results.reduce((sum, r) => sum + (r.maxScore || 1), 0);
+                    const scoreColor = getTotalScoreColor(moduleTotalScore, moduleMaxScore);
 
                     return (
                       <tr key={index}>
                         <td>{capitalizeFirstLetter(moduleName)}</td>
                         <td>
                           <Badge bg={scoreColor}>
-                            {obtainedTotal} / {maxTotal}
+                            {moduleTotalScore} / {moduleMaxScore}
                           </Badge>
                         </td>
                       </tr>
@@ -518,7 +296,7 @@ const MocaFinalScreen = () => {
                     <td><strong>Puntaje Total</strong></td>
                     <td>
                       <Badge bg={getTotalScoreColor(mocaRecord.totalScore || 0, 30)}>
-                        {mocaRecord.totalScore || 0} / 32
+                        {mocaRecord.totalScore || 0} / 30
                       </Badge>
                     </td>
                   </tr>
@@ -542,9 +320,15 @@ const MocaFinalScreen = () => {
             <Col>
               <h4>Detalles por Módulo</h4>
               <Accordion defaultActiveKey="0">
-                {Object.entries(mocaRecord.modulesData).map(([moduleName, data], index) => (
-                  renderModuleDetails(moduleName, data)
-                ))}
+                {mocaRecord.consolidatedResults && Array.isArray(mocaRecord.consolidatedResults) ? (
+                  Object.entries(groupedResults).map(([moduleName, results], index) => (
+                    renderModuleDetails(moduleName, results)
+                  ))
+                ) : (
+                  <Alert variant="warning">
+                    No hay resultados detallados disponibles para esta evaluación.
+                  </Alert>
+                )}
               </Accordion>
             </Col>
           </Row>

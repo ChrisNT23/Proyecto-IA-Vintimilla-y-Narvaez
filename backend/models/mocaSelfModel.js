@@ -22,6 +22,12 @@ const mocaSelfSchema = new mongoose.Schema(
     // Puntaje total (suma de todos los módulos)
     totalScore: { type: Number, default: 0 },
 
+    // JSON consolidado de resultados homogeneizados por subprueba (Array)
+    consolidatedResults: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+
     // Fecha de creación de la prueba
     testDate: { type: Date, default: Date.now },
 

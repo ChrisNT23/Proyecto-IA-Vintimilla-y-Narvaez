@@ -89,6 +89,43 @@ app.post('/api/evaluate-cube', async (req, res) => {
   }
 });
 
+// NUEVA RUTA para evaluar la alternancia conceptual (Visuoespacial)
+app.post('/api/evaluate-alternancia', (req, res) => {
+  try {
+    const { sequence, userId, module } = req.body;
+    const correctSequence = ['1', 'A', '2', 'B', '3', 'C', '4', 'D', '5', 'E'];
+
+    if (!sequence || !Array.isArray(sequence)) {
+      return res.status(400).json({ error: 'No se proporcionó la secuencia del usuario.' });
+    }
+
+    const isCorrect = 
+      correctSequence.length === sequence.length &&
+      correctSequence.every((label, index) => label === sequence[index]);
+
+    console.log("Evaluación Alternancia:", {
+      recibida: sequence,
+      correcta: correctSequence,
+      esCorrecta: isCorrect,
+      userId
+    });
+
+    const score = isCorrect ? 1 : 0;
+    
+    // Devolver la puntuación junto con los metadatos solicitados
+    res.json({ 
+      userId: userId || 'desconocido',
+      module: 'Visuoespacial',
+      subtest: 'Alternancia Conceptual',
+      score
+    });
+
+  } catch (error) {
+    console.error('Error al evaluar alternancia:', error.message);
+    res.status(500).json({ error: 'Error al evaluar la alternancia conceptual.' });
+  }
+});
+
 // Configurar ruta para archivos estáticos (subidas)
 const __dirname = path.resolve();
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));

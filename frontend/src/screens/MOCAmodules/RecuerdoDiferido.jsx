@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button, Row, Col, Alert, Form, Spinner } from "react-bootstrap";
 import { FaPlay, FaStop, FaMicrophone } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { buildMocaResult } from './helpers/mocaResultBuilder';
 import '../../assets/styles/mocamodules.css';
 
 const RecuerdoDiferido = ({ onComplete, onPrevious, isFirstModule }) => {
@@ -251,6 +252,9 @@ const RecuerdoDiferido = ({ onComplete, onPrevious, isFirstModule }) => {
   // Al final, dar "Continuar" con la prueba
   const handleNext = () => {
     const totalScore = activityScore || 0;
+
+    const standardResults = [buildMocaResult("Recuerdo Diferido", totalScore)];
+
     onComplete(totalScore, {
       totalScore,
       spontaneousScore: activityScore,
@@ -259,6 +263,7 @@ const RecuerdoDiferido = ({ onComplete, onPrevious, isFirstModule }) => {
         categoryAnswers,
         multipleChoiceAnswers,
       },
+      standardResults
     });
   };
 
@@ -513,6 +518,7 @@ const RecuerdoDiferido = ({ onComplete, onPrevious, isFirstModule }) => {
           variant="success"
           onClick={() => {
             const finalScore = activityScore || 0;
+            const standardResults = [buildMocaResult("Recuerdo Diferido", finalScore)];
             onComplete(finalScore, {
               totalScore: finalScore,
               spontaneousScore: finalScore,
@@ -521,6 +527,7 @@ const RecuerdoDiferido = ({ onComplete, onPrevious, isFirstModule }) => {
                 categoryAnswers,
                 multipleChoiceAnswers,
               },
+              standardResults
             });
           }}
           style={{ minWidth: "150px" }}
