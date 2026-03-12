@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button, Row, Col, Form, Alert, Spinner } from "react-bootstrap";
 import { FaPlay, FaStop, FaMicrophone } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { buildMocaResult } from './helpers/mocaResultBuilder';
 import '../../assets/styles/mocamodules.css';
 
 /* ==============================================
@@ -244,7 +245,8 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
     if (arraysEqual(second, expectedSecond)) {
       score += 1;
     }
-    onComplete(score, { ...responses });
+    const standardResults = [buildMocaResult("Digitos", score)];
+    onComplete(score, { ...responses, standardResults });
   };
 
   return (
@@ -532,7 +534,8 @@ export const ConcentracionActivity = ({ onComplete, onPrevious, isFirstModule })
 
   const handleContinue = () => {
     const score = errors > 1 ? 0 : 1;
-    onComplete(score, { hits, errors });
+    const standardResults = [buildMocaResult("Vigilancia", score)];
+    onComplete(score, { hits, errors, standardResults });
   };
 
   return (
@@ -716,11 +719,15 @@ export const Sub7Activity = ({ onComplete, onPrevious, isFirstModule }) => {
     else if (correctCount === 2 || correctCount === 3) score = 2;
     else if (correctCount === 4 || correctCount === 5) score = 3;
 
-    onComplete(score, { steps });
+    // Sustraccion Seriada usa una escala especial. Config Max es 3.
+    const standardResults = [buildMocaResult("Sustraccion Seriada", score)];
+
+    onComplete(score, { steps, standardResults });
   };
 
   const handleTerminate = () => {
-    onComplete(0, { steps });
+    const standardResults = [buildMocaResult("Sustraccion Seriada", 0)];
+    onComplete(0, { steps, standardResults });
   };
 
   return (

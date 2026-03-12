@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button, Form, Spinner, Alert, Row, Col } from "react-bootstrap";
 import { FaPlay, FaStop, FaMicrophone } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { buildMocaResult } from './helpers/mocaResultBuilder';
 import '../../assets/styles/mocamodules.css';
 
 /* ==============================================
@@ -148,12 +149,15 @@ const RepeticionFrasesActivity = ({ onComplete }) => {
       const lastScore = isCorrect;
       const totalScore = partialScore + lastScore;
 
+      const standardResults = [buildMocaResult("Repeticion", totalScore)];
+
       onComplete(totalScore, {
         activityScore: totalScore,
         phraseAnswers: [
           ...activityAnswers,
           { phraseIndex: currentPhraseIndex, response: userResp },
         ],
+        standardResults
       });
     }
   };
@@ -460,9 +464,13 @@ const FluidezVerbalActivity = ({ onComplete }) => {
       (w) => w[0] === "p" && w.length > 1
     );
     const score = validWords.length >= 11 ? 1 : 0;
+    
+    const standardResults = [buildMocaResult("Fluidez Verbal", score)];
+
     onComplete(score, {
       activityScore: score,
       words: wordList,
+      standardResults
     });
   };
 
@@ -594,12 +602,20 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
       (activity1Data?.activityScore || 0) +
       (activity2Data?.activityScore || 0);
 
+    // Las actividades individuales ya reportaron sus standardResults hacia arriba.
+    // Aquí concatenamos los standardResults de ambas actividades.
+    const standardResults = [
+      ...(activity1Data?.standardResults || []),
+      ...(activity2Data?.standardResults || [])
+    ];
+
     onComplete(
       totalScore,
       {
         totalScore,
         activity1: activity1Data,
         activity2: activity2Data,
+        standardResults
       }
     );
   };

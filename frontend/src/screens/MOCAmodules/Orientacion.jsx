@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button, Row, Col, Form } from "react-bootstrap";
 import { FaPlay, FaStop } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { buildMocaResult } from './helpers/mocaResultBuilder';
 import "../../assets/styles/mocamodules.css";
 
 const Orientacion = ({ onComplete, onPrevious, isFirstModule }) => {
@@ -218,6 +219,8 @@ const Orientacion = ({ onComplete, onPrevious, isFirstModule }) => {
 
     const total = tempScore.date + tempScore.weekday + tempScore.location;
 
+    const standardResults = [buildMocaResult("Orientacion", total)];
+
     // Llamamos a onComplete con un flag especial que indique el fin de la prueba
     onComplete(total, {
       date: selectedDate,
@@ -225,6 +228,7 @@ const Orientacion = ({ onComplete, onPrevious, isFirstModule }) => {
       location,
       total,
       forceFinish: true, // Indicamos que se forzó el fin aquí
+      standardResults
     });
   };
 
