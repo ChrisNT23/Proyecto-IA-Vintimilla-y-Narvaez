@@ -61,10 +61,11 @@ def load_model_safely(path, name):
 
 # Initial Load
 model_cube = load_model_safely(MODEL_CUBE_PATH, "CUBE")
-model_clock = tf.keras.models.load_model(
-    os.path.join(BASE_DIR, 'model_clock.keras'),
-    compile=False
-)
+model_clock = load_model_safely(MODEL_CLOCK_PATH, "CLOCK")
+# model_clock = tf.keras.models.load_model(
+#     os.path.join(BASE_DIR, 'model_clock.keras'),
+#     compile=False
+# )
 
 print("Loaded model outputs:", model_clock.outputs)
 print("Output count:", len(model_clock.outputs))

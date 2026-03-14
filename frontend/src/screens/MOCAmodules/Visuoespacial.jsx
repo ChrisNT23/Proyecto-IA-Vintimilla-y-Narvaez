@@ -44,6 +44,7 @@ const Visuoespacial = ({ onComplete, onPrevious, isFirstModule, patientId }) => 
   const handleNext = () => {
     if (currentActivity < 2) {
       setCurrentActivity(currentActivity + 1);
+    } else {
       const totalScore =
         (alternanciaScore || 0) + (cubeScore || 0) + (clockScore || 0);
 

@@ -12,7 +12,7 @@ CSV_PATH = "clock_labels_full.csv"
 ORIGINAL_DIR = "data_clock_original"
 BASE_OUTPUT = "data_clock"
 
-TARGET_PER_CLASS = 1500
+TARGET_PER_CLASS = 1000
 IMG_EXT = [".jpg", ".png", ".jpeg"]
 
 
@@ -46,6 +46,11 @@ def augment_image(img):
 
 print("Cargando etiquetas reales...")
 df = pd.read_csv(CSV_PATH)
+
+# Limpiar caracteres sobrantes (como ;;;) en los nombres de columnas y datos
+df.columns = [c.replace(';', '').strip() for c in df.columns]
+if df['agujas'].dtype == object:
+    df['agujas'] = df['agujas'].astype(str).str.replace(';', '').astype(int)
 
 # Crear una columna combinada para estratificación
 df["combo"] = (
