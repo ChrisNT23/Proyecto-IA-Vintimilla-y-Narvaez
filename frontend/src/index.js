@@ -91,9 +91,7 @@ import Identificacion from "./screens/MOCAmodules/Identificacion.jsx";
 import Memoria from "./screens/MOCAmodules/Memoria.jsx";
 import Atencion from "./screens/MOCAmodules/Atencion.jsx";
 import Lenguaje from "./screens/MOCAmodules/Lenguaje.jsx";
-import Abstraccion from "./screens/MOCAmodules/Abstraccion.jsx";
-import RecuerdoDiferido from "./screens/MOCAmodules/RecuerdoDiferido.jsx";
-import Orientacion from "./screens/MOCAmodules/Orientacion.jsx";
+
 import MocaFinalScreen from "./screens/MOCAmodules/MocaFinalScreen.jsx";
 import Configuration from "./screens/Médico/Configuration.jsx";
 import UsersActivities from "./screens/Médico/UsersActivities.jsx";
@@ -233,9 +231,7 @@ const router = createBrowserRouter(
       <Route path="/moca/memoria" element={<Memoria />} />
       <Route path="/moca/atencion" element={<Atencion />} />
       <Route path="/moca/lenguaje" element={<Lenguaje />} />
-      <Route path="/moca/abstraccion" element={<Abstraccion />} />
-      <Route path="/moca/recuerdo-diferido" element={<RecuerdoDiferido />} />
-      <Route path="/moca/orientacion" element={<Orientacion />} />
+
       <Route path="/moca-final/:id" element={<MocaFinalScreen />} />
     </Route>
   )

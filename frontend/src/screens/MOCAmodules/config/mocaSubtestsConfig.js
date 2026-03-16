@@ -7,8 +7,5 @@ export const MOCA_SUBTESTS_CONFIG = {
   "Vigilancia": { module: "Atencion", maxScore: 1 },
   "Sustraccion Seriada": { module: "Atencion", maxScore: 1 },
   "Repeticion": { module: "Lenguaje", maxScore: 1 },
-  "Fluidez Verbal": { module: "Lenguaje", maxScore: 1 },
-  "Abstraccion": { module: "Abstraccion", maxScore: 1 },
-  "Recuerdo Diferido": { module: "RecuerdoDiferido", maxScore: 1 },
-  "Orientacion": { module: "Orientacion", maxScore: 1 }
+  "Fluidez Verbal": { module: "Lenguaje", maxScore: 1 }
 };
