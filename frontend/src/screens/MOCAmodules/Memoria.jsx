@@ -241,7 +241,10 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
 
     const standardResults = [buildMocaResult("Memoria", score)];
 
-    onComplete(score, { responses: uniqueResponses, standardResults });
+    // En MoCA, el recuerdo inmediato (esta actividad) no suma puntos al total.
+    // Pasamos 0 como primer argumento para no afectar el totalScore del test,
+    // pero incluimos la cuenta de palabras en el objeto de datos.
+    onComplete(0, { responses: uniqueResponses, standardResults, totalRecalled: score });
   };
 
   // ─── PANTALLA INTRO (antes de empezar) ───────────────────────────────────

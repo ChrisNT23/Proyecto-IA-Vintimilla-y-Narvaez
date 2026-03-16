@@ -213,28 +213,46 @@ const DashboardIAScreen = () => {
                     </div>
                 </div>
 
-                {/* Distribución de Emociones */}
+                {/* Distribución de Emociones y Galería */}
                 <div className="dashboard-card col-emotions">
                     <h3 className="card-title"><FaChartBar /> Distribución de Emociones</h3>
-                    <div className="emotion-distribution">
-                        {emotionDistData.length > 0 ? emotionDistData.slice(0, 4).map((item, idx) => (
-                            <div key={idx} className="emotion-item">
-                                <div className="emotion-label">
-                                    <span>{item.name}</span>
-                                    <span>{item.value}%</span>
+                    <div className="emotion-layout">
+                        <div className="emotion-distribution">
+                            {emotionDistData.length > 0 ? emotionDistData.slice(0, 4).map((item, idx) => (
+                                <div key={idx} className="emotion-item">
+                                    <div className="emotion-label">
+                                        <span>{item.name}</span>
+                                        <span>{item.value}%</span>
+                                    </div>
+                                    <div className="emotion-bar-container">
+                                        <div 
+                                            className="emotion-bar" 
+                                            style={{ 
+                                                width: `${item.value}%`, 
+                                                backgroundColor: EMOTION_COLORS[item.name] || '#3b82f6' 
+                                            }}
+                                        ></div>
+                                    </div>
                                 </div>
-                                <div className="emotion-bar-container">
-                                    <div 
-                                        className="emotion-bar" 
-                                        style={{ 
-                                            width: `${item.value}%`, 
-                                            backgroundColor: EMOTION_COLORS[item.name] || '#3b82f6' 
-                                        }}
-                                    ></div>
+                            )) : (
+                                <div className="text-center text-muted py-4">No hay datos de emociones</div>
+                            )}
+                        </div>
+                        
+                        {mocaRecord?.emotionData?.captures?.length > 0 && (
+                            <div className="emotion-gallery-mini">
+                                <h4>Evidencia de IA</h4>
+                                <div className="gallery-scroll">
+                                    {mocaRecord.emotionData.captures.slice(-4).map((cap, idx) => (
+                                        <div key={idx} className="gallery-item" title={`${cap.emotion} - ${cap.currentModule}`}>
+                                            <img src={cap.imageUrl} alt={cap.emotion} />
+                                            <Badge className="gallery-badge" style={{ backgroundColor: EMOTION_COLORS[cap.name] || '#3b82f6' }}>
+                                                {cap.emotion}
+                                            </Badge>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-                        )) : (
-                            <div className="text-center text-muted py-4">No hay datos de emociones</div>
                         )}
                     </div>
                 </div>
@@ -242,17 +260,35 @@ const DashboardIAScreen = () => {
                 {/* Timeline Emocional */}
                 <div className="dashboard-card col-timeline">
                     <h3 className="card-title"><FaHistory /> Timeline Emocional</h3>
-                    <div className="chart-wrapper">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={[
-                                { name: 'I', val: 40 },
-                                { name: 'M', val: 70 },
-                                { name: 'F', val: 50 },
-                                { name: 'E', val: 80 }
-                            ]}>
-                                <Bar dataKey="val" fill="#bfdbfe" radius={[4, 4, 0, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
+                    <div className="emotional-timeline-container">
+                        <div className="timeline-labels">
+                            <span>Visuoespacial</span>
+                            <span>Atención</span>
+                            <span>Lenguaje</span>
+                        </div>
+                        <div className="timeline-visual">
+                            {['Visuoespacial', 'Identificación', 'Atención', 'Lenguaje'].map((mod, idx) => {
+                                const cap = mocaRecord?.emotionData?.captures?.find(c => c.currentModule === mod);
+                                return (
+                                    <div key={idx} className="timeline-node">
+                                        <div className="node-line"></div>
+                                        <div className={`node-marker ${cap ? 'has-data' : ''}`}>
+                                            {cap ? (
+                                                <div className="node-preview">
+                                                    <img src={cap.imageUrl} alt={mod} />
+                                                    <div className="node-tooltip">
+                                                        <strong>{mod}</strong>
+                                                        <p>{cap.emotionLabel}</p>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="node-empty"></div>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
 

@@ -866,31 +866,37 @@ const Atencion = ({ onComplete, onPrevious, isFirstModule }) => {
   const isAdmin = useSelector((state) => state.auth.userInfo?.isAdmin) || false;
 
   const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
-  const [activity1Score, setActivity1Score] = useState(null);
-  const [activity2Score, setActivity2Score] = useState(null);
-  const [activity3Score, setActivity3Score] = useState(null);
+  const [activity1Data, setActivity1Data] = useState(null);
+  const [activity2Data, setActivity2Data] = useState(null);
+  const [activity3Data, setActivity3Data] = useState(null);
 
   const handleActivity1Complete = (score, data) => {
-    setActivity1Score(score);
+    setActivity1Data({ score, standardResults: data.standardResults });
     setCurrentActivityIndex(1);
   };
 
   const handleActivity2Complete = (score, data) => {
-    setActivity2Score(score);
+    setActivity2Data({ score, standardResults: data.standardResults });
     setCurrentActivityIndex(2);
   };
 
   const handleActivity3Complete = (score, data) => {
-    setActivity3Score(score);
-    handleNext();
+    setActivity3Data({ score, standardResults: data.standardResults });
+    handleNext(score, data.standardResults);
   };
 
-  const handleNext = () => {
-    const total = (activity1Score || 0) + (activity2Score || 0) + (activity3Score || 0);
+  const handleNext = (lastScore, lastStandardResults) => {
+    const total = (activity1Data?.score || 0) + (activity2Data?.score || 0) + (lastScore || 0);
+    const standardResults = [
+        ...(activity1Data?.standardResults || []),
+        ...(activity2Data?.standardResults || []),
+        ...(lastStandardResults || [])
+    ];
     onComplete(total, {
-      activity1: activity1Score,
-      activity2: activity2Score,
-      activity3: activity3Score,
+      activity1: activity1Data?.score,
+      activity2: activity2Data?.score,
+      activity3: lastScore,
+      standardResults
     });
   };
 

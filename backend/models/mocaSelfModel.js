@@ -22,6 +22,9 @@ const mocaSelfSchema = new mongoose.Schema(
     // Puntaje total (suma de todos los módulos)
     totalScore: { type: Number, default: 0 },
 
+    // Puntaje máximo posible para esta evaluación específica
+    totalMaxScore: { type: Number, default: 30 },
+
     // JSON consolidado de resultados homogeneizados por subprueba (Array)
     consolidatedResults: {
       type: mongoose.Schema.Types.Mixed,
