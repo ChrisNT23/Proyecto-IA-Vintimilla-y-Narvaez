@@ -17,6 +17,7 @@ import '../../assets/styles/ReportsScreen.css';
 import resultadosMocaImg from '../../images/Reports/resultados-moca.webp';
 import progresoPacienteImg from '../../images/Reports/progreso-paciente.webp';
 import estadoAnimoImg from '../../images/Reports/estado-ánimo.webp'; 
+import dashboardIAImg from '../../images/Reports/dashboard-ia.png';
 
 const ReportsScreen = () => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const ReportsScreen = () => {
     { title: 'Resultados MOCA', img: resultadosMocaImg, route: '/moca' },
     /*{ title: 'Progreso del Paciente', img: progresoPacienteImg, route: '/progreso-paciente' },*/
     { title: 'Resultados de Estado de Ánimo', img: estadoAnimoImg, route: '/estado-animo' },
+    { title: 'Dashboard IA', img: dashboardIAImg, route: '/reports/dashboard-ia/selection' },
     { title: 'Dashboard', img: progresoPacienteImg, route: '/dashboard' },
   ];
 

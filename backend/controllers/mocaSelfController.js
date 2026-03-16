@@ -7,7 +7,7 @@ import { calculateAllDerivedVariables } from "../utils/emotionAnalysis.js";
 // Crear un nuevo registro MoCA Self
 // Recibe en el body: patientId, patientName (opcional), modulesData, totalScore, emotionDataId (opcional)
 export const createMocaSelf = asyncHandler(async (req, res) => {
-  const { patientId, patientName, modulesData, totalScore, emotionDataId, consolidatedResults } = req.body;
+  const { patientId, patientName, modulesData, totalScore, totalMaxScore, emotionDataId, consolidatedResults } = req.body;
 
   const patient = await Patient.findById(patientId);
   if (!patient) {
@@ -20,6 +20,7 @@ export const createMocaSelf = asyncHandler(async (req, res) => {
     patientName: patientName || patient.user?.name || "Paciente Desconocido",
     modulesData: modulesData || {},
     totalScore: totalScore || 0,
+    totalMaxScore: totalMaxScore || 30,
     consolidatedResults: consolidatedResults || {},
     testDate: new Date(),
     emotionData: emotionDataId || null,

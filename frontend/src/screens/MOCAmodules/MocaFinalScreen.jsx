@@ -295,8 +295,8 @@ const MocaFinalScreen = () => {
                   <tr>
                     <td><strong>Puntaje Total</strong></td>
                     <td>
-                      <Badge bg={getTotalScoreColor(mocaRecord.totalScore || 0, 30)}>
-                        {mocaRecord.totalScore || 0} / 30
+                      <Badge bg={getTotalScoreColor(mocaRecord.totalScore || 0, mocaRecord.totalMaxScore || 30)}>
+                        {mocaRecord.totalScore || 0} / {mocaRecord.totalMaxScore || 30}
                       </Badge>
                     </td>
                   </tr>

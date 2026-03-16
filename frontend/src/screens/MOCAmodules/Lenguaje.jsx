@@ -584,6 +584,7 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
     setActivity1Data({
       activityScore: score,
       phraseAnswers: data.phraseAnswers || [],
+      standardResults: data.standardResults || []
     });
     setCurrentActivityIndex(1);
   };
@@ -592,21 +593,22 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
     setActivity2Data({
       activityScore: score,
       words: data.words || [],
+      standardResults: data.standardResults || []
     });
     // Una vez finalizada la segunda actividad, calcular el puntaje total
-    handleNext();
+    handleNext(score, data.standardResults);
   };
 
-  const handleNext = () => {
+  const handleNext = (lastScore, lastStandardResults) => {
     const totalScore =
       (activity1Data?.activityScore || 0) +
-      (activity2Data?.activityScore || 0);
+      (lastScore || 0);
 
     // Las actividades individuales ya reportaron sus standardResults hacia arriba.
     // Aquí concatenamos los standardResults de ambas actividades.
     const standardResults = [
       ...(activity1Data?.standardResults || []),
-      ...(activity2Data?.standardResults || [])
+      ...(lastStandardResults || [])
     ];
 
     onComplete(
@@ -656,7 +658,7 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
             
             style={{ minWidth: "150px" }}
           >
-            Continuar
+            Finalizar test
           </Button>
         </div>
       )}

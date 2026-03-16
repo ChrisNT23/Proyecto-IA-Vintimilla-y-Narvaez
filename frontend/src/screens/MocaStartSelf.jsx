@@ -329,6 +329,13 @@ const MocaStartSelf = () => {
       setCurrentModuleIndex(currentModuleIndex + 1);
     } else {
       setTestCompleted(true);
+      // 🔥 Si es paciente (no admin), guardar automáticamente al completar el último módulo
+      if (!isAdmin) {
+        handleSaveResults(newCurrentScore, {
+          ...individualScores,
+          [MODULES[moduleId].name]: { ...activityScores, total: moduleScore },
+        });
+      }
     }
   };
 
@@ -382,6 +389,7 @@ const MocaStartSelf = () => {
       patientName: selectedPatient.user?.name || "Paciente Desconocido",
       modulesData: finalIndividualScores,
       totalScore: adjustedScore,
+      totalMaxScore: summaryData.totalMaxScore || 30,
       hasLessThan12YearsOfEducation,
       emotionDataId: emotionDataIdRef.current || null,
       consolidatedResults: summaryData // <-- Nuevo campo consolidado
