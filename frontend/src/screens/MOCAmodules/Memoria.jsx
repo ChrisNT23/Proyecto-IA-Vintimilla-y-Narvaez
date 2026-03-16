@@ -225,7 +225,7 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
     } else if (stage === STAGE_SECOND_RECALL) {
       setStage(STAGE_FINAL);
       setMessage(
-        "Recuerde estas palabras, ya que deberá repetirlas más tarde al final de la prueba."
+        "Ha completado la prueba de memoria."
       );
     }
   };

@@ -23,9 +23,8 @@ import Identificacion from "./MOCAmodules/Identificacion";
 import Memoria from "./MOCAmodules/Memoria";
 import Atencion from "./MOCAmodules/Atencion";
 import Lenguaje from "./MOCAmodules/Lenguaje";
-import Abstraccion from "./MOCAmodules/Abstraccion";
-import RecuerdoDiferido from "./MOCAmodules/RecuerdoDiferido";
-import Orientacion from "./MOCAmodules/Orientacion";
+
+
 import {
   FaPlay,
   FaStop,
@@ -45,9 +44,7 @@ const MODULES = [
   { id: 2, name: "Memoria", icon: "🧠", component: Memoria },
   { id: 3, name: "Atención", icon: "🔍", component: Atencion },
   { id: 4, name: "Lenguaje", icon: "🗣️", component: Lenguaje },
-  { id: 5, name: "Abstracción", icon: "🔎", component: Abstraccion },
-  { id: 6, name: "Recuerdo Diferido", icon: "💭", component: RecuerdoDiferido },
-  { id: 7, name: "Orientación", icon: "🧭", component: Orientacion },
+
 ];
 
 const MocaStartSelf = () => {
@@ -287,7 +284,7 @@ const MocaStartSelf = () => {
    * - moduleId: índice del módulo actual
    * - moduleScore: puntaje calculado del módulo
    * - activityScores: datos adicionales del módulo (respuestas, puntajes parciales, etc.)
-   *    Se puede incluir forceFinish: true desde el módulo de Orientación para forzar guardado inmediato.
+   *    Se puede incluir forceFinish: true para forzar guardado inmediato.
    */
   const handleCompleteModule = async (moduleId, moduleScore, activityScores) => {
     // 📸 Snapshot emocional al completar el módulo (fire-and-forget, no bloquea)
@@ -314,7 +311,7 @@ const MocaStartSelf = () => {
       [MODULES[moduleId].name]: { ...activityScores, total: moduleScore },
     }));
 
-    // Si el módulo de Orientación manda forceFinish => Guardar de inmediato
+    // Si el módulo manda forceFinish => Guardar de inmediato
     if (activityScores?.forceFinish) {
       setTestCompleted(true);
       handleSaveResults(newCurrentScore, {
@@ -376,7 +373,7 @@ const MocaStartSelf = () => {
         allStandardResults.push(...moduleData.standardResults);
       }
     });
-    
+
     // Construir el JSON de resultados homogeneizados
     const summaryData = buildMocaSummary(selectedPatient._id, allStandardResults);
 
@@ -444,29 +441,7 @@ const MocaStartSelf = () => {
         activity2: { activityScore: 0, words: [] },
         total: 0,
       },
-      Abstraccion: {
-        totalScore: 1,
-        activity1: 0,
-        activity2: 1,
-        pairAnswers: [{ pairIndex: 0, input: "nada", correct: false }],
-        total: 1,
-      },
-      RecuerdoDiferido: {
-        totalScore: 0,
-        spontaneousScore: 0,
-        pairAnswers: {
-          spontaneousAnswers: [],
-          categoryAnswers: {},
-          multipleChoiceAnswers: { rojo: "rojo" },
-        },
-        total: 0,
-      },
-      Orientacion: {
-        date: { day: "2", month: "marzo", year: "2023" },
-        weekday: "sábado",
-        location: "",
-        total: 0,
-      },
+
     };
 
     const totalScore = Object.values(simulatedScores).reduce(
@@ -621,7 +596,7 @@ const MocaStartSelf = () => {
   // Descripción general de la prueba
   const handleTestDescription = () => {
     const description =
-      "La prueba MoCA es una evaluación breve diseñada para detectar deterioro cognitivo leve. Está dividida en varios módulos, cada uno con actividades específicas que evalúan diferentes aspectos de la función cognitiva, como la memoria, la atención, el lenguaje y la orientación.";
+      "La prueba MoCA es una evaluación breve diseñada para detectar deterioro cognitivo leve. Está dividida en varios módulos, cada uno con actividades específicas que evalúan diferentes aspectos de la función cognitiva, como la memoria, la atención y el lenguaje.";
     speakInstructions(description);
   };
 

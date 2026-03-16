@@ -57,15 +57,7 @@ const MocaStart = () => {
   const [sentence2Score, setSentence2Score] = useState(null);
   const [wordsFScore, setWordsFScore] = useState(null);
 
-  // == Abstracción ==
-  const [abstraction1Score, setAbstraction1Score] = useState(null);
-  const [abstraction2Score, setAbstraction2Score] = useState(null);
 
-  // == Recuerdo Diferido ==
-  const [delayedRecallScore, setDelayedRecallScore] = useState(null);
-
-  // == Orientación ==
-  const [orientationScore, setOrientationScore] = useState(null);
 
   // == Mutación para Crear un MocaSelf ==
   const [
@@ -101,11 +93,7 @@ const MocaStart = () => {
   const getLenguajeScore = () =>
     (sentence1Score || 0) + (sentence2Score || 0) + (wordsFScore || 0);
 
-  const getAbstraccionScore = () =>
-    (abstraction1Score || 0) + (abstraction2Score || 0);
 
-  const getRecuerdoDiferidoScore = () => delayedRecallScore || 0;
-  const getOrientacionScore = () => orientationScore || 0;
 
   // == Calcular Puntaje Total en cada render ==
   useEffect(() => {
@@ -114,10 +102,7 @@ const MocaStart = () => {
       getVisuoespacialScore() +
       getDenominacionScore() +
       getMemoriaAtencionScore() +
-      getLenguajeScore() +
-      getAbstraccionScore() +
-      getRecuerdoDiferidoScore() +
-      getOrientacionScore();
+      getLenguajeScore();
 
     setTotalScore(currentScore);
   }, [
@@ -136,10 +121,6 @@ const MocaStart = () => {
     sentence1Score,
     sentence2Score,
     wordsFScore,
-    abstraction1Score,
-    abstraction2Score,
-    delayedRecallScore,
-    orientationScore,
   ]);
 
   // == Manejo de Inicio de Test ==
@@ -200,19 +181,7 @@ const MocaStart = () => {
         wordsF: wordsFScore,
         total: getLenguajeScore(),
       },
-      Abstraccion: {
-        similarity1: abstraction1Score,
-        similarity2: abstraction2Score,
-        total: getAbstraccionScore(),
-      },
-      RecuerdoDiferido: {
-        delayedRecall: delayedRecallScore,
-        total: getRecuerdoDiferidoScore(),
-      },
-      Orientacion: {
-        orientation: orientationScore,
-        total: getOrientacionScore(),
-      },
+
     };
 
     const mocaData = {
@@ -273,16 +242,7 @@ const MocaStart = () => {
         sentence2: 1,
         wordsF: 1,
       },
-      Abstraccion: {
-        similarity1: 1,
-        similarity2: 1,
-      },
-      RecuerdoDiferido: {
-        delayedRecall: 5,
-      },
-      Orientacion: {
-        orientation: 6,
-      },
+
     };
 
     // Calcular total de cada módulo y sumarlos
@@ -345,10 +305,6 @@ const MocaStart = () => {
     sentence1Score,
     sentence2Score,
     wordsFScore,
-    abstraction1Score,
-    abstraction2Score,
-    delayedRecallScore,
-    orientationScore,
   ];
   const isAllAnswered = allScores.every((score) => score !== null);
 
@@ -830,7 +786,7 @@ const MocaStart = () => {
                 </Col>
               </Row>
 
-              {/* Fila 3: Lenguaje, Abstracción, Recuerdo Diferido, Orientación */}
+              {/* Fila 3: Lenguaje */}
               <Row className="mt-4">
                 {/* Lenguaje */}
                 <Col xs={12} sm={6} className="mb-4">
@@ -951,169 +907,8 @@ const MocaStart = () => {
                   </Card>
                 </Col>
 
-                {/* Abstracción */}
-                <Col xs={12} sm={6} className="mb-4">
-                  <Card className="module-card">
-                    <Card.Body>
-                      <Card.Title>Abstracción</Card.Title>
-                      <div className="module-score">
-                        {getAbstraccionScore()}/2
-                      </div>
-
-                      <ListGroup className="mt-3">
-                        {/* Similaridad 1 */}
-                        <ListGroup.Item>
-                          <p>Tren - Bicicleta (1 pto)</p>
-                          <div className="score-buttons">
-                            <Button
-                              size="sm"
-                              className={`toggle-button ${
-                                abstraction1Score === 1 ? "active" : ""
-                              }`}
-                              variant={
-                                abstraction1Score === 1
-                                  ? "success"
-                                  : "outline-success"
-                              }
-                              onClick={() => handleScoreChange(1, abstraction1Score, setAbstraction1Score)}
-                            >
-                              +1
-                            </Button>
-                            <Button
-                              size="sm"
-                              className={`toggle-button ${
-                                abstraction1Score === 0 ? "active" : ""
-                              }`}
-                              variant={
-                                abstraction1Score === 0
-                                  ? "danger"
-                                  : "outline-danger"
-                              }
-                              onClick={() => handleScoreChange(0, abstraction1Score, setAbstraction1Score)}
-                            >
-                              0
-                            </Button>
-                          </div>
-                        </ListGroup.Item>
-
-                        {/* Similaridad 2 */}
-                        <ListGroup.Item>
-                          <p>Reloj - Regla (1 pto)</p>
-                          <div className="score-buttons">
-                            <Button
-                              size="sm"
-                              className={`toggle-button ${
-                                abstraction2Score === 1 ? "active" : ""
-                              }`}
-                              variant={
-                                abstraction2Score === 1
-                                  ? "success"
-                                  : "outline-success"
-                              }
-                              onClick={() => handleScoreChange(1, abstraction2Score, setAbstraction2Score)}
-                            >
-                              +1
-                            </Button>
-                            <Button
-                              size="sm"
-                              className={`toggle-button ${
-                                abstraction2Score === 0 ? "active" : ""
-                              }`}
-                              variant={
-                                abstraction2Score === 0
-                                  ? "danger"
-                                  : "outline-danger"
-                              }
-                              onClick={() => handleScoreChange(0, abstraction2Score, setAbstraction2Score)}
-                            >
-                              0
-                            </Button>
-                          </div>
-                        </ListGroup.Item>
-                      </ListGroup>
-                    </Card.Body>
-                  </Card>
-                </Col>
               </Row>
 
-              {/* Fila 3: Recuerdo Diferido y Orientación */}
-              <Row className="mt-4">
-                {/* Recuerdo Diferido */}
-                <Col xs={12} sm={6} className="mb-4">
-                  <Card className="module-card">
-                    <Card.Body>
-                      <Card.Title>Recuerdo Diferido</Card.Title>
-                      <div className="module-score">
-                        {getRecuerdoDiferidoScore()}/5
-                      </div>
-
-                      <ListGroup className="mt-3">
-                        {/* Puntajes 0-5 */}
-                        <ListGroup.Item>
-                          <p>(0-5 pts)</p>
-                          <div className="score-buttons">
-                            {[5, 4, 3, 2, 1, 0].map((val) => (
-                              <Button
-                                key={val}
-                                size="sm"
-                                className={`toggle-button ${
-                                  delayedRecallScore === val ? "active" : ""
-                                }`}
-                                variant={
-                                  delayedRecallScore === val
-                                    ? "success"
-                                    : "outline-success"
-                                }
-                                onClick={() => handleScoreChange(val, delayedRecallScore, setDelayedRecallScore)}
-                              >
-                                {val}
-                              </Button>
-                            ))}
-                          </div>
-                        </ListGroup.Item>
-                      </ListGroup>
-                    </Card.Body>
-                  </Card>
-                </Col>
-
-                {/* Orientación */}
-                <Col xs={12} sm={6} className="mb-4">
-                  <Card className="module-card">
-                    <Card.Body>
-                      <Card.Title>Orientación</Card.Title>
-                      <div className="module-score">
-                        {getOrientacionScore()}/6
-                      </div>
-
-                      <ListGroup className="mt-3">
-                        {/* Puntajes 0-6 */}
-                        <ListGroup.Item>
-                          <p>(0-6 pts)</p>
-                          <div className="score-buttons">
-                            {[6, 5, 4, 3, 2, 1, 0].map((val) => (
-                              <Button
-                                key={val}
-                                size="sm"
-                                className={`toggle-button ${
-                                  orientationScore === val ? "active" : ""
-                                }`}
-                                variant={
-                                  orientationScore === val
-                                    ? "success"
-                                    : "outline-success"
-                                }
-                                onClick={() => handleScoreChange(val, orientationScore, setOrientationScore)}
-                              >
-                                {val}
-                              </Button>
-                            ))}
-                          </div>
-                        </ListGroup.Item>
-                      </ListGroup>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              </Row>
 
               {/* Fila Final: Puntaje Total y Botones de Guardar */}
               <Row className="mt-4">
