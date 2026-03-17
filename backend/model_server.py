@@ -177,6 +177,29 @@ def evaluate_cube():
         logger.error(f"Error evaluating cube: {e}")
         return jsonify({"error": str(e)}), 500
 
+def detect_circle_contour(img_pil):
+    img = np.array(img_pil.convert("L"))
+    img = cv2.GaussianBlur(img, (5,5), 0)
+    edges = cv2.Canny(img, 50, 150)
+
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    for cnt in contours:
+        area = cv2.contourArea(cnt)
+        if area < 2000:
+            continue
+
+        perimeter = cv2.arcLength(cnt, True)
+        if perimeter == 0:
+            continue
+
+        circularity = 4 * np.pi * (area / (perimeter * perimeter))
+
+        if 0.6 < circularity < 1.3:
+            return True
+
+    return False
+
 @app.route('/api/evaluate-clock', methods=['POST'])
 def evaluate_clock():
     if model_clock is None:
@@ -205,9 +228,13 @@ def evaluate_clock():
         prob_agujas   = float(np.squeeze(preds[2]))
 
         p_contorno = 1 if prob_contorno >= 0.8 else 0
-        p_numeros  = 1 if prob_numeros  >= 0.9 else 0
+        p_numeros  = 1 if prob_numeros  >= 0.999 else 0
         p_agujas   = 1 if prob_agujas   >= 0.9 else 0
 
+        if not p_contorno:
+            if detect_circle_contour(img):
+                p_contorno = 1
+        
         total = p_contorno + p_numeros + p_agujas
 
         logger.info(
