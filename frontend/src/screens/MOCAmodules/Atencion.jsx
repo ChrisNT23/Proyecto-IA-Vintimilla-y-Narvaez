@@ -457,9 +457,9 @@ const Atencion = ({ onComplete, onPrevious, isFirstModule }) => {
   const handleNext = (lastScore, lastStandardResults) => {
     const total = (activity1Data?.score || 0) + (activity2Data?.score || 0) + (lastScore || 0);
     const standardResults = [
-        ...(activity1Data?.standardResults || []),
-        ...(activity2Data?.standardResults || []),
-        ...(lastStandardResults || [])
+      ...(activity1Data?.standardResults || []),
+      ...(activity2Data?.standardResults || []),
+      ...(lastStandardResults || [])
     ];
     onComplete(total, {
       activity1: activity1Data?.score,
