@@ -8,7 +8,7 @@ import { buildMocaResult } from './helpers/mocaResultBuilder';
 import '../../assets/styles/mocamodules.css';
 
 /* ==============================================
-   ACTIVIDAD 1: SECUENCIA NUM├ëRICA
+   ACTIVIDAD 1: SECUENCIA NUMâ”œÃ«RICA
    ============================================== */
 const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
   const isAdmin = useSelector((state) => state.auth.userInfo?.isAdmin) || false;
@@ -84,10 +84,10 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
         let instructions;
         if (stage === STAGE_FIRST_SEQUENCE_READ) {
           instructions =
-            "Le voy a leer una serie de n├║meros, y cuando termine, rep├¡talos en el mismo orden.";
+            "Le voy a leer una serie de nâ”œâ•‘meros, y cuando termine, repâ”œÂ¡talos en el mismo orden.";
         } else {
           instructions =
-            "Ahora le voy a leer otra serie de n├║meros. Rep├¡talos en orden inverso.";
+            "Ahora le voy a leer otra serie de nâ”œâ•‘meros. Repâ”œÂ¡talos en orden inverso.";
         }
         await speakText(instructions);
         await readSequence();
@@ -147,7 +147,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
       setIsSpeakingLocal(false);
     } else {
       const text =
-        "M├│dulo de Atenci├│n, Actividad 1. Escuche una serie de n├║meros y rep├¡talos.";
+        "Mâ”œâ”‚dulo de Atenciâ”œâ”‚n, Actividad 1. Escuche una serie de nâ”œâ•‘meros y repâ”œÂ¡talos.";
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "es-ES";
       utterance.onend = () => setIsSpeakingLocal(false);
@@ -158,7 +158,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
 
   const handleStartRecall = () => {
     if (!recognitionSupported) {
-      alert("El reconocimiento de voz no est├í disponible en su navegador.");
+      alert("El reconocimiento de voz no estâ”œÃ­ disponible en su navegador.");
       return;
     }
     setListening(true);
@@ -231,7 +231,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
       setStage(STAGE_SECOND_SEQUENCE_READ);
     } else if (stage === STAGE_SECOND_SEQUENCE_RECALL) {
       setStage(STAGE_FINAL);
-      setMessage("Ha completado la Actividad 1 de Atenci├│n.");
+      setMessage("Ha completado la Actividad 1 de Atenciâ”œâ”‚n.");
     }
   };
 
@@ -252,7 +252,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
   return (
     <div className="module-container">
       <div className="d-flex align-items-center mb-2">
-        <h5 className="mb-0">Actividad 1: Secuencia Num├®rica</h5>
+        <h5 className="mb-0">Actividad 1: Secuencia Numâ”œÂ®rica</h5>
         <Button
           variant="link"
           onClick={speakInstructions}
@@ -270,8 +270,8 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
             <Spinner animation="grow" variant="primary" />
             <p className="mt-3">
               {stage === STAGE_FIRST_SEQUENCE_READ
-                ? "Le leer├® una serie de n├║meros, rep├¡talos en el mismo orden."
-                : "Le leer├® otra serie de n├║meros, rep├¡talos en orden inverso."}
+                ? "Le leerâ”œÂ® una serie de nâ”œâ•‘meros, repâ”œÂ¡talos en el mismo orden."
+                : "Le leerâ”œÂ® otra serie de nâ”œâ•‘meros, repâ”œÂ¡talos en orden inverso."}
             </p>
           </div>
         )}
@@ -282,8 +282,8 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
           <div className="text-center mt-3">
             <p>
               {stage === STAGE_FIRST_SEQUENCE_RECALL
-                ? "Repita los n├║meros en el mismo orden."
-                : "Repita los n├║meros en orden inverso."}
+                ? "Repita los nâ”œâ•‘meros en el mismo orden."
+                : "Repita los nâ”œâ•‘meros en orden inverso."}
             </p>
             {listening ? (
               <div>
@@ -311,7 +311,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
             {showButtons && (
               <div className="mt-3">
                 <Alert variant="secondary">
-                  <p>┬┐Es correcta su respuesta?</p>
+                  <p>â”¬â”Es correcta su respuesta?</p>
                   <strong>{transcript}</strong>
                 </Alert>
                 <Row>
@@ -334,7 +334,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
                       variant="success"
                       onClick={handleConfirmResponse}
                     >
-                      S├¡
+                      Sâ”œÂ¡
                     </Button>
                   </Col>
                 </Row>
@@ -348,7 +348,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
             >
               <Form.Control
                 type="text"
-                placeholder="Escriba los n├║meros separados por espacios o comas"
+                placeholder="Escriba los nâ”œâ•‘meros separados por espacios o comas"
                 value={manualInputValue}
                 onChange={(e) => setManualInputValue(e.target.value)}
                 onKeyPress={handleManualKeyPress}
@@ -364,7 +364,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
             </Form>
 
             <div className="mt-3">
-              <p>N├║meros recordados:</p>
+              <p>Nâ”œâ•‘meros recordados:</p>
               <ul>
                 {(stage === STAGE_FIRST_SEQUENCE_RECALL
                   ? responses.first
@@ -380,7 +380,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
               variant="secondary"
               onClick={handleNoMoreWords}
             >
-              No recuerdo m├ís
+              No recuerdo mâ”œÃ­s
             </Button>
           </div>
         )}
@@ -425,529 +425,26 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
 
 
 /* ==============================================
-   ACTIVIDAD 2: CONCENTRACI├ôN (LETRAS)
-   ============================================== */
-export const ConcentracionActivity = ({ onComplete, onPrevious, isFirstModule }) => {
-  const isAdmin = useSelector((state) => state.auth.userInfo?.isAdmin) || false;
-
-  const [isSpeakingLocal, setIsSpeakingLocal] = useState(false);
-  const [ttsSupported, setTtsSupported] = useState(true);
-
-  const [playing, setPlaying] = useState(false);     // Indica si se est├í reproduciendo la secuencia
-  const [currentLetter, setCurrentLetter] = useState("--");
-  const [currentIndex, setCurrentIndex] = useState(-1); // ├ìndice de la letra actual
-  const [errors, setErrors] = useState(0);
-  const [hits, setHits] = useState([]);
-  const [showContinue, setShowContinue] = useState(false);
-
-  const lettersSequence = [
-    "F", "B", "A", "C", "M", "N", "A", "A",
-    "J", "K", "L", "B", "A", "F", "A", "K",
-    "D", "E", "A", "A", "A", "J", "A", "M",
-    "O", "F", "A", "A", "B"
-  ];
-
-  useEffect(() => {
-    if (!window.speechSynthesis) {
-      setTtsSupported(false);
-    }
-    return () => {
-      stopSequence();
-      if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
-
-  const speakInstructions = () => {
-    if (!ttsSupported) return;
-    if (isSpeakingLocal) {
-      window.speechSynthesis.cancel();
-      setIsSpeakingLocal(false);
-    } else {
-      const instructions =
-        "Actividad de Concentraci├│n con Letras. Presione Golpe cuando escuche la letra A. M├ís de un error implica puntaje cero.";
-      const utterance = new SpeechSynthesisUtterance(instructions);
-      utterance.lang = "es-ES";
-      utterance.onend = () => {
-        setIsSpeakingLocal(false);
-      };
-      window.speechSynthesis.speak(utterance);
-      setIsSpeakingLocal(true);
-    }
-  };
-
-  const startSequence = () => {
-    setPlaying(true);
-    setErrors(0);
-    setHits([]);
-    setShowContinue(false);
-    readAllLetters(0);
-  };
-
-  const readAllLetters = (index) => {
-    if (!ttsSupported) return;
-    if (index >= lettersSequence.length) {
-      setPlaying(false);
-      setCurrentLetter("--");
-      setShowContinue(true);
-      return;
-    }
-    const letter = lettersSequence[index];
-    setCurrentLetter(letter);
-    setCurrentIndex(index);
-
-    const utterance = new SpeechSynthesisUtterance(letter);
-    utterance.lang = "es-ES";
-    utterance.onend = () => {
-      setTimeout(() => {
-        readAllLetters(index + 1);
-      }, 1000);
-    };
-    window.speechSynthesis.speak(utterance);
-  };
-
-  const stopSequence = () => {
-    setPlaying(false);
-    setCurrentLetter("--");
-    window.speechSynthesis.cancel();
-  };
-
-  const handleGolpe = () => {
-    if (!playing) return;
-    if (currentIndex < 0 || currentIndex >= lettersSequence.length) return;
-
-    const expectedLetter = lettersSequence[currentIndex];
-    if (expectedLetter === "A") {
-      setHits((prev) => [...prev, currentIndex]);
-    } else {
-      setErrors((prev) => {
-        const newErrors = prev + 1;
-        if (newErrors > 1) {
-          stopSequence();
-          setShowContinue(true);
-        }
-        return newErrors;
-      });
-    }
-  };
-
-  const handleContinue = () => {
-    const score = errors > 1 ? 0 : 1;
-    const standardResults = [buildMocaResult("Vigilancia", score)];
-    onComplete(score, { hits, errors, standardResults });
-  };
-
-  return (
-    <div className="module-container">
-      <div className="d-flex align-items-center mb-2">
-        <h5 className="mb-0">Actividad 2: Concentraci├│n (Letras)</h5>
-        <Button
-          variant="link"
-          onClick={speakInstructions}
-          disabled={isSpeakingLocal || playing}
-          className="listen-button ms-3 text-decoration-none"
-        >
-          <FaPlay /> Escuchar<br />Instrucciones
-        </Button>
-      </div>
-
-      <p>
-        Se leer├í una serie de letras. Cuando la letra sea "A", presione "Golpe". M├ís de 1 error ÔçÆ 0 pts.
-      </p>
-
-      {/* Bot├│n para iniciar */}
-      {!playing && !showContinue && (
-        <Button
-          className="activity-button d-block mx-auto mb-3"
-          variant="primary"
-          onClick={startSequence}
-          style={{ minWidth: "180px" }}
-        >
-          Iniciar Lectura
-        </Button>
-      )}
-
-      {playing && (
-        <div className="text-center mt-3">
-          <Spinner animation="grow" variant="primary" />
-          <p className="mt-2">
-            Leyendo letra: <strong>{currentLetter}</strong>
-          </p>
-        </div>
-      )}
-
-      {/* Bot├│n Golpe */}
-      <Button
-        className="activity-button d-block mx-auto mb-3"
-        variant="success"
-        onClick={handleGolpe}
-        style={{ minWidth: "200px" }}
-        disabled={!playing}
-      >
-        Golpe
-      </Button>
-
-      {/* Mostrar Errores y Aciertos */}
-      <div className="mt-3 text-center">
-        <p>Errores: {errors}</p>
-        <p>Golpes acertados: {hits.length}</p>
-      </div>
-
-      {showContinue && (
-        <div className="text-center mt-3">
-          <Alert variant={errors > 1 ? "danger" : "success"}>
-            {errors > 1
-              ? "Has cometido m├ís de un error. Puntaje: 0."
-              : "Puntaje: 1."}
-          </Alert>
-          <Button
-            className="continue-button mt-2"
-            variant="success"
-            onClick={handleContinue}
-            style={{ minWidth: "150px" }}
-          >
-            Continuar
-          </Button>
-        </div>
-      )}
-
-      {/* Bot├│n de Regresar y Continuar */}
-      {!showContinue && (
-        <div className="d-flex justify-content-between mt-4">
-          {isAdmin && (
-            <Button
-              className="back-button"
-              variant="secondary"
-              onClick={onPrevious}
-              disabled={isFirstModule}
-            >
-              Regresar
-            </Button>
-          )}
-          <Button
-            className="continue-button"
-            variant="success"
-            onClick={handleContinue}
-          >
-            Continuar
-          </Button>
-        </div>
-      )}
-    </div>
-  );
-};
-
-
-/* ==============================================
-   ACTIVIDAD 3: SUBSTRACCI├ôN DE 7
-   ============================================== */
-export const Sub7Activity = ({ onComplete, onPrevious, isFirstModule }) => {
-  const isAdmin = useSelector((state) => state.auth.userInfo?.isAdmin) || false;
-
-  const [isSpeakingLocal, setIsSpeakingLocal] = useState(false);
-  const [ttsSupported, setTtsSupported] = useState(true);
-  const [steps, setSteps] = useState([]);
-  const [manualInput, setManualInput] = useState("");
-  const [currentNumber, setCurrentNumber] = useState(100);
-  const [showFinalButtons, setShowFinalButtons] = useState(false);
-
-  useEffect(() => {
-    if (!window.speechSynthesis) {
-      setTtsSupported(false);
-    }
-    return () => {
-      if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
-
-  const speakInstructions = () => {
-    if (!ttsSupported) return;
-    if (isSpeakingLocal) {
-      window.speechSynthesis.cancel();
-      setIsSpeakingLocal(false);
-    } else {
-      const text =
-        "Actividad de Substracci├│n en Secuencia de 7. Comience en 100 y reste 7 sucesivamente. Ingrese cada resultado. M├ís aciertos = mayor puntaje.";
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "es-ES";
-      utterance.onend = () => {
-        setIsSpeakingLocal(false);
-      };
-      window.speechSynthesis.speak(utterance);
-      setIsSpeakingLocal(true);
-    }
-  };
-
-  const handleAddStep = () => {
-    if (!manualInput.trim()) return;
-    const val = parseInt(manualInput, 10);
-    if (isNaN(val)) {
-      alert("Por favor, ingrese un n├║mero v├ílido.");
-      return;
-    }
-    const expected = currentNumber - 7;
-    const isCorrect = val === expected;
-    setSteps((prev) => [...prev, { value: val, correct: isCorrect }]);
-    setCurrentNumber(val);
-    setManualInput("");
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddStep();
-    }
-  };
-
-  const calculateScore = () => {
-    let correctCount = 0;
-    let previousValue = 100;
-
-    for (let i = 0; i < steps.length && i < 5; i++) {
-      const expected = previousValue - 7;
-      if (steps[i].value === expected) {
-        correctCount += 1;
-      }
-      previousValue = steps[i].value;
-    }
-
-    let score = 0;
-    if (correctCount === 1) score = 1;
-    else if (correctCount === 2 || correctCount === 3) score = 2;
-    else if (correctCount === 4 || correctCount === 5) score = 3;
-
-    // Sustraccion Seriada usa una escala especial. Config Max es 3.
-    const standardResults = [buildMocaResult("Sustraccion Seriada", score)];
-
-    onComplete(score, { steps, standardResults });
-  };
-
-  const handleTerminate = () => {
-    const standardResults = [buildMocaResult("Sustraccion Seriada", 0)];
-    onComplete(0, { steps, standardResults });
-  };
-
-  return (
-    <div className="module-container">
-      <div className="d-flex align-items-center mb-2">
-        <h5 className="mb-0">Actividad 3: Substracci├│n en Secuencia de 7</h5>
-        <Button
-          variant="link"
-          onClick={speakInstructions}
-          disabled={isSpeakingLocal}
-          className="listen-button ms-3 text-decoration-none"
-        >
-          <FaPlay /> Escuchar<br />Instrucciones
-        </Button>
-      </div>
-
-      <p>
-        Comience con <strong>100</strong> y reste 7 sucesivamente. Ingrese cada resultado.
-      </p>
-
-      <div className="text-center my-4">
-        <h2>{currentNumber}</h2>
-      </div>
-
-      {!showFinalButtons && (
-        <Form
-          onSubmit={(e) => e.preventDefault()}
-          className="d-flex flex-column align-items-center"
-        >
-          <Form.Control
-            type="number"
-            placeholder="Ingrese el siguiente n├║mero"
-            value={manualInput}
-            onChange={(e) => setManualInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            style={{ maxWidth: "300px" }}
-          />
-          <Button
-            className="activity-button mt-2"
-            variant="success"
-            onClick={handleAddStep}
-            style={{ minWidth: "150px" }}
-          >
-            Agregar
-          </Button>
-        </Form>
-      )}
-
-      <div className="mt-3">
-        <p>N├║meros ingresados:</p>
-        <ul>
-          {steps.map((step, index) => (
-            <li key={index} style={{ color: step.correct ? "green" : "red" }}>
-              {step.value} {step.correct ? "Ô£ö´©Å" : "ÔØî"}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {!showFinalButtons && steps.length > 0 && (
-        <div className="d-flex justify-content-center mt-4">
-          <Button
-            className="activity-button me-2"
-            variant="success"
-            onClick={() => {
-              setShowFinalButtons(true);
-            }}
-            style={{ minWidth: "150px" }}
-          >
-            Finalizar
-          </Button>
-          <Button
-            className="activity-button"
-            variant="danger"
-            onClick={handleTerminate}
-            style={{ minWidth: "150px" }}
-          >
-            Terminar
-          </Button>
-        </div>
-      )}
-
-      {showFinalButtons && (
-        <div className="text-center mt-3">
-          <Alert variant="info">
-            Puede calcular su puntaje o terminar sin puntaje.
-          </Alert>
-          <Button
-            className="activity-button me-2"
-            variant="success"
-            onClick={calculateScore}
-            style={{ minWidth: "150px" }}
-          >
-            Calcular Puntaje
-          </Button>
-          <Button
-            className="activity-button"
-            variant="danger"
-            onClick={handleTerminate}
-            style={{ minWidth: "150px" }}
-          >
-            Terminar
-          </Button>
-        </div>
-      )}
-
-      {/* Botones de Regresar y Continuar */}
-      <div className="d-flex justify-content-between mt-4">
-        {isAdmin && (
-          <Button
-            className="back-button"
-            variant="secondary"
-            onClick={onPrevious}
-            disabled={isFirstModule}
-          >
-            Regresar
-          </Button>
-        )}
-        <Button
-          className="continue-button"
-          variant="success"
-          onClick={calculateScore}
-        >
-          Continuar
-        </Button>
-      </div>
-    </div>
-  );
-};
-
-
-/* ==============================================
-   M├ôDULO PRINCIPAL DE ATENCI├ôN
+   MÃ“DULO PRINCIPAL DE ATENCIÃ“N
    ============================================== */
 const Atencion = ({ onComplete, onPrevious, isFirstModule }) => {
-  const isAdmin = useSelector((state) => state.auth.userInfo?.isAdmin) || false;
-
-  const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
-  const [activity1Data, setActivity1Data] = useState(null);
-  const [activity2Data, setActivity2Data] = useState(null);
-  const [activity3Data, setActivity3Data] = useState(null);
-
   const handleActivity1Complete = (score, data) => {
-    setActivity1Data({ score, standardResults: data.standardResults });
-    setCurrentActivityIndex(1);
-  };
-
-  const handleActivity2Complete = (score, data) => {
-    setActivity2Data({ score, standardResults: data.standardResults });
-    setCurrentActivityIndex(2);
-  };
-
-  const handleActivity3Complete = (score, data) => {
-    setActivity3Data({ score, standardResults: data.standardResults });
-    handleNext(score, data.standardResults);
-  };
-
-  const handleNext = (lastScore, lastStandardResults) => {
-    const total = (activity1Data?.score || 0) + (activity2Data?.score || 0) + (lastScore || 0);
-    const standardResults = [
-        ...(activity1Data?.standardResults || []),
-        ...(activity2Data?.standardResults || []),
-        ...(lastStandardResults || [])
-    ];
-    onComplete(total, {
-      activity1: activity1Data?.score,
-      activity2: activity2Data?.score,
-      activity3: lastScore,
-      standardResults
+    onComplete(score, {
+      activity1: score,
+      standardResults: data.standardResults,
     });
   };
 
   return (
-    <div className="module-container">
-      {currentActivityIndex === 0 && (
-        <NumberSequenceActivity
-          onComplete={handleActivity1Complete}
-          onPrevious={onPrevious}
-          isFirstModule={isFirstModule}
-        />
-      )}
-      {currentActivityIndex === 1 && (
-        <ConcentracionActivity
-          onComplete={handleActivity2Complete}
-          onPrevious={onPrevious}
-          isFirstModule={isFirstModule}
-        />
-      )}
-      {currentActivityIndex === 2 && (
-        <Sub7Activity
-          onComplete={handleActivity3Complete}
-          onPrevious={onPrevious}
-          isFirstModule={isFirstModule}
-        />
-      )}
-
-      {/* Debug / Navegaci├│n r├ípida (solo visible si esAdmin) */}
-      {isAdmin && (
-        <div className="d-flex justify-content-center mt-4">
-          <Button
-            variant="info"
-            onClick={() => setCurrentActivityIndex(0)}
-            className="me-2"
-          >
-            Ir a Actividad 1
-          </Button>
-          <Button
-            variant="info"
-            onClick={() => setCurrentActivityIndex(1)}
-            className="me-2"
-          >
-            Ir a Actividad 2
-          </Button>
-          <Button variant="info" onClick={() => setCurrentActivityIndex(2)}>
-            Ir a Actividad 3
-          </Button>
-        </div>
-      )}
+    <div className="module-container w-100">
+      <NumberSequenceActivity
+        onComplete={handleActivity1Complete}
+        onPrevious={onPrevious}
+        isFirstModule={isFirstModule}
+      />
     </div>
   );
 };
 
 export default Atencion;
+
