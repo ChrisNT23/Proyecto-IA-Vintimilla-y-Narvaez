@@ -339,9 +339,14 @@ const MocaFinalScreen = () => {
           {/* Botón para regresar */}
           <Row className="mt-4">
             <Col className="d-flex justify-content-end">
-              <Button variant="secondary" onClick={handleBack}>
+              <button 
+                className="cubo-undo-button" 
+                onClick={handleBack}
+                style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 Regresar
-              </Button>
+              </button>
             </Col>
           </Row>
         </>
