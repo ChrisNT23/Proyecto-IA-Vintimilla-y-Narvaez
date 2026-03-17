@@ -1,4 +1,4 @@
-// src/screens/MOCAmodules/Atencion.jsx
+﻿// src/screens/MOCAmodules/Atencion.jsx
 
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Row, Col, Form, Alert, Spinner } from "react-bootstrap";
@@ -8,7 +8,7 @@ import { buildMocaResult } from './helpers/mocaResultBuilder';
 import '../../assets/styles/mocamodules.css';
 
 /* ==============================================
-   ACTIVIDAD 1: SECUENCIA NUMÉRICA
+   ACTIVIDAD 1: SECUENCIA NUMERICA
    ============================================== */
 const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
   const isAdmin = useSelector((state) => state.auth.userInfo?.isAdmin) || false;
@@ -147,7 +147,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
       setIsSpeakingLocal(false);
     } else {
       const text =
-        "Módulo de Atención, Actividad 1. Escuche una serie de números y repítalos.";
+        "Módulo de atención, Actividad 1. Escuche una serie de nâ”œâ•‘meros y repâ”œÂ¡talos.";
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "es-ES";
       utterance.onend = () => setIsSpeakingLocal(false);
@@ -158,7 +158,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
 
   const handleStartRecall = () => {
     if (!recognitionSupported) {
-      alert("El reconocimiento de voz no está disponible en su navegador.");
+      alert("El reconocimiento de voz no está­ disponible en su navegador.");
       return;
     }
     setListening(true);
@@ -231,7 +231,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
       setStage(STAGE_SECOND_SEQUENCE_READ);
     } else if (stage === STAGE_SECOND_SEQUENCE_RECALL) {
       setStage(STAGE_FINAL);
-      setMessage("Ha completado la Actividad 1 de Atención.");
+      setMessage("Ha completado la Actividad 1 de Atenciâ”œâ”‚n.");
     }
   };
 
@@ -270,8 +270,8 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
             <Spinner animation="grow" variant="primary" />
             <p className="mt-3">
               {stage === STAGE_FIRST_SEQUENCE_READ
-                ? "Le leeré una serie de números, repítalos en el mismo orden."
-                : "Le leeré otra serie de números, repítalos en orden inverso."}
+                ? "Le leerá una serie de números, repítalos en el mismo orden."
+                : "Le leerá otra serie de números, repítalos en orden inverso."}
             </p>
           </div>
         )}
@@ -410,48 +410,14 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
 };
 
 
-
-
-
-
 /* ==============================================
    MÓDULO PRINCIPAL DE ATENCIÓN
    ============================================== */
 const Atencion = ({ onComplete, onPrevious, isFirstModule }) => {
-  const isAdmin = useSelector((state) => state.auth.userInfo?.isAdmin) || false;
-
-  const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
-  const [activity1Data, setActivity1Data] = useState(null);
-  const [activity2Data, setActivity2Data] = useState(null);
-  const [activity3Data, setActivity3Data] = useState(null);
-
   const handleActivity1Complete = (score, data) => {
-    setActivity1Data({ score, standardResults: data.standardResults });
-    setCurrentActivityIndex(1);
-  };
-
-  const handleActivity2Complete = (score, data) => {
-    setActivity2Data({ score, standardResults: data.standardResults });
-    setCurrentActivityIndex(2);
-  };
-
-  const handleActivity3Complete = (score, data) => {
-    setActivity3Data({ score, standardResults: data.standardResults });
-    handleNext(score, data.standardResults);
-  };
-
-  const handleNext = (lastScore, lastStandardResults) => {
-    const total = (activity1Data?.score || 0) + (activity2Data?.score || 0) + (lastScore || 0);
-    const standardResults = [
-      ...(activity1Data?.standardResults || []),
-      ...(activity2Data?.standardResults || []),
-      ...(lastStandardResults || [])
-    ];
-    onComplete(total, {
-      activity1: activity1Data?.score,
-      activity2: activity2Data?.score,
-      activity3: lastScore,
-      standardResults
+    onComplete(score, {
+      activity1: score,
+      standardResults: data.standardResults,
     });
   };
 
@@ -467,3 +433,4 @@ const Atencion = ({ onComplete, onPrevious, isFirstModule }) => {
 };
 
 export default Atencion;
+
