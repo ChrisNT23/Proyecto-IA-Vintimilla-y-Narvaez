@@ -1147,3 +1147,288 @@
   line-height: 1.6;
   margin: 0;
 }
+
+/* ============================================================
+   CUBOS ACTIVITY — Rediseño moderno
+   ============================================================ */
+
+.cubo-section-breadcrumb {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #2563eb;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.cubo-header {
+  margin-bottom: 1.5rem;
+}
+
+.cubo-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+.cubo-subtitle {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.cubo-instruction-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.cubo-instruction-box {
+  flex: 1;
+  background-color: #eff6ff;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cubo-instruction-icon {
+  color: #3b82f6;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.cubo-instruction-text {
+  color: #1e3a8a;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.cubo-instruction-text strong {
+  color: #2563eb;
+}
+
+.cubo-tts-button {
+  background-color: white;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.cubo-tts-button:hover:not(:disabled) {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.cubo-canvas-main-container {
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.cubo-draw-area-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 1200px) {
+  .cubo-draw-area-wrapper {
+    flex-direction: row;
+    justify-content: center;
+    gap: 4rem;
+  }
+}
+
+.cubo-model-img {
+  max-width: 380px;
+  height: auto;
+}
+
+.cubo-canvas-container {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px #e2e8f0;
+  background-color: white;
+}
+
+.cubo-canvas-dots {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cubo-drawing-canvas {
+  position: relative;
+  z-index: 1;
+  background-color: transparent !important;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="%232563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5" fill="%232563eb"/><line x1="12" y1="2" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="2" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="22" y2="12"/></svg>') 16 16, crosshair;
+}
+
+.cubo-controls-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  z-index: 10;
+}
+
+.cubo-undo-button,
+.cubo-clear-button {
+  background-color: white;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.cubo-undo-button:hover {
+  background-color: #f1f5f9;
+  color: #3b82f6;
+  border-color: #bfdbfe;
+}
+
+.cubo-clear-button:hover {
+  background-color: #fff1f2;
+  color: #e11d48;
+  border-color: #fecaca;
+}
+
+.cubo-evaluate-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+
+.cubo-evaluate-button {
+  background-color: #f8fafc;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+  border-radius: 12px;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+}
+
+.cubo-evaluate-button:hover:not(:disabled) {
+  background-color: #2563eb;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.2);
+}
+
+.cubo-evaluate-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #cbd5e1;
+  color: #94a3b8;
+}
+
+.cubo-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 1.5rem;
+}
+
+.cubo-pagination {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cubo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #e2e8f0;
+}
+
+.cubo-dot.active {
+  background-color: #2563eb;
+  width: 12px;
+  border-radius: 4px;
+}
+
+.cubo-continue-button {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.8rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.cubo-continue-button:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+}
+
+.cubo-back-button {
+  background-color: white;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.8rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.cubo-back-button:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}

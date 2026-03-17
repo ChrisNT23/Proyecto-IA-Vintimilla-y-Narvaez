@@ -226,127 +226,167 @@ const Identificacion = ({ onComplete, onPrevious, isFirstModule }) => {
   }, [listening]);
 
   return (
-    <div className="identificacion-container">
-      {/* Header */}
-      <div className="mb-4 w-100">
-        <h2 className="mb-1 fw-bold" style={{ color: '#004A7C', fontSize: '26px' }}>Identificación de Animales</h2>
-        <span className="text-secondary" style={{ fontSize: '15px' }}>Nombre el animal mostrado en la imagen a continuación.</span>
+    <div className="w-100 h-100 d-flex flex-column" style={{ padding: "20px 40px" }}>
+      {/* Breadcrumb Section */}
+      <div className="cubo-section-breadcrumb">
+        SECCIÓN 2: IDENTIFICACIÓN
       </div>
 
-      {/* Imagen del animal */}
-      <div className="identificacion-image-wrapper">
-        <img
-          src={animals[currentAnimalIndex].image}
-          alt={`Animal ${currentAnimalIndex + 1}`}
-          className="identificacion-animal-img"
-        />
+      {/* Header Section */}
+      <div className="cubo-header">
+        <h1 className="cubo-title">
+          Identificación <span className="text-primary">(Animales)</span>
+        </h1>
+        <p className="cubo-subtitle">Prueba de denominación de animales</p>
       </div>
 
-      {/* Sección de respuesta */}
-      <div className="identificacion-answer-section">
-
-        {/* Estado: Escuchando */}
-        {useVoice && listening && (
-          <div className="identificacion-listening-state">
-            <div className="identificacion-pulse-ring"></div>
-            <Spinner animation="grow" size="sm" className="me-2" style={{ color: "#2563eb" }} />
-            <span className="identificacion-listening-text">Escuchando...</span>
-            <button
-              className="identificacion-stop-btn"
-              onClick={handleStop}
-            >
-              <FaStop className="me-2" />
-              Detener
-            </button>
+      {/* Instruction Row */}
+      <div className="cubo-instruction-row">
+        <div className="cubo-instruction-box">
+          <div className="cubo-instruction-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
           </div>
-        )}
-
-        {/* Botón principal Hablar Respuesta */}
-        {useVoice && !listening && !confirmation && (
-          <button
-            className="identificacion-speak-btn"
-            onClick={handleListen}
-            disabled={!useVoice}
-          >
-            <FaMicrophone className="me-2" />
-            Hablar Respuesta
-          </button>
-        )}
-
-        {/* Separador */}
-        {!listening && !confirmation && (
-          <div className="identificacion-divider">
-            <span className="identificacion-divider-line"></span>
-            <span className="identificacion-divider-text">O ESCRIBE AQUÍ</span>
-            <span className="identificacion-divider-line"></span>
-          </div>
-        )}
-
-        {/* Input de texto */}
-        {!listening && !confirmation && (
-          <Form onSubmit={(e) => e.preventDefault()} className="w-100">
-            <input
-              type="text"
-              className="identificacion-input"
-              placeholder="Ej: Camello"
-              value={manualInput}
-              onChange={(e) => setManualInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-            />
-            <button
-              className="identificacion-confirm-btn"
-              onClick={handleConfirm}
-              disabled={!manualInput.trim()}
-            >
-              Confirmar Respuesta
-              <FaCheckCircle className="ms-2" />
-            </button>
-          </Form>
-        )}
-
-        {/* Confirmación de voz */}
-        {confirmation && (
-          <div className="identificacion-confirmation">
-            <div className="identificacion-confirmation-bubble">
-              <p className="identificacion-confirmation-question">¿Es correcta su respuesta?</p>
-              <p className="identificacion-confirmation-answer">"{transcript || manualInput}"</p>
-            </div>
-            <div className="identificacion-confirmation-actions">
-              <button
-                className="identificacion-retry-btn"
-                onClick={handleRetry}
-              >
-                <FaRedo className="me-2" />
-                Reintentar
-              </button>
-              <button
-                className="identificacion-yes-btn"
-                onClick={handleConfirm}
-              >
-                <FaCheckCircle className="me-2" />
-                Confirmar
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Botón Siguiente Pregunta - siempre visible para avanzar a la siguiente fase */}
-      <div className="identificacion-nav">
-        {isAdmin && (
-          <button
-            className="identificacion-back-btn"
-            onClick={onPrevious}
-            disabled={isFirstModule}
-          >
-            Regresar
-          </button>
-        )}
+          <p className="cubo-instruction-text">
+            Nombre el <strong>animal</strong> mostrado en la imagen a continuación.
+          </p>
+        </div>
         <button
-          className="identificacion-siguiente-btn"
-          onClick={handleNext}
+          className="cubo-tts-button"
+          onClick={handleSpeakInstructions}
+          disabled={isSpeakingLocal}
         >
-          Siguiente Pregunta <span className="identificacion-siguiente-arrow">→</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Escuchar Instrucciones
+        </button>
+      </div>
+
+      {/* Image Section */}
+      <div className="cubo-canvas-main-container mb-4">
+        <div className="d-flex justify-content-center py-4">
+          <div style={{
+            background: 'white',
+            borderRadius: '20px',
+            padding: '1.5rem',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+            border: '2px solid #f1f5f9'
+          }}>
+            <img
+              src={animals[currentAnimalIndex].image}
+              alt={`Animal ${currentAnimalIndex + 1}`}
+              style={{
+                maxWidth: '400px',
+                height: 'auto',
+                borderRadius: '12px'
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Answer Section */}
+      <div className="d-flex flex-column align-items-center mb-5">
+        <div style={{ maxWidth: '500px', width: '100%' }}>
+          {/* Status: Listening */}
+          {useVoice && listening && (
+            <div className="identificacion-listening-state mb-4">
+              <div className="identificacion-pulse-ring"></div>
+              <Spinner animation="grow" size="sm" className="me-2" style={{ color: "#2563eb" }} />
+              <span className="identificacion-listening-text">Escuchando...</span>
+              <button className="identificacion-stop-btn" onClick={handleStop}>
+                <FaStop className="me-2" />
+                Detener
+              </button>
+            </div>
+          )}
+
+          {/* Voice Button */}
+          {useVoice && !listening && !confirmation && (
+            <button
+              className="identificacion-speak-btn mb-4 w-100"
+              onClick={handleListen}
+              disabled={!useVoice}
+            >
+              <FaMicrophone className="me-2" />
+              Hablar Respuesta
+            </button>
+          )}
+
+          {/* Divider */}
+          {!listening && !confirmation && (
+            <div className="identificacion-divider mb-4">
+              <span className="identificacion-divider-line"></span>
+              <span className="identificacion-divider-text uppercase">O ESCRIBE AQUÍ</span>
+              <span className="identificacion-divider-line"></span>
+            </div>
+          )}
+
+          {/* Text Input */}
+          {!listening && !confirmation && (
+            <Form onSubmit={(e) => e.preventDefault()} className="w-100">
+              <input
+                type="text"
+                className="identificacion-input mb-4"
+                placeholder="Ej: Camello"
+                value={manualInput}
+                onChange={(e) => setManualInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                style={{
+                  height: '60px',
+                  fontSize: '1.1rem',
+                  borderRadius: '16px',
+                  border: '2px solid #e2e8f0',
+                  padding: '0 1.5rem',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+                }}
+              />
+              <button
+                className="cubo-continue-button w-100 justify-content-center"
+                style={{ height: '60px', fontSize: '1.1rem' }}
+                onClick={handleConfirm}
+                disabled={!manualInput.trim()}
+              >
+                Confirmar Respuesta
+                <FaCheckCircle className="ms-2" />
+              </button>
+            </Form>
+          )}
+
+          {/* Voice Confirmation */}
+          {confirmation && (
+            <div className="identificacion-confirmation">
+              <div className="identificacion-confirmation-bubble">
+                <p className="identificacion-confirmation-question">¿Es correcta su respuesta?</p>
+                <p className="identificacion-confirmation-answer">"{transcript || manualInput}"</p>
+              </div>
+              <div className="identificacion-confirmation-actions">
+                <button className="identificacion-retry-btn" onClick={handleRetry}>
+                  <FaRedo className="me-2" />
+                  Reintentar
+                </button>
+                <button className="identificacion-yes-btn" onClick={handleConfirm}>
+                  <FaCheckCircle className="me-2" />
+                  Confirmar
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Unified Footer */}
+      <div className="cubo-footer mt-auto">
+        <button
+          className="cubo-undo-button"
+          onClick={onPrevious}
+          style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Regresar
+        </button>
+
+        <button className="cubo-continue-button" onClick={handleNext}>
+          Siguiente Pregunta
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
         </button>
       </div>
     </div>

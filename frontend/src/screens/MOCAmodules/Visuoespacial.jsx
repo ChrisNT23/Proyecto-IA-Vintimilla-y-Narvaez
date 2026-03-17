@@ -193,11 +193,11 @@ const AlternanciaConceptualActivity = ({
   const handleMarkerClick = (index) => {
     if (selectedMarker !== null && selectedMarker !== index) {
       // Evitar agregar conexiones duplicadas
-      const exists = connections.some(c => 
-        (c.from === selectedMarker && c.to === index) || 
+      const exists = connections.some(c =>
+        (c.from === selectedMarker && c.to === index) ||
         (c.from === index && c.to === selectedMarker)
       );
-      
+
       if (!exists) {
         setConnections((prev) => [...prev, { from: selectedMarker, to: index, dashed: false }]);
         setAnswers((prev) => [...prev, `${markers[selectedMarker].label}-${markers[index].label}`]);
@@ -278,7 +278,7 @@ const AlternanciaConceptualActivity = ({
       const response = await fetch('/api/evaluate-alternancia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           sequence: userSequence,
           userId: patientId || userInfo?._id,
           module: 'Visuoespacial',
@@ -325,49 +325,68 @@ const AlternanciaConceptualActivity = ({
   };
 
   return (
-    <div className="bg-white shadow-sm w-100 h-100" style={{ padding: '40px', fontFamily: 'system-ui, -apple-system, sans-serif', border: '1px solid #e0e0e0', minHeight: '600px', display: 'flex', flexDirection: 'column', borderRadius: '16px' }}>
-      {/* Header and subtitle */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 className="mb-1 fw-bold" style={{ color: '#004A7C', fontSize: '28px' }}>Alternancia Conceptual</h2>
-          <span className="text-secondary" style={{ fontSize: '15px' }}>Evaluación de funciones ejecutivas</span>
-        </div>
-        <Button
-          variant="outline-primary"
-          onClick={() => speakInstructions(
-            "Instrucciones: Dibuje una línea alternando cifras y letras, empezando en 1, luego A, 2, B, etc., hasta E. Presione Reiniciar para comenzar de nuevo y Continuar para avanzar."
-          )}
-          disabled={isSpeaking}
-          className="d-flex align-items-center rounded-pill px-3 py-2"
-          style={{ borderColor: '#2DAAE1', color: '#2DAAE1', backgroundColor: '#fff', fontWeight: '600', fontSize: '14px' }}
-        >
-          <div className="rounded-circle d-flex align-items-center justify-content-center me-2" style={{ backgroundColor: '#2DAAE1', width: '22px', height: '22px' }}>
-            <FaPlay size={10} color="#fff" style={{ marginLeft: '2px' }} />
-          </div>
-          Escuchar Instrucciones
-        </Button>
+    <div className="w-100 h-100 d-flex flex-column" style={{ padding: '20px 40px' }}>
+      {/* Breadcrumb Section */}
+      <div className="cubo-section-breadcrumb">
+        SECCIÓN 1: VISUOESPACIAL / EJECUTIVA
       </div>
 
-      {/* Instruction Card */}
-      <div className="p-4 mb-4" style={{ backgroundColor: '#fff', borderLeft: '4px solid #00A0E3', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.04)' }}>
-        <p className="mb-0 text-dark" style={{ fontSize: '16px', lineHeight: '1.5' }}>
-          Dibuje una línea alternando entre cifras y letras, respetando el orden numérico y alfabético.<br />
-          Inicie en <strong>1</strong> y termine en <strong>E</strong>.
-        </p>
+      {/* Header */}
+      <div className="cubo-header">
+        <h2 className="cubo-title">Capacidades Visuoconstructivas <span style={{ color: '#3b82f6' }}>(Alternancia)</span></h2>
       </div>
+
+      {/* Instruction Row */}
+      <div className="cubo-instruction-row">
+        <div className="cubo-instruction-box">
+          <div className="cubo-instruction-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          </div>
+          <p className="cubo-instruction-text">
+            Dibuje una línea que pase de un <strong>número a una letra</strong>, y luego de una letra a un número, siguiendo el orden correlativo (1-A-2-B-3-C...).
+          </p>
+        </div>
+        <button
+          className="cubo-tts-button"
+          onClick={() => speakInstructions("Dibuje una línea que pase de un número a una letra, y luego de una letra a un número, siguiendo el orden correlativo: uno, A, dos, B, tres, C, cuatro, D, cinco, E.")}
+          disabled={isSpeaking}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Escuchar Instrucciones
+        </button>
+      </div>
+
+      <div
+        className="alternancia-wrapper mt-4 mb-4 w-100"
+        style={{
+          background: 'white',
+          borderRadius: '24px',
+          padding: '2.5rem',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+          border: '1px solid #eef2f6',
+          position: 'relative',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          maxWidth: '900px',
+          margin: '0 auto'
+        }}
+      >
+
 
       {/* Canvas Container */}
-      <div ref={containerRef} className="p-4 mb-4 position-relative d-flex flex-column flex-grow-1" style={{ backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 2px 15px rgba(0,0,0,0.03)', minHeight: '400px' }}>
+      <div ref={containerRef} className="p-4 mb-4 position-relative d-flex flex-column align-items-center justify-content-center" style={{ backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 2px 15px rgba(0,0,0,0.03)', minHeight: '600px', width: '100%', maxWidth: '800px' }}>
         <div style={{
           position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
           backgroundImage: 'radial-gradient(#E2E8F0 2px, transparent 2px)',
-          backgroundSize: '30px 30px',
+          backgroundSize: '50px 50px',
           opacity: 0.6,
           borderRadius: '16px',
           pointerEvents: 'none'
         }} />
 
-        <div className="d-flex justify-content-end mb-2 position-relative" style={{ zIndex: 10 }}>
+        <div className="d-flex justify-content-end mb-2 w-100 position-relative" style={{ zIndex: 10 }}>
           <Button
             variant="light"
             size="sm"
@@ -385,7 +404,7 @@ const AlternanciaConceptualActivity = ({
             height="100%"
             viewBox="0 0 500 500"
             preserveAspectRatio="xMidYMid meet"
-            style={{ backgroundColor: 'transparent', maxWidth: '600px', maxHeight: '600px' }}
+            style={{ backgroundColor: 'transparent', maxWidth: '750px', minHeight: '550px' }}
             onMouseMove={handleMouseMove}
           >
             {connections.map((conn, idx) => {
@@ -503,12 +522,15 @@ const AlternanciaConceptualActivity = ({
         </div>
       )}
 
-      <div className="d-flex justify-content-end mt-4">
-        <Button
+      </div>
+
+      <div className="cubo-footer mt-auto">
+        <div>{/* Spacing */}</div>
+        <button
+          className="cubo-continue-button"
           onClick={handleContinue}
+          style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
           disabled={isLoading}
-          className="d-flex align-items-center px-4 py-2 rounded-3 shadow-sm"
-          style={{ backgroundColor: '#217FE5', border: 'none', fontWeight: '500', fontSize: '15px' }}
         >
           {isLoading ? (
             <>
@@ -516,9 +538,12 @@ const AlternanciaConceptualActivity = ({
               Evaluando...
             </>
           ) : (
-            <>Continuar <FaArrowRight className="ms-2" /></>
+            <>
+              Siguiente Pregunta
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </>
           )}
-        </Button>
+        </button>
       </div>
     </div>
   );
@@ -608,7 +633,7 @@ const CuboActivity = ({
     context.fillRect(0, 0, canvas.width, canvas.height);
 
     context.strokeStyle = '#000';
-    context.lineWidth = 2;
+    context.lineWidth = 3;
     lines.forEach((line) => {
       context.beginPath();
       line.forEach((point, index) => {
@@ -655,11 +680,9 @@ const CuboActivity = ({
       if (Number(data.score) === 1) {
         setAlertMessage('¡Buen trabajo! El dibujo del cubo cumple los criterios establecidos.');
         setAlertVariant('success');
-        console.log("Score recibido:", data.score, typeof data.score);
       } else {
         setAlertMessage('No se cumplieron todos los criterios del cubo (0 puntos).');
         setAlertVariant('danger');
-        console.log("Score recibido:", data.score, typeof data.score);
       }
       setShowAlert(true);
       setEvaluated(true);
@@ -673,143 +696,146 @@ const CuboActivity = ({
     }
   };
 
-  const handleContinue = () => {
-    // Ya no se deshabilita el botón, el usuario puede avanzar sin evaluar
-    handleNext();
-  };
-
   return (
-    <div className="module-container">
-      <div className="d-flex align-items-center mb-2">
-        <h4 className="mb-0">Capacidades Visuoconstructivas (Cubo)</h4>
-        <Button
-          variant="link"
-          onClick={() =>
-            speakInstructions(
-              "Instrucciones: Copie el cubo de la manera más precisa posible. Puede usar las herramientas de deshacer, rehacer o borrar. Luego presione Evaluar y finalmente Continuar."
-            )
-          }
-          disabled={isSpeaking}
-          className="listen-button ms-3 text-decoration-none"
-        >
-          <FaPlay /> Escuchar<br />Instrucciones
-        </Button>
+    <div className="w-100 h-100 d-flex flex-column" style={{ padding: '20px 40px' }}>
+      {/* Breadcrumb Section */}
+      <div className="cubo-section-breadcrumb">
+        SECCIÓN 1: VISUOESPACIAL / EJECUTIVA
       </div>
-      <p>“Copie este dibujo de la manera más precisa posible”. Se califica la exactitud y completitud del cubo.</p>
 
-      <div className="d-flex justify-content-center">
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <img
-            src={cubo}
-            alt="Cubo"
-            style={{ width: '300px', marginRight: '20px' }}
-          />
-          <canvas
-            ref={canvasRef}
-            width={300}
-            height={300}
-            style={{ border: '1px solid black', backgroundColor: '#fff' }}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-          />
+      {/* Header */}
+      <div className="cubo-header">
+        <h2 className="cubo-title">Capacidades Visuoconstructivas <span style={{ color: '#3b82f6' }}>(Cubo)</span></h2>
+      </div>
+
+      {/* Instruction Row */}
+      <div className="cubo-instruction-row">
+        <div className="cubo-instruction-box">
+          <div className="cubo-instruction-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          </div>
+          <p className="cubo-instruction-text">
+            Copie el <strong>cubo</strong> de la manera más precisa posible. Se califica la exactitud y completitud.
+          </p>
         </div>
+        <button
+          className="cubo-tts-button"
+          onClick={() => speakInstructions("Copie este dibujo de la manera más precisa posible. Se califica la exactitud y completitud del cubo.")}
+          disabled={isSpeaking}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Escuchar Instrucciones
+        </button>
       </div>
 
-      <Row className="mt-3 justify-content-center">
-        <Col xs="auto" className="d-flex">
-          {isAdmin && (
-            <>
-              <Button variant="outline-secondary" onClick={handleUndo} className="me-2">
-                Deshacer
-              </Button>
-              <Button variant="outline-secondary" onClick={handleRedo} className="me-2">
-                Rehacer
-              </Button>
-            </>
-          )}
-          <Button variant="warning" onClick={handleClear}>
-            Borrar dibujo
-          </Button>
-        </Col>
-      </Row>
-
-      <Row className="mt-3 justify-content-center">
-        <Col xs={12} md={6}>
-          <Button
-            variant="primary"
-            onClick={handleEvaluate}
-            disabled={isLoading || lines.length === 0}
-            className="w-100"
-          >
-            {isLoading ? (
-              <>
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                  className="me-2"
-                />
-                Evaluando...
-              </>
-            ) : (
-              "Evaluar"
-            )}
-          </Button>
-        </Col>
-      </Row>
-
+      {/* Alerts moved above the canvas */}
       {showAlert && (
         <Alert
           variant={alertVariant}
           onClose={() => setShowAlert(false)}
           dismissible
-          className="mt-3 text-center"
+          className="mb-4 text-center shadow-sm"
+          style={{ borderRadius: '12px', padding: '1.25rem', fontWeight: '500' }}
         >
-          {alertMessage}
+          {alertVariant === 'success' ? (
+            <div className="d-flex align-items-center justify-content-center gap-2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>¡Excelente! {alertMessage}</span>
+            </div>
+          ) : (
+            <div className="d-flex align-items-center justify-content-center gap-2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span>{alertMessage}</span>
+            </div>
+          )}
         </Alert>
       )}
 
       {error && (
-        <Alert variant="danger" className="mt-3 text-center">
-          {error}
+        <Alert variant="danger" className="mb-4 text-center shadow-sm" style={{ borderRadius: '12px', padding: '1.25rem' }}>
+          <div className="d-flex align-items-center justify-content-center gap-2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+            <span>{error}</span>
+          </div>
         </Alert>
       )}
 
-      <div className="d-flex flex-column align-items-center mt-3">
-        {cubeScore !== null && (
-          <Button
-            variant={cubeScore === 1 ? 'success' : 'danger'}
-            className="w-100"
-            disabled
-          >
-            {cubeScore === 1
-              ? 'Criterios cumplidos (+1)'
-              : 'Criterios no cumplidos (0)'}
-          </Button>
-        )}
+      {/* Main Drawing Container */}
+      <div className="cubo-canvas-main-container">
+        <div className="cubo-draw-area-wrapper">
+          <img
+            src={cubo}
+            alt="Modelo Cubo"
+            className="cubo-model-img"
+          />
+          <div className="cubo-canvas-container">
+            <div className="cubo-canvas-dots"></div>
+            <canvas
+              ref={canvasRef}
+              width={450}
+              height={450}
+              className="cubo-drawing-canvas"
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+            />
+          </div>
+        </div>
+
+        {/* Canvas Controls (Undo & Clear) - Repositioned by CSS */}
+        <div className="cubo-controls-wrapper">
+          <button className="cubo-undo-button" onClick={handleUndo} title="Deshacer último trazo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 14L4 9l5-5"></path><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
+            Atras
+          </button>
+          <button className="cubo-clear-button" onClick={handleClear} title="Borrar todo el dibujo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            Borrar dibujo
+          </button>
+        </div>
       </div>
 
-      <Row className="mt-4">
-        {isAdmin && (
-          <Col xs="auto">
-            <Button variant="secondary" onClick={handlePrevious} className="me-2">
-              Regresar
-            </Button>
-          </Col>
-        )}
-        <Col className="d-flex justify-content-end">
-          <Button
-            variant="success"
-            onClick={handleContinue}
-          >
-            Continuar
-          </Button>
-        </Col>
-      </Row>
+      {/* Evaluate Section */}
+      <div className="cubo-evaluate-wrapper">
+        <button
+          className="cubo-evaluate-button"
+          onClick={handleEvaluate}
+          disabled={isLoading || lines.length === 0}
+        >
+          {isLoading ? (
+            <>
+              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+              Procesando trazo...
+            </>
+          ) : (
+            <>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              Evaluar Trazo con IA
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Unified Footer */}
+      <div className="cubo-footer mt-auto">
+        <button
+          className="cubo-undo-button"
+          onClick={handlePrevious}
+          style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Regresar
+        </button>
+        <button
+          className="cubo-continue-button"
+          onClick={handleNext}
+          style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
+        >
+          Siguiente Pregunta
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
     </div>
   );
 };
@@ -898,7 +924,7 @@ const RelojActivity = ({
     context.fillRect(0, 0, canvas.width, canvas.height);
 
     context.strokeStyle = '#000';
-    context.lineWidth = 2;
+    context.lineWidth = 3;
     lines.forEach((line) => {
       context.beginPath();
       line.forEach((point, index) => {
@@ -971,138 +997,145 @@ Agujas: ${agujas || 'No cumple'}`);
     // Siempre habilitado
     handleNext();
   };
-
   return (
-    <div className="module-container">
-      <div className="d-flex align-items-center mb-2">
-        <h4 className="mb-0">Capacidades Visuoconstructivas (Reloj)</h4>
-        <Button
-          variant="link"
-          onClick={() =>
-            speakInstructions(
-              "Instrucciones: Dibuje un reloj, incluyendo todos los números, y marque las 11 y 10. Luego presione Evaluar y por último Continuar."
-            )
-          }
+    <>
+      {/* Breadcrumb Section */}
+      <div className="cubo-section-breadcrumb">
+        SECCIÓN 1: VISUOESPACIAL / EJECUTIVA
+      </div>
+
+      {/* Header Section */}
+      <div className="cubo-header">
+        <h1 className="cubo-title">
+          Capacidades Visuoconstructivas <span className="text-primary">(Reloj)</span>
+        </h1>
+        <p className="cubo-subtitle">Instrucciones de dibujo y evaluación con IA</p>
+      </div>
+
+      {/* Instruction Row */}
+      <div className="cubo-instruction-row">
+        <div className="cubo-instruction-box">
+          <div className="cubo-instruction-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          </div>
+          <p className="cubo-instruction-text">
+            Dibuje un <strong>reloj</strong> que incluya todos los números y marque las <strong>11 y 10</strong>.
+          </p>
+        </div>
+        <button
+          className="cubo-tts-button"
+          onClick={() => speakInstructions("Dibuje un reloj que incluya todos los números y marque las 11 y 10. Luego presione Evaluar y por último Continuar.")}
           disabled={isSpeaking}
-          className="listen-button ms-3 text-decoration-none"
         >
-          <FaPlay /> Escuchar<br />Instrucciones
-        </Button>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          Escuchar Instrucciones
+        </button>
       </div>
 
-      <p>“Dibuje un reloj que incluya todos los números y marque las 11 y 10.”</p>
-
-      <div className="d-flex justify-content-center">
-        <canvas
-          ref={canvasRef}
-          width={300}
-          height={300}
-          style={{ border: '1px solid black', backgroundColor: '#fff' }}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-        />
-      </div>
-
-      <Row className="mt-3 justify-content-center">
-        <Col xs="auto" className="d-flex">
-          {isAdmin && (
-            <>
-              <Button variant="outline-secondary" onClick={handleUndo} className="me-2">
-                Deshacer
-              </Button>
-              <Button variant="outline-secondary" onClick={handleRedo} className="me-2">
-                Rehacer
-              </Button>
-            </>
-          )}
-          <Button variant="warning" onClick={handleClear}>
-            Borrar dibujo
-          </Button>
-        </Col>
-      </Row>
-
-      <Row className="mt-3 justify-content-center">
-        <Col xs={12} md={6}>
-          <Button
-            variant="primary"
-            onClick={handleEvaluate}
-            disabled={isLoading || lines.length === 0}
-            className="w-100"
-          >
-            {isLoading ? (
-              <>
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                  className="me-2"
-                />
-                Evaluando...
-              </>
-            ) : (
-              "Evaluar"
-            )}
-          </Button>
-        </Col>
-      </Row>
-
+      {/* Alerts moved above the canvas */}
       {showAlert && (
         <Alert
           variant={alertVariant}
           onClose={() => setShowAlert(false)}
           dismissible
-          className="mt-3 text-center"
+          className="mb-4 text-center shadow-sm"
+          style={{ borderRadius: '12px', padding: '1.25rem', fontWeight: '500' }}
         >
-          {alertMessage}
+          {alertVariant === 'success' ? (
+            <div className="d-flex align-items-center justify-content-center gap-2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>{alertMessage}</span>
+            </div>
+          ) : (
+            <div className="d-flex align-items-center justify-content-center gap-2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span style={{ whiteSpace: 'pre-line' }}>{alertMessage}</span>
+            </div>
+          )}
         </Alert>
       )}
 
       {error && (
-        <Alert variant="danger" className="mt-3 text-center">
-          {error}
+        <Alert variant="danger" className="mb-4 text-center shadow-sm" style={{ borderRadius: '12px', padding: '1.25rem' }}>
+          <div className="d-flex align-items-center justify-content-center gap-2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+            <span>{error}</span>
+          </div>
         </Alert>
       )}
 
-      <div className="d-flex flex-column align-items-center mt-3">
-        {clockScore !== null && (
-          <Button
-            variant={clockScore > 0 ? 'success' : 'danger'}
-            className="w-100"
-            disabled
-          >
-            {clockScore > 0
-              ? `Criterios cumplidos (+${clockScore})`
-              : 'Criterios no cumplidos (0)'}
-          </Button>
-        )}
+      {/* Main Drawing Container */}
+      <div className="cubo-canvas-main-container">
+        <div className="cubo-draw-area-wrapper">
+          <div className="cubo-canvas-container">
+            <div className="cubo-canvas-dots"></div>
+            <canvas
+              ref={canvasRef}
+              width={450}
+              height={450}
+              className="cubo-drawing-canvas"
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+            />
+          </div>
+        </div>
+
+        {/* Canvas Controls (Undo & Clear) */}
+        <div className="cubo-controls-wrapper">
+          <button className="cubo-undo-button" onClick={handleUndo} title="Deshacer último trazo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 14L4 9l5-5"></path><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
+            Atras
+          </button>
+          <button className="cubo-clear-button" onClick={handleClear} title="Borrar todo el dibujo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            Borrar dibujo
+          </button>
+        </div>
       </div>
 
-      <Row className="mt-4">
-        {isAdmin && (
-          <Col xs="auto">
-            <Button
-              variant="secondary"
-              onClick={handlePrevious}
-              className="me-2"
-            >
-              Regresar
-            </Button>
-          </Col>
-        )}
-        <Col className="d-flex justify-content-end">
-          <Button
-            variant="success"
-            onClick={handleContinue}
-          >
-            Continuar
-          </Button>
-        </Col>
-      </Row>
-    </div>
+      {/* Evaluate Section */}
+      <div className="cubo-evaluate-wrapper">
+        <button
+          className="cubo-evaluate-button"
+          onClick={handleEvaluate}
+          disabled={isLoading || lines.length === 0}
+        >
+          {isLoading ? (
+            <>
+              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+              Procesando trazo...
+            </>
+          ) : (
+            <>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              Evaluar Trazo con IA
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Footer */}
+      <div className="cubo-footer mt-auto">
+        <button
+          className="cubo-undo-button"
+          onClick={handlePrevious}
+          style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Regresar
+        </button>
+        <button
+          className="cubo-continue-button"
+          onClick={handleContinue}
+          style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
+        >
+          Siguiente Pregunta
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
+    </>
   );
 };
 

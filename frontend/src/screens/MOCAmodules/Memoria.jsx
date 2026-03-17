@@ -250,11 +250,18 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
   // ─── PANTALLA INTRO (antes de empezar) ───────────────────────────────────
   if (!started) {
     return (
-      <div className="mem-intro-wrapper">
-        {/* Título */}
-        <div className="mem-intro-title-block">
-          <h1 className="mem-intro-title">Memoria</h1>
-          <p className="mem-intro-subtitle">Memoria de Trabajo y Retención Digital</p>
+      <div className="w-100 d-flex flex-column align-items-center">
+        {/* Breadcrumb Section */}
+        <div className="cubo-section-breadcrumb text-center">
+          SECCIÓN 3: MEMORIA
+        </div>
+
+        {/* Header Section */}
+        <div className="cubo-header text-center">
+          <h1 className="cubo-title">
+            Memoria <span className="text-primary">(Trabajo y Retención Digital)</span>
+          </h1>
+          <p className="cubo-subtitle">Memoria de Trabajo y Retención Digital</p>
         </div>
 
         {/* Card de instrucciones */}
@@ -307,21 +314,23 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
           </div>
         </div>
 
-        {/* Botón Empezar */}
-        <button className="mem-intro-start-btn" onClick={handleStart}>
-          Empezar Evaluación <FaArrowRight className="ms-2" />
-        </button>
-
-        {/* Botón admin */}
-        {isAdmin && (
+        {/* Botones de Navegación Footer */}
+        <div className="cubo-footer mt-5">
           <button
-            className="mem-intro-back-btn"
+            className="cubo-undo-button"
             onClick={onPrevious}
             disabled={isFirstModule}
+            style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
           >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
             Regresar
           </button>
-        )}
+
+          <button className="cubo-continue-button" onClick={handleStart}>
+            Empezar Evaluación
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
       </div>
     );
   }
@@ -329,7 +338,21 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
   // ─── PANTALLA LEYENDO PALABRAS ────────────────────────────────────────────
   if (stage === STAGE_FIRST_READ || stage === STAGE_SECOND_READ) {
     return (
-      <div className="mem-reading-wrapper">
+      <div className="w-100 d-flex flex-column align-items-center">
+        {/* Breadcrumb Section */}
+        <div className="cubo-section-breadcrumb text-center">
+          SECCIÓN 3: MEMORIA
+        </div>
+
+        {/* Header Section */}
+        <div className="cubo-header text-center">
+          <h1 className="cubo-title">
+            Memoria <span className="text-primary">(Lectura)</span>
+          </h1>
+          <p className="cubo-subtitle">Memoria de Trabajo y Retención Digital</p>
+        </div>
+
+        <div className="mem-reading-wrapper">
         <div className="mem-reading-card">
           <div className="mem-reading-spinner-wrap">
             <Spinner animation="border" style={{ color: "#2563eb", width: "3rem", height: "3rem" }} />
@@ -349,13 +372,28 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   // ─── PANTALLA RECALL ──────────────────────────────────────────────────────
   if ((stage === STAGE_FIRST_RECALL || stage === STAGE_SECOND_RECALL) && !message) {
     return (
-      <div className="mem-recall-wrapper">
+      <div className="w-100 d-flex flex-column align-items-center">
+        {/* Breadcrumb Section */}
+        <div className="cubo-section-breadcrumb text-center">
+          SECCIÓN 3: MEMORIA
+        </div>
+
+        {/* Header Section */}
+        <div className="cubo-header text-center">
+          <h1 className="cubo-title">
+            Memoria <span className="text-primary">(Recuerdo Inmediato)</span>
+          </h1>
+          <p className="cubo-subtitle">Memoria de Trabajo y Retención Digital</p>
+        </div>
+
+        <div className="mem-recall-wrapper">
         <div className="mem-recall-card">
           <h2 className="mem-recall-title">Dígame todas las palabras que recuerde</h2>
           <p className="mem-recall-subtitle">Puede usar el micrófono o escribir las palabras manualmente.</p>
@@ -441,38 +479,50 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
         </div>
 
         {/* Botones inferiores */}
-        <div className="mem-recall-footer">
-          <button className="mem-recall-no-more-btn" onClick={handleNoMoreWords}>
-            ❓ No recuerdo más-Repetir palabras
+        <div className="cubo-footer mt-4">
+          <button
+            className="cubo-undo-button"
+            onClick={onPrevious}
+            disabled={isFirstModule}
+            style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Regresar
           </button>
-          <button className="mem-recall-continue-btn" onClick={handleNext}>
-            Continuar <FaArrowRight className="ms-2" />
+
+          <button className="mem-recall-no-more-btn me-2" onClick={handleNoMoreWords}>
+            ❓ No recuerdo más
+          </button>
+
+          <button className="cubo-continue-button" onClick={handleNext}>
+            Siguiente Pregunta
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
           </button>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   // ─── PANTALLA FINAL ───────────────────────────────────────────────────────
   return (
     <div className="mem-final-wrapper">
-      {message && (
-        <div className="mem-final-card">
-          <div className="mem-final-icon">✅</div>
-          <h3 className="mem-final-title">¡Bien hecho!</h3>
-          <p className="mem-final-message">{message}</p>
-          <button className="mem-recall-continue-btn" onClick={handleNext}>
-            Continuar <FaArrowRight className="ms-2" />
-          </button>
-        </div>
-      )}
-      {!message && (
-        <div className="mem-final-card">
-          <button className="mem-recall-continue-btn" onClick={handleNext}>
-            Continuar <FaArrowRight className="ms-2" />
-          </button>
-        </div>
-      )}
+      <div className="cubo-footer mt-4" style={{ width: '100%', maxWidth: '600px' }}>
+        <button
+          className="cubo-undo-button"
+          onClick={onPrevious}
+          disabled={isFirstModule}
+          style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Regresar
+        </button>
+
+        <button className="cubo-continue-button" onClick={handleNext}>
+          Siguiente Pregunta
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
     </div>
   );
 };

@@ -637,31 +637,26 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
         />
       )}
 
-      {/* Botones de navegación solo en el módulo principal */}
-      {currentActivityIndex === 1 && (
-        <div className="d-flex justify-content-between mt-4">
-          {isAdmin && (
-            <Button
-              className="back-button"
-              variant="secondary"
-              onClick={onPrevious}
-              disabled={isFirstModule}
-              style={{ minWidth: "150px" }}
-            >
-              Regresar
-            </Button>
-          )}
-          <Button
-            className="continue-button"
-            variant="success"
-            onClick={handleNext}
-            
-            style={{ minWidth: "150px" }}
-          >
-            Finalizar test
-          </Button>
-        </div>
-      )}
+      {/* Unified Navigation Footer */}
+      <div className="cubo-footer mt-5">
+        <button
+          className="cubo-undo-button"
+          onClick={onPrevious}
+          disabled={isFirstModule}
+          style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Regresar
+        </button>
+
+        <button
+          className="cubo-continue-button"
+          onClick={handleNext}
+        >
+          {currentActivityIndex === 1 ? "Finalizar test" : "Siguiente Pregunta"}
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
 
       {/* Navegación rápida para administradores */}
       {isAdmin && (
