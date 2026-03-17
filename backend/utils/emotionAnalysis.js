@@ -228,8 +228,8 @@ export const calculateAllDerivedVariables = (captures) => {
   return {
     emotionalVariabilityIndex: calculateEmotionalVariabilityIndex(sortedCaptures),
     temporalConsistency: calculateTemporalConsistency(sortedCaptures),
-    averageEmotionProbabilities: calculateAverageEmotionProbabilities(sortedCaptures),
-    emotionTransitions: calculateEmotionTransitions(sortedCaptures),
+    averageEmotionProbabilities: mapToObject(calculateAverageEmotionProbabilities(sortedCaptures)),
+    emotionTransitions: mapToObject(calculateEmotionTransitions(sortedCaptures)),
     stressIndex: calculateStressIndex(sortedCaptures),
     anxietyIndex: calculateAnxietyIndex(sortedCaptures),
     temporalVariability: calculateTemporalVariability(sortedCaptures),

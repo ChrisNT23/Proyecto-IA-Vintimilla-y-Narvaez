@@ -15,6 +15,7 @@ import treatmentRoutes from "./routes/treatmentRoutes.js";
 import assignmentRoutes from "./routes/assignmentRoutes.js";
 import mocaSelfRoutes from "./routes/mocaSelfRoutes.js";
 import emotionRoutes from "./routes/emotionRoutes.js";
+import fs from "fs";
 import axios from "axios"; // Importar axios para realizar solicitudes HTTP
 
 import connectDB from "./config/db.js";
@@ -57,7 +58,21 @@ app.post('/api/evaluate-cube', async (req, res) => {
       return res.status(400).json({ error: 'No se proporcionó la imagen.' });
     }
 
-    // Enviar la imagen al servidor Flask
+    // 1. Guardar la imagen en disco
+    const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+    const filename = `cube-${Date.now()}.png`;
+    const uploadPath = path.join(__dirname, 'uploads', 'moca_drawings');
+    
+    // Asegurar que el directorio existe
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+
+    const filepath = path.join(uploadPath, filename);
+    fs.writeFileSync(filepath, base64Data, 'base64');
+    const imageUrl = `/uploads/moca_drawings/${filename}`;
+
+    // 2. Enviar la imagen al servidor Flask
     const flaskResponse = await axios.post('http://localhost:5001/api/evaluate-cube', { image }, {
       headers: {
         'Content-Type': 'application/json'
@@ -67,7 +82,10 @@ app.post('/api/evaluate-cube', async (req, res) => {
 
     // Verificar la respuesta del servidor Flask
     if (flaskResponse.data && typeof flaskResponse.data.score === 'number') {
-      return res.json({ score: flaskResponse.data.score });
+      return res.json({ 
+        score: flaskResponse.data.score,
+        imageUrl: imageUrl 
+      });
     } else {
       return res.status(500).json({ error: 'Respuesta inesperada del servidor de IA.' });
     }
@@ -123,6 +141,50 @@ app.post('/api/evaluate-alternancia', (req, res) => {
   } catch (error) {
     console.error('Error al evaluar alternancia:', error.message);
     res.status(500).json({ error: 'Error al evaluar la alternancia conceptual.' });
+  }
+});
+
+// NUEVA RUTA para evaluar el reloj (con guardado de imagen)
+app.post('/api/evaluate-clock', async (req, res) => {
+  try {
+    const { image } = req.body;
+
+    if (!image) {
+      return res.status(400).json({ error: 'No se proporcionó la imagen.' });
+    }
+
+    // 1. Guardar la imagen en disco
+    const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+    const filename = `clock-${Date.now()}.png`;
+    const uploadPath = path.join(__dirname, 'uploads', 'moca_drawings');
+    
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+
+    const filepath = path.join(uploadPath, filename);
+    fs.writeFileSync(filepath, base64Data, 'base64');
+    const imageUrl = `/uploads/moca_drawings/${filename}`;
+
+    // 2. Enviar al servidor Flask
+    const flaskResponse = await axios.post('http://localhost:5001/api/evaluate-clock', { image }, {
+      headers: { 'Content-Type': 'application/json' },
+      timeout: 10000
+    });
+
+    if (flaskResponse.data && typeof flaskResponse.data.score === 'number') {
+      res.json({ 
+        score: flaskResponse.data.score,
+        detail: flaskResponse.data.detail,
+        imageUrl: imageUrl 
+      });
+    } else {
+      res.status(500).json({ error: 'Respuesta inesperada del servidor de IA.' });
+    }
+
+  } catch (error) {
+    console.error('Error al evaluar el reloj:', error.message);
+    res.status(500).json({ error: 'Error al evaluar el reloj.' });
   }
 });
 

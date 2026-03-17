@@ -1,16 +1,18 @@
 // src/screens/Reports/DashboardIAScreen.jsx
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Spinner, Alert, Badge } from 'react-bootstrap';
 import { 
     FaUser, FaDownload, FaShareAlt, FaBrain, FaExclamationTriangle, 
-    FaChartBar, FaClock, FaHistory, FaCheckCircle, FaTimesCircle 
+    FaChartBar, FaClock, FaHistory, FaCheckCircle, FaTimesCircle,
+    FaHeartbeat, FaListUl
 } from 'react-icons/fa';
 import { 
     PieChart, Pie, Cell, ResponsiveContainer, 
     BarChart, Bar, XAxis, YAxis, Tooltip, 
-    LineChart, Line, CartesianGrid 
+    LineChart, Line, CartesianGrid,
+    Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis
 } from 'recharts';
 import { useGetMocaSelfByIdQuery, useGetAllMocaSelfsQuery } from '../../slices/mocaSelfApiSlice';
 import { useGetPatientByIdQuery } from '../../slices/patientApiSlice';
@@ -20,6 +22,8 @@ import '../../assets/styles/DashboardIAScreen.css';
 const DashboardIAScreen = () => {
     const { patientId, id: evalId } = useParams();
     const navigate = useNavigate();
+    const [findingPage, setFindingPage] = useState(0);
+    const FINDINGS_PER_PAGE = 3;
 
     // 1. Fetch Data
     const { data: mocaHistory } = useGetAllMocaSelfsQuery(patientId);
@@ -40,21 +44,75 @@ const DashboardIAScreen = () => {
     });
 
     // 2. Process Data for Charts
-    const cognitiveData = useMemo(() => [
-        { name: 'Obtenido', value: mocaRecord?.totalScore || 0 },
-        { name: 'Restante', value: 30 - (mocaRecord?.totalScore || 0) }
-    ], [mocaRecord]);
+    const cognitiveData = useMemo(() => {
+        const total = mocaRecord?.totalScore || 0;
+        const max = mocaRecord?.totalMaxScore || 30;
+        return [
+            { name: 'Obtenido', value: total },
+            { name: 'Restante', value: Math.max(0, max - total) }
+        ];
+    }, [mocaRecord]);
 
     const insights = useMemo(() => generateIAInsights(mocaRecord, mocaHistory), [mocaRecord, mocaHistory]);
     const riskPercentage = useMemo(() => calculateDeteriorationRisk(mocaRecord?.totalScore, mocaHistory), [mocaRecord, mocaHistory]);
 
     const emotionDistData = useMemo(() => {
-        if (!mocaRecord?.emotionData?.derivedVariables?.averageEmotionProbabilities) return [];
-        const probs = mocaRecord.emotionData.derivedVariables.averageEmotionProbabilities;
+        let probs = mocaRecord?.emotionData?.derivedVariables?.averageEmotionProbabilities;
+        
+        // Fallback: Si no hay variables calculadas, intentar calcular desde capturas
+        if ((!probs || Object.keys(probs).length === 0) && mocaRecord?.emotionData?.captures?.length > 0) {
+            const counts = {};
+            const sums = {};
+            mocaRecord.emotionData.captures.forEach(cap => {
+                const emotion = (cap.emotion || '').toLowerCase();
+                counts[emotion] = (counts[emotion] || 0) + 1;
+                sums[emotion] = (sums[emotion] || 0) + (cap.confidence / 100);
+            });
+            probs = {};
+            Object.keys(sums).forEach(emotion => {
+                probs[emotion] = sums[emotion] / counts[emotion];
+            });
+        }
+
+        if (!probs || Object.keys(probs).length === 0) return [];
+
         return Object.entries(probs).map(([name, value]) => ({ 
             name: name.charAt(0).toUpperCase() + name.slice(1), 
             value: Math.round(value * 100) 
         })).sort((a, b) => b.value - a.value);
+    }, [mocaRecord]);
+
+    // Calcular Biomarcadores con Fallback
+    const clinicalIndices = useMemo(() => {
+        const derived = mocaRecord?.emotionData?.derivedVariables || {};
+        const captures = mocaRecord?.emotionData?.captures || [];
+        
+        const getIndex = (key, fallbackFn) => {
+            if (derived[key] !== undefined && derived[key] !== null) return derived[key];
+            if (captures.length === 0) return 0;
+            return fallbackFn(captures);
+        };
+
+        return {
+            stress: getIndex('stressIndex', (caps) => {
+                const stressEmotions = ['angry', 'fear', 'sad'];
+                const stressCount = caps.filter(c => stressEmotions.includes(c.emotion?.toLowerCase())).length;
+                return stressCount / caps.length;
+            }),
+            anxiety: getIndex('anxietyIndex', (caps) => {
+                const anxietyEmotions = ['fear', 'surprise'];
+                const anxietyCount = caps.filter(c => anxietyEmotions.includes(c.emotion?.toLowerCase())).length;
+                return anxietyCount / caps.length;
+            }),
+            consistency: getIndex('temporalConsistency', (caps) => {
+                if (caps.length < 2) return 1;
+                let transitions = 0;
+                for (let i = 1; i < caps.length; i++) {
+                    if (caps[i].emotion !== caps[i-1].emotion) transitions++;
+                }
+                return 1 - (transitions / (caps.length - 1));
+            })
+        };
     }, [mocaRecord]);
 
     const evolutionData = useMemo(() => {
@@ -102,7 +160,8 @@ const DashboardIAScreen = () => {
                     <div className="patient-main-info">
                         <h2>Resumen de Evaluación</h2>
                         <div className="patient-meta">
-                            <span><strong>ID:</strong> {patient?.user?.cardId || mocaRecord.patient?.cardId || 'No asignado'}</span>
+                            <span><strong>ID Sistema:</strong> {targetPatientId}</span>
+                            <span><strong>Cédula:</strong> {patient?.user?.cardId || mocaRecord.patient?.cardId || 'No asignada'}</span>
                             <span><strong>Edad:</strong> {age} años</span>
                             <span><strong>Género:</strong> {patient?.gender || 'Masculino'}</span>
                         </div>
@@ -119,25 +178,45 @@ const DashboardIAScreen = () => {
                 <div className="dashboard-card col-score">
                     <h3 className="card-title">Score Cognitivo</h3>
                     <div className="score-content">
-                        <ResponsiveContainer width="100%" height={200}>
+                        <ResponsiveContainer width="100%" height={220}>
                             <PieChart>
+                                <defs>
+                                    <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="#3b82f6" stopOpacity={1}/>
+                                        <stop offset="100%" stopColor="#2563eb" stopOpacity={1}/>
+                                    </linearGradient>
+                                    <filter id="shadow" height="130%">
+                                        <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                                        <feOffset dx="0" dy="2" result="offsetblur" />
+                                        <feComponentTransfer>
+                                            <feFuncA type="linear" slope="0.3" />
+                                        </feComponentTransfer>
+                                        <feMerge>
+                                            <feMergeNode />
+                                            <feMergeNode in="SourceGraphic" />
+                                        </feMerge>
+                                    </filter>
+                                </defs>
                                 <Pie
                                     data={cognitiveData}
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    paddingAngle={5}
+                                    innerRadius={70}
+                                    outerRadius={90}
+                                    paddingAngle={0}
                                     dataKey="value"
-                                    startAngle={90}
-                                    endAngle={450}
+                                    startAngle={225}
+                                    endAngle={-45}
+                                    stroke="none"
+                                    cornerRadius={10}
                                 >
-                                    <Cell fill="#2563eb" />
+                                    <Cell fill="url(#scoreGradient)" filter="url(#shadow)" />
                                     <Cell fill="#f1f5f9" />
                                 </Pie>
                             </PieChart>
                         </ResponsiveContainer>
-                        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -40%)' }}>
-                            <div className="score-value">{mocaRecord.totalScore}</div>
-                            <div className="score-max">/ 30</div>
+                        <div className="score-center-info">
+                            <span className="score-value">{mocaRecord.totalScore}</span>
+                            <div className="score-separator"></div>
+                            <span className="score-max">{mocaRecord.totalMaxScore || 30}</span>
                         </div>
                         <div className={`risk-label ${mocaRecord.totalScore >= 26 ? 'bajo' : 'moderado'}`}>
                             Riesgo: {mocaRecord.totalScore >= 26 ? 'Bajo' : 'Moderado'}
@@ -150,19 +229,45 @@ const DashboardIAScreen = () => {
                     <h3 className="card-title">Pruebas Visuoespaciales</h3>
                     <div className="visuo-grid">
                         <div className="visuo-item">
-                            <div className="visuo-img-placeholder"><FaBrain /></div>
+                            <div className="visuo-img-container">
+                                {mocaRecord.modulesData?.Visuoespacial?.cubeImageUrl ? (
+                                    <img src={mocaRecord.modulesData.Visuoespacial.cubeImageUrl} alt="Cubo del paciente" />
+                                ) : (
+                                    <div className="visuo-img-placeholder"><FaBrain /></div>
+                                )}
+                            </div>
                             <div className="visuo-info">
                                 <h4>Copia del Cubo</h4>
-                                <p className="visuo-status">Ejecución correcta.</p>
-                                <span className="status-tag correct">Correcto</span>
+                                <p className="visuo-status">
+                                    {mocaRecord.modulesData?.Visuoespacial?.cube === 1 
+                                        ? "Criterios de perspectiva y dimensiones cumplidos." 
+                                        : "Fallos detectados en perspectiva o dimensiones."}
+                                </p>
+                                <span className={`status-tag ${mocaRecord.modulesData?.Visuoespacial?.cube === 1 ? 'correct' : 'incorrect'}`}>
+                                    {mocaRecord.modulesData?.Visuoespacial?.cube === 1 ? 'Correcto' : 'Incorrecto'}
+                                </span>
                             </div>
                         </div>
                         <div className="visuo-item">
-                            <div className="visuo-img-placeholder"><FaClock /></div>
+                            <div className="visuo-img-container">
+                                {mocaRecord.modulesData?.Visuoespacial?.clockImageUrl ? (
+                                    <img src={mocaRecord.modulesData.Visuoespacial.clockImageUrl} alt="Reloj del paciente" />
+                                ) : (
+                                    <div className="visuo-img-placeholder"><FaClock /></div>
+                                )}
+                            </div>
                             <div className="visuo-info">
                                 <h4>Dibujo del Reloj</h4>
-                                <p className="visuo-status">Error: Manecillas incorrectas.</p>
-                                <span className="status-tag incorrect">Incorrecto</span>
+                                <p className="visuo-status">
+                                    {mocaRecord.modulesData?.Visuoespacial?.clock === 3 
+                                        ? "Contorno, números y manecillas correctos." 
+                                        : mocaRecord.modulesData?.Visuoespacial?.clock > 0 
+                                            ? `Cumple algunos criterios (${mocaRecord.modulesData.Visuoespacial.clock}/3 pts).`
+                                            : "No cumple los criterios mínimos del dibujo."}
+                                </p>
+                                <span className={`status-tag ${mocaRecord.modulesData?.Visuoespacial?.clock >= 2 ? 'correct' : 'incorrect'}`}>
+                                    {mocaRecord.modulesData?.Visuoespacial?.clock >= 2 ? 'Correcto' : 'Incorrecto'}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -170,9 +275,30 @@ const DashboardIAScreen = () => {
 
                 {/* Hallazgos IA */}
                 <div className="dashboard-card col-findings">
-                    <h3 className="card-title"><FaBrain /> Hallazgos IA</h3>
+                    <div className="card-header-flex">
+                        <h3 className="card-title"><FaBrain /> Hallazgos IA</h3>
+                        {insights.length > FINDINGS_PER_PAGE && (
+                            <div className="pagination-controls">
+                                <button 
+                                    className="btn-pager" 
+                                    disabled={findingPage === 0}
+                                    onClick={() => setFindingPage(f => f - 1)}
+                                >
+                                    &lsaquo;
+                                </button>
+                                <span className="page-indicator">{findingPage + 1} / {Math.ceil(insights.length / FINDINGS_PER_PAGE)}</span>
+                                <button 
+                                    className="btn-pager" 
+                                    disabled={(findingPage + 1) * FINDINGS_PER_PAGE >= insights.length}
+                                    onClick={() => setFindingPage(f => f + 1)}
+                                >
+                                    &rsaquo;
+                                </button>
+                            </div>
+                        )}
+                    </div>
                     <div className="findings-list">
-                        {insights.map((insight, idx) => (
+                        {insights.slice(findingPage * FINDINGS_PER_PAGE, (findingPage + 1) * FINDINGS_PER_PAGE).map((insight, idx) => (
                             <div key={idx} className={`finding-alert ${insight.type}`}>
                                 <div className="finding-icon">
                                     {insight.type === 'danger' ? <FaExclamationTriangle /> : <FaBrain />}
@@ -217,24 +343,27 @@ const DashboardIAScreen = () => {
                 <div className="dashboard-card col-emotions">
                     <h3 className="card-title"><FaChartBar /> Distribución de Emociones</h3>
                     <div className="emotion-layout">
-                        <div className="emotion-distribution">
-                            {emotionDistData.length > 0 ? emotionDistData.slice(0, 4).map((item, idx) => (
-                                <div key={idx} className="emotion-item">
-                                    <div className="emotion-label">
-                                        <span>{item.name}</span>
-                                        <span>{item.value}%</span>
-                                    </div>
-                                    <div className="emotion-bar-container">
-                                        <div 
-                                            className="emotion-bar" 
-                                            style={{ 
-                                                width: `${item.value}%`, 
-                                                backgroundColor: EMOTION_COLORS[item.name] || '#3b82f6' 
-                                            }}
-                                        ></div>
-                                    </div>
-                                </div>
-                            )) : (
+                        <div className="emotion-distribution radar-wrapper">
+                            {emotionDistData.length > 0 ? (
+                                <ResponsiveContainer width="100%" height={250}>
+                                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={emotionDistData}>
+                                        <PolarGrid stroke="#e2e8f0" />
+                                        <PolarAngleAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 12 }} />
+                                        <PolarRadiusAxis angle={30} domain={[0, 100]} axisLine={false} tick={false} />
+                                        <Radar
+                                            name="Paciente"
+                                            dataKey="value"
+                                            stroke="#3b82f6"
+                                            fill="#3b82f6"
+                                            fillOpacity={0.5}
+                                        />
+                                        <Tooltip 
+                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                            formatter={(value) => [`${value}%`, 'Probabilidad']}
+                                        />
+                                    </RadarChart>
+                                </ResponsiveContainer>
+                            ) : (
                                 <div className="text-center text-muted py-4">No hay datos de emociones</div>
                             )}
                         </div>
@@ -272,13 +401,20 @@ const DashboardIAScreen = () => {
                                 return (
                                     <div key={idx} className="timeline-node">
                                         <div className="node-line"></div>
-                                        <div className={`node-marker ${cap ? 'has-data' : ''}`}>
+                                        <div className={`node-marker ${cap ? 'has-data' : ''} intensity-${Math.floor((cap?.probability || 0) * 10)}`}>
                                             {cap ? (
-                                                <div className="node-preview">
-                                                    <img src={cap.imageUrl} alt={mod} />
+                                                <div className="node-content-wrapper">
+                                                    <div className="node-preview">
+                                                        <img src={cap.imageUrl} alt={mod} />
+                                                    </div>
                                                     <div className="node-tooltip">
-                                                        <strong>{mod}</strong>
-                                                        <p>{cap.emotionLabel}</p>
+                                                        <div className="tooltip-header">
+                                                            <strong>{mod}</strong>
+                                                            <Badge bg="primary">{Math.round((cap.probability || 0) * 100)}%</Badge>
+                                                        </div>
+                                                        <p className="tooltip-emotion">{cap.emotionLabel || cap.emotion}</p>
+                                                        <div className="tooltip-divider"></div>
+                                                        <p className="tooltip-detail">Presencia de {cap.emotionLabel?.toLowerCase() || cap.emotion} detectada en este módulo.</p>
                                                     </div>
                                                 </div>
                                             ) : (
@@ -304,6 +440,69 @@ const DashboardIAScreen = () => {
                                 <Line type="monotone" dataKey="score" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4, fill: '#3b82f6' }} />
                             </LineChart>
                         </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Card 1: Biomarcadores Clínicos */}
+                <div className="dashboard-card col-biomarkers">
+                    <h3 className="card-title"><FaHeartbeat /> Biomarcadores de Carga Cognitiva</h3>
+                    <div className="biomarkers-grid">
+                        <div className="biomarker-item">
+                            <div className="biomarker-header">
+                                <span>Índice de Estrés</span>
+                                <span className={`biomarker-value ${(clinicalIndices.stress || 0) > 0.6 ? 'text-danger' : 'text-primary'}`}>
+                                    {Math.round((clinicalIndices.stress || 0) * 100)}%
+                                </span>
+                            </div>
+                            <div className="vital-bar">
+                                <div className="vital-fill" style={{ width: `${(clinicalIndices.stress || 0) * 100}%` }}></div>
+                            </div>
+                        </div>
+                        <div className="biomarker-item">
+                            <div className="biomarker-header">
+                                <span>Ansiedad Detectada</span>
+                                <span className="biomarker-value">
+                                    {Math.round((clinicalIndices.anxiety || 0) * 100)}%
+                                </span>
+                            </div>
+                            <div className="vital-bar">
+                                <div className="vital-fill anxiety" style={{ width: `${(clinicalIndices.anxiety || 0) * 100}%` }}></div>
+                            </div>
+                        </div>
+                        <div className="biomarker-item">
+                            <div className="biomarker-header">
+                                <span>Consistencia Afectiva</span>
+                                <span className="biomarker-value">
+                                    {Math.round((clinicalIndices.consistency || 0) * 100)}%
+                                </span>
+                            </div>
+                            <div className="vital-bar">
+                                <div className="vital-fill consistency" style={{ width: `${(clinicalIndices.consistency || 0) * 100}%` }}></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Card 2: Desglose por Módulo */}
+                <div className="dashboard-card col-module-breakdown">
+                    <h3 className="card-title"><FaListUl /> Desglose Emocional por Módulo</h3>
+                    <div className="module-list">
+                        {['Visuoespacial', 'Identificación', 'Atención', 'Lenguaje'].map((mod, idx) => {
+                            const summary = mocaRecord.emotionData?.moduleSummaries?.[mod];
+                            return (
+                                <div key={idx} className="module-row">
+                                    <span className="mod-name">{mod}</span>
+                                    <div className="mod-details">
+                                        {summary ? (
+                                            <>
+                                                <Badge bg="light" text="dark" className="me-2">{summary.dominantEmotion}</Badge>
+                                                <span className="mod-conf">Conf: {Math.round(summary.avgConfidence)}%</span>
+                                            </>
+                                        ) : <span className="text-muted small">Sin capturas</span>}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>

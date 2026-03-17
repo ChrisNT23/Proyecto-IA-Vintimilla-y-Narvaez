@@ -16,6 +16,8 @@ const Visuoespacial = ({ onComplete, onPrevious, isFirstModule, patientId }) => 
   const [alternanciaScore, setAlternanciaScore] = useState(null);
   const [cubeScore, setCubeScore] = useState(null);
   const [clockScore, setClockScore] = useState(null);
+  const [cubeImageUrl, setCubeImageUrl] = useState(null);
+  const [clockImageUrl, setClockImageUrl] = useState(null);
 
   // TTS
   const [ttsSupported, setTtsSupported] = useState(true);
@@ -58,6 +60,8 @@ const Visuoespacial = ({ onComplete, onPrevious, isFirstModule, patientId }) => 
         alternancia: alternanciaScore,
         cube: cubeScore,
         clock: clockScore,
+        cubeImageUrl,
+        clockImageUrl,
         standardResults
       });
     }
@@ -96,6 +100,7 @@ const Visuoespacial = ({ onComplete, onPrevious, isFirstModule, patientId }) => 
         <CuboActivity
           cubeScore={cubeScore}
           setCubeScore={setCubeScore}
+          setCubeImageUrl={setCubeImageUrl}
           handleNext={handleNext}
           handlePrevious={handlePrevious}
           isSpeaking={isSpeaking}
@@ -108,6 +113,7 @@ const Visuoespacial = ({ onComplete, onPrevious, isFirstModule, patientId }) => 
         <RelojActivity
           clockScore={clockScore}
           setClockScore={setClockScore}
+          setClockImageUrl={setClockImageUrl}
           handleNext={handleNext}
           handlePrevious={handlePrevious}
           isSpeaking={isSpeaking}
@@ -523,6 +529,7 @@ const AlternanciaConceptualActivity = ({
 const CuboActivity = ({
   cubeScore,
   setCubeScore,
+  setCubeImageUrl,
   handleNext,
   handlePrevious,
   isSpeaking,
@@ -643,6 +650,7 @@ const CuboActivity = ({
       const data = await response.json();
       const numericScore = Number(data.score);
       setCubeScore(numericScore);
+      if (data.imageUrl) setCubeImageUrl(data.imageUrl);
 
       if (Number(data.score) === 1) {
         setAlertMessage('¡Buen trabajo! El dibujo del cubo cumple los criterios establecidos.');
@@ -811,6 +819,7 @@ const CuboActivity = ({
 const RelojActivity = ({
   clockScore,
   setClockScore,
+  setClockImageUrl,
   handleNext,
   handlePrevious,
   isSpeaking,
@@ -932,6 +941,7 @@ const RelojActivity = ({
 
       if (typeof data.score === 'number') {
         setClockScore(data.score);
+        if (data.imageUrl) setClockImageUrl(data.imageUrl);
         setEvaluated(true);
 
         if (data.score === 3) {
