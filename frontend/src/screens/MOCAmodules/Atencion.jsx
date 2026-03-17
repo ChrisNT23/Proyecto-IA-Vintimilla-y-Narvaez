@@ -8,7 +8,7 @@ import { buildMocaResult } from './helpers/mocaResultBuilder';
 import '../../assets/styles/mocamodules.css';
 
 /* ==============================================
-   ACTIVIDAD 1: SECUENCIA NUMâ”œÃ«RICA
+   ACTIVIDAD 1: SECUENCIA NUMERICA
    ============================================== */
 const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
   const isAdmin = useSelector((state) => state.auth.userInfo?.isAdmin) || false;
@@ -84,10 +84,10 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
         let instructions;
         if (stage === STAGE_FIRST_SEQUENCE_READ) {
           instructions =
-            "Le voy a leer una serie de nâ”œâ•‘meros, y cuando termine, repâ”œÂ¡talos en el mismo orden.";
+            "Le voy a leer una serie de números, y cuando termine, repítalos en el mismo orden.";
         } else {
           instructions =
-            "Ahora le voy a leer otra serie de nâ”œâ•‘meros. Repâ”œÂ¡talos en orden inverso.";
+            "Ahora le voy a leer otra serie de números. Repítalos en orden inverso.";
         }
         await speakText(instructions);
         await readSequence();
@@ -147,7 +147,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
       setIsSpeakingLocal(false);
     } else {
       const text =
-        "Mâ”œâ”‚dulo de Atenciâ”œâ”‚n, Actividad 1. Escuche una serie de nâ”œâ•‘meros y repâ”œÂ¡talos.";
+        "Módulo de atención, Actividad 1. Escuche una serie de nâ”œâ•‘meros y repâ”œÂ¡talos.";
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "es-ES";
       utterance.onend = () => setIsSpeakingLocal(false);
@@ -158,7 +158,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
 
   const handleStartRecall = () => {
     if (!recognitionSupported) {
-      alert("El reconocimiento de voz no estâ”œÃ­ disponible en su navegador.");
+      alert("El reconocimiento de voz no está­ disponible en su navegador.");
       return;
     }
     setListening(true);
@@ -252,7 +252,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
   return (
     <div className="module-container">
       <div className="d-flex align-items-center mb-2">
-        <h5 className="mb-0">Actividad 1: Secuencia Numâ”œÂ®rica</h5>
+        <h5 className="mb-0">Actividad 1: Secuencia Numérica</h5>
         <Button
           variant="link"
           onClick={speakInstructions}
@@ -270,8 +270,8 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
             <Spinner animation="grow" variant="primary" />
             <p className="mt-3">
               {stage === STAGE_FIRST_SEQUENCE_READ
-                ? "Le leerâ”œÂ® una serie de nâ”œâ•‘meros, repâ”œÂ¡talos en el mismo orden."
-                : "Le leerâ”œÂ® otra serie de nâ”œâ•‘meros, repâ”œÂ¡talos en orden inverso."}
+                ? "Le leerá una serie de números, repítalos en el mismo orden."
+                : "Le leerá otra serie de números, repítalos en orden inverso."}
             </p>
           </div>
         )}
@@ -282,8 +282,8 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
           <div className="text-center mt-3">
             <p>
               {stage === STAGE_FIRST_SEQUENCE_RECALL
-                ? "Repita los nâ”œâ•‘meros en el mismo orden."
-                : "Repita los nâ”œâ•‘meros en orden inverso."}
+                ? "Repita los números en el mismo orden."
+                : "Repita los números en orden inverso."}
             </p>
             {listening ? (
               <div>
@@ -311,7 +311,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
             {showButtons && (
               <div className="mt-3">
                 <Alert variant="secondary">
-                  <p>â”¬â”Es correcta su respuesta?</p>
+                  <p>¿Es correcta su respuesta?</p>
                   <strong>{transcript}</strong>
                 </Alert>
                 <Row>
@@ -334,7 +334,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
                       variant="success"
                       onClick={handleConfirmResponse}
                     >
-                      Sâ”œÂ¡
+                      Sí
                     </Button>
                   </Col>
                 </Row>
@@ -348,7 +348,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
             >
               <Form.Control
                 type="text"
-                placeholder="Escriba los nâ”œâ•‘meros separados por espacios o comas"
+                placeholder="Escriba los números separados por espacios o comas"
                 value={manualInputValue}
                 onChange={(e) => setManualInputValue(e.target.value)}
                 onKeyPress={handleManualKeyPress}
@@ -364,7 +364,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
             </Form>
 
             <div className="mt-3">
-              <p>Nâ”œâ•‘meros recordados:</p>
+              <p>Números recordados:</p>
               <ul>
                 {(stage === STAGE_FIRST_SEQUENCE_RECALL
                   ? responses.first
@@ -380,7 +380,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
               variant="secondary"
               onClick={handleNoMoreWords}
             >
-              No recuerdo mâ”œÃ­s
+              No recuerdo más
             </Button>
           </div>
         )}
@@ -425,7 +425,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
 
 
 /* ==============================================
-   MÃ“DULO PRINCIPAL DE ATENCIÃ“N
+   MÓDULO PRINCIPAL DE ATENCIÓN
    ============================================== */
 const Atencion = ({ onComplete, onPrevious, isFirstModule }) => {
   const handleActivity1Complete = (score, data) => {
