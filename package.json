@@ -10,6 +10,7 @@
     "client": "npm start --prefix frontend",
     "python": "python backend/model_server.py",
     "dev": "concurrently \"npm run server\" \"npm run client\" \"npm run python\"",
+    "dev2": "concurrently \"npm run server\" \"npm run client\"",
     "data:import": "node backend/seeder.js",
     "data:destroy": "node backend/seeder.js -d"
   },

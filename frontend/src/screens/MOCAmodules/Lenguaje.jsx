@@ -149,8 +149,9 @@ const RepeticionFrasesActivity = ({ onComplete }) => {
       const lastScore = isCorrect;
       const totalScore = partialScore + lastScore;
 
-      const standardResults = [buildMocaResult("Repeticion", totalScore)];
+      console.log("Lenguaje - Repeticion de Frases Score calculated:", totalScore);
 
+      const standardResults = [buildMocaResult("Repeticion", totalScore)];
       onComplete(totalScore, {
         activityScore: totalScore,
         phraseAnswers: [
@@ -161,6 +162,7 @@ const RepeticionFrasesActivity = ({ onComplete }) => {
       });
     }
   };
+
 
   const handleRetry = () => {
     setTranscript("");
@@ -307,6 +309,9 @@ const FluidezVerbalActivity = ({ onComplete }) => {
 
   const recognitionRef = useRef(null);
 
+  // Usamos un ref para rastrear si el usuario quiere que el micrófono esté activo
+  const wantListening = useRef(false);
+
   useEffect(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -328,7 +333,8 @@ const FluidezVerbalActivity = ({ onComplete }) => {
               .replace(/[^a-z0-9\s]/g, "")
               .trim();
 
-            const words = result.split(/\s+/).filter((w) => w.length > 0);
+            const words = result.split(/\s+/)
+              .filter((w) => w.length > 1 && w.startsWith("p"));
 
             setWordList((prev) => {
               const combined = [...prev, ...words];
@@ -340,14 +346,31 @@ const FluidezVerbalActivity = ({ onComplete }) => {
         }
       };
 
-      recognition.onerror = () => {
+      recognition.onerror = (event) => {
+        const errorType = event.error;
+        console.warn("Recognition error:", errorType);
+        // Si es un error común como silencio o cancelado, no hacemos nada y dejamos que onend lo gestione
+        if (errorType === 'no-speech' || errorType === 'aborted') {
+          return;
+        }
+        wantListening.current = false;
         setListening(false);
-        alert("Error al reconocer la voz. Intente de nuevo.");
+        if (errorType !== 'audio-capture') {
+          alert(`Error al reconocer la voz (${errorType}). Intente de nuevo.`);
+        }
       };
 
       recognition.onend = () => {
-        if (listening && isRunning && timer > 0) {
-          recognition.start();
+        // Solo reiniciar si el usuario aún tiene activo el micrófono y hay tiempo
+        if (wantListening.current && timer > 0) {
+          try {
+            recognition.start();
+          } catch (e) {
+            // Ya está iniciado
+          }
+        } else {
+          setListening(false);
+          wantListening.current = false;
         }
       };
 
@@ -366,7 +389,8 @@ const FluidezVerbalActivity = ({ onComplete }) => {
         window.speechSynthesis.cancel();
       }
     };
-  }, [listening, isRunning, timer]);
+    // Quitamos timer y listening de las dependencias para evitar recrear el objeto muchas veces
+  }, [isRunning]);
 
   useEffect(() => {
     let interval = null;
@@ -420,7 +444,7 @@ const FluidezVerbalActivity = ({ onComplete }) => {
         .replace(/[^a-z0-9\s]/g, "")
         .trim();
 
-      if (cleaned.length > 0) {
+      if (cleaned.length > 1 && cleaned.startsWith("p")) {
         setWordList((prev) => {
           const combined = [...prev, cleaned];
           return combined.filter(
@@ -448,11 +472,17 @@ const FluidezVerbalActivity = ({ onComplete }) => {
       alert("Primero inicie el tiempo antes de hablar.");
       return;
     }
+    wantListening.current = true;
     setListening(true);
-    recognitionRef.current.start();
+    try {
+      recognitionRef.current.start();
+    } catch(e) {
+      console.warn("Mic already active");
+    }
   };
 
   const handleStopListening = () => {
+    wantListening.current = false;
     if (recognitionRef.current) {
       recognitionRef.current.stop();
     }
@@ -461,18 +491,22 @@ const FluidezVerbalActivity = ({ onComplete }) => {
 
   const calculateScore = () => {
     const validWords = wordList.filter(
-      (w) => w[0] === "p" && w.length > 1
+      (w) => w.toLowerCase().trim().startsWith("p") && w.length > 1
     );
     const score = validWords.length >= 11 ? 1 : 0;
     
+    console.log(`Lenguaje - Fluidez Verbal: ${validWords.length} palabras válidas. Puntaje: ${score}`);
+
     const standardResults = [buildMocaResult("Fluidez Verbal", score)];
 
     onComplete(score, {
       activityScore: score,
       words: wordList,
+      validCount: validWords.length,
       standardResults
     });
   };
+
 
   return (
     <div className="module-container">
@@ -555,13 +589,69 @@ const FluidezVerbalActivity = ({ onComplete }) => {
             </Form>
           </div>
 
-          <div>
-            <h5>Palabras registradas:</h5>
-            <ul>
+          <div className="mt-4">
+            <h5 className="mb-3 d-flex align-items-center">
+              Palabras válidas registradas
+              <span className="badge bg-primary ms-2 rounded-pill px-3">{wordList.length}</span>
+            </h5>
+            <div className="d-flex flex-wrap gap-2 justify-content-center p-4" style={{ 
+              backgroundColor: '#f1f5f9',
+              borderRadius: '20px',
+              minHeight: '140px',
+              border: '2px solid #e2e8f0',
+              overflowY: 'auto',
+              maxHeight: '350px',
+              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
+            }}>
               {wordList.map((word, index) => (
-                <li key={index}>{word}</li>
+                <span key={index} 
+                  className="animate__animated animate__fadeInUp"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '10px 20px',
+                    borderRadius: '12px',
+                    backgroundColor: 'white',
+                    color: '#0f172a',
+                    fontWeight: '600',
+                    fontSize: '1rem',
+                    border: '1px solid #cbd5e1',
+                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)',
+                    transition: 'transform 0.2s',
+                    cursor: 'default'
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                  onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                  <span style={{ 
+                    color: '#2563eb', 
+                    marginRight: '6px',
+                    fontSize: '1.1rem'
+                  }}>
+                    P
+                  </span>
+                  {word.substring(1)}
+                </span>
               ))}
-            </ul>
+              {wordList.length === 0 && (
+                <div className="d-flex flex-column align-items-center justify-content-center w-100 text-muted">
+                  <div style={{
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '50%',
+                    backgroundColor: '#e2e8f0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '1rem'
+                  }}>
+                    <FaMicrophone size={24} className="opacity-50" />
+                  </div>
+                  <p className="mb-0 fw-medium">Diga o escriba palabras que comiencen con P</p>
+                  <small className="opacity-75">Las palabras deben tener más de una letra</small>
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}
@@ -600,16 +690,26 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
   };
 
   const handleNext = (lastScore, lastStandardResults) => {
-    const totalScore =
-      (activity1Data?.activityScore || 0) +
-      (lastScore || 0);
+    // Si estamos en la primera actividad y se activó por el botón de navegación (lastScore es Evento),
+    // avanzamos a la segunda actividad interna en lugar de terminar el módulo.
+    if (currentActivityIndex === 0 && (typeof lastScore !== 'number')) {
+      setCurrentActivityIndex(1);
+      return;
+    }
 
-    // Las actividades individuales ya reportaron sus standardResults hacia arriba.
-    // Aquí concatenamos los standardResults de ambas actividades.
+    // Si se llama desde el botón (onClick) en la última actividad, lastScore será un objeto Event.
+    // En ese caso, usamos los valores acumulados en el estado (activity2Data).
+    const s2 = (typeof lastScore === 'number') ? lastScore : (activity2Data?.activityScore || 0);
+    const r2 = Array.isArray(lastStandardResults) ? lastStandardResults : (activity2Data?.standardResults || []);
+
+    const totalScore = (activity1Data?.activityScore || 0) + s2;
+
     const standardResults = [
       ...(activity1Data?.standardResults || []),
-      ...(lastStandardResults || [])
+      ...r2
     ];
+
+    console.log("Lenguaje Module - Final Score calculated:", totalScore);
 
     onComplete(
       totalScore,
@@ -621,6 +721,15 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
       }
     );
   };
+
+  const handlePrevious = () => {
+    if (currentActivityIndex > 0) {
+      setCurrentActivityIndex(currentActivityIndex - 1);
+    } else {
+      onPrevious();
+    }
+  };
+
 
   return (
     <div className="module-container">
@@ -641,7 +750,7 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
       <div className="cubo-footer mt-5">
         <button
           className="cubo-undo-button"
-          onClick={onPrevious}
+          onClick={handlePrevious}
           disabled={isFirstModule}
           style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
         >
@@ -651,7 +760,7 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
 
         <button
           className="cubo-continue-button"
-          onClick={handleNext}
+          onClick={() => handleNext()}
         >
           {currentActivityIndex === 1 ? "Finalizar test" : "Siguiente Pregunta"}
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>

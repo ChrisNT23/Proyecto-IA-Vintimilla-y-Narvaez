@@ -1,4 +1,4 @@
-﻿// src/screens/MOCAmodules/Atencion.jsx
+// src/screens/MOCAmodules/Atencion.jsx
 
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Row, Col, Form, Alert, Spinner } from "react-bootstrap";
@@ -21,6 +21,23 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
 
   const firstSequence = ["5", "3", "8", "1", "6"];
   const secondSequence = ["2", "4", "7"];
+
+  const spanishNumbersMap = {
+    "cero": "0", "uno": "1", "dos": "2", "tres": "3", "cuatro": "4",
+    "cinco": "5", "seis": "6", "siete": "7", "ocho": "8", "nueve": "9"
+  };
+
+  const processInput = (text) => {
+    return text
+      .toLowerCase()
+      .replace(/[.,]/g, " ")
+      .split(/[\s,]+/)
+      .map(word => {
+        const cleaned = word.trim();
+        return spanishNumbersMap[cleaned] || cleaned;
+      })
+      .filter(x => /^\d+$/.test(x)); // Only keep digits
+  };
 
   const [stage, setStage] = useState(STAGE_FIRST_SEQUENCE_READ);
   const [responses, setResponses] = useState({ first: [], second: [] });
@@ -56,7 +73,12 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
         setShowButtons(true);
       };
 
-      recognition.onerror = () => {
+      recognition.onerror = (event) => {
+        const errorType = event.error;
+        if (errorType === 'no-speech' || errorType === 'aborted' || errorType === 'audio-capture') {
+          setListening(false);
+          return;
+        }
         setListening(false);
         alert("Error al reconocer la voz. Intente de nuevo.");
       };
@@ -147,7 +169,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
       setIsSpeakingLocal(false);
     } else {
       const text =
-        "Módulo de atención, Actividad 1. Escuche una serie de nâ”œâ•‘meros y repâ”œÂ¡talos.";
+        "Módulo de atención, Actividad 1. Escuche una serie de números y repítalos.";
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "es-ES";
       utterance.onend = () => setIsSpeakingLocal(false);
@@ -182,17 +204,19 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
   };
 
   const handleConfirmResponse = () => {
-    const number = transcript.trim();
-    if (number) {
-      setResponses((prev) => {
-        const updated = { ...prev };
-        if (stage === STAGE_FIRST_SEQUENCE_RECALL) {
-          updated.first.push(number);
-        } else if (stage === STAGE_SECOND_SEQUENCE_RECALL) {
-          updated.second.push(number);
-        }
-        return updated;
-      });
+    if (transcript) {
+      const digits = processInput(transcript);
+      if (digits.length > 0) {
+        setResponses((prev) => {
+          const updated = { ...prev };
+          if (stage === STAGE_FIRST_SEQUENCE_RECALL) {
+            updated.first.push(...digits);
+          } else if (stage === STAGE_SECOND_SEQUENCE_RECALL) {
+            updated.second.push(...digits);
+          }
+          return updated;
+        });
+      }
     }
     setTranscript("");
     setShowButtons(false);
@@ -200,18 +224,15 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
 
   const handleAddManualSequence = () => {
     if (!manualInputValue.trim()) return;
-    const splitted = manualInputValue
-      .split(/[\s,]+/)
-      .map((x) => x.trim())
-      .filter(Boolean);
+    const digits = processInput(manualInputValue);
 
-    if (splitted.length > 0) {
+    if (digits.length > 0) {
       setResponses((prev) => {
         const updated = { ...prev };
         if (stage === STAGE_FIRST_SEQUENCE_RECALL) {
-          updated.first.push(...splitted);
+          updated.first.push(...digits);
         } else if (stage === STAGE_SECOND_SEQUENCE_RECALL) {
-          updated.second.push(...splitted);
+          updated.second.push(...digits);
         }
         return updated;
       });
@@ -231,7 +252,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
       setStage(STAGE_SECOND_SEQUENCE_READ);
     } else if (stage === STAGE_SECOND_SEQUENCE_RECALL) {
       setStage(STAGE_FINAL);
-      setMessage("Ha completado la Actividad 1 de Atenciâ”œâ”‚n.");
+      setMessage("Ha completado la Actividad 1 de Atención.");
     }
   };
 
@@ -245,9 +266,11 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
     if (arraysEqual(second, expectedSecond)) {
       score += 1;
     }
+    console.log("Atencion - Actividad 1 (Digitos) Score calculated:", score);
     const standardResults = [buildMocaResult("Digitos", score)];
     onComplete(score, { ...responses, standardResults });
   };
+
 
   return (
     <div className="module-container">
@@ -364,15 +387,29 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
             </Form>
 
             <div className="mt-3">
-              <p>Números recordados:</p>
-              <ul>
+              <p className="fw-bold mb-2">Números recordados:</p>
+              <div className="d-flex flex-wrap justify-content-center gap-2">
                 {(stage === STAGE_FIRST_SEQUENCE_RECALL
                   ? responses.first
                   : responses.second
                 ).map((number, index) => (
-                  <li key={index}>{number}</li>
+                  <span key={index} className="identificacion-badge" style={{
+                    display: 'inline-block',
+                    padding: '8px 16px',
+                    borderRadius: '50%',
+                    backgroundColor: '#eff6ff',
+                    color: '#2563eb',
+                    fontWeight: 'bold',
+                    fontSize: '1.2rem',
+                    border: '1px solid #dbeafe',
+                    minWidth: '45px',
+                    height: '45px',
+                    lineHeight: '28px'
+                  }}>
+                    {number}
+                  </span>
                 ))}
-              </ul>
+              </div>
             </div>
 
             <Button
@@ -399,7 +436,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
 
         <button
           className="cubo-continue-button"
-          onClick={handleNext}
+          onClick={() => handleNext()}
         >
           Siguiente Pregunta
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
@@ -415,11 +452,13 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
    ============================================== */
 const Atencion = ({ onComplete, onPrevious, isFirstModule }) => {
   const handleActivity1Complete = (score, data) => {
+    console.log("Atencion Module - Activity 1 Complete. Score:", score);
     onComplete(score, {
       activity1: score,
       standardResults: data.standardResults,
     });
   };
+
 
   return (
     <div className="module-container w-100">

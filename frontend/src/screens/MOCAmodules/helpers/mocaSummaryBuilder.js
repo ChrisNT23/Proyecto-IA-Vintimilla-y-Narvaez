@@ -1,3 +1,5 @@
+import { MOCA_SUBTESTS_CONFIG } from '../config/mocaSubtestsConfig';
+
 /**
  * Consolidates an array of standardized MoCA results into a single summary JSON.
  * 
@@ -13,14 +15,16 @@ export const buildMocaSummary = (userId, results) => {
   const validResults = Array.isArray(results) ? results : [];
 
   let totalScore = 0;
-  let totalMaxScore = 0;
-
   validResults.forEach(res => {
-    if (res && typeof res.score === 'number' && typeof res.maxScore === 'number') {
+    if (res && typeof res.score === 'number') {
       totalScore += res.score;
-      totalMaxScore += res.maxScore;
     }
   });
+
+  // Calcular el puntaje máximo siempre en base a la configuración oficial (22)
+  const totalMaxScore = Object.values(MOCA_SUBTESTS_CONFIG).reduce(
+    (acc, test) => acc + (test.maxScore || 0), 0
+  );
 
   return {
     userId: userId || "desconocido",

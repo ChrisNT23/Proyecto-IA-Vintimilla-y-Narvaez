@@ -9,7 +9,7 @@ import { MOCA_SUBTESTS_CONFIG } from '../config/mocaSubtestsConfig';
  */
 export const buildMocaResult = (subtestName, rawScore) => {
   const config = MOCA_SUBTESTS_CONFIG[subtestName];
-  
+
   if (!config) {
     console.warn(`[buildMocaResult] subtestName "${subtestName}" no encontrado en la configuración. Usando valores por defecto.`);
     return {
@@ -25,6 +25,8 @@ export const buildMocaResult = (subtestName, rawScore) => {
   if (score < 0) score = 0;
   if (score > config.maxScore) score = config.maxScore;
 
+  console.log(`[buildMocaResult] subtest: ${subtestName}, score: ${score}`);
+
   return {
     module: config.module,
     subtest: subtestName,
@@ -32,3 +34,4 @@ export const buildMocaResult = (subtestName, rawScore) => {
     maxScore: config.maxScore
   };
 };
+
