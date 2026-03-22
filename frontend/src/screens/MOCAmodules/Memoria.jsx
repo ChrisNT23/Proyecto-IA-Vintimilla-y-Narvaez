@@ -246,7 +246,7 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
     // En MoCA, el recuerdo inmediato (esta actividad) no suma puntos al total.
     // Pasamos 0 como primer argumento para no afectar el totalScore del test,
     // pero incluimos la cuenta de palabras en el objeto de datos.
-    onComplete(0, { responses: uniqueResponses, standardResults, totalRecalled: score });
+    onComplete(score, { responses: uniqueResponses, standardResults, totalRecalled: score });
   };
 
 
@@ -357,28 +357,28 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
         </div>
 
         <div className="mem-reading-wrapper">
-        <div className="mem-reading-card">
-          <div className="mem-reading-spinner-wrap">
-            <Spinner animation="border" style={{ color: "#2563eb", width: "3rem", height: "3rem" }} />
-          </div>
-          <h3 className="mem-reading-title">
-            {stage === STAGE_FIRST_READ ? "Escuche con atención" : "Escuche nuevamente"}
-          </h3>
-          <p className="mem-reading-desc">
-            {stage === STAGE_FIRST_READ
-              ? "Se está leyendo la lista de palabras. Préstele atención para poder recordarlas."
-              : "Repasando la lista de palabras..."}
-          </p>
-          <div className="mem-reading-waves">
-            {[4, 8, 6, 10, 7, 5, 9, 6, 4, 8].map((h, i) => (
-              <div key={i} className="mem-reading-wave-bar" style={{ animationDelay: `${i * 0.1}s`, height: `${h * 4}px` }} />
-            ))}
+          <div className="mem-reading-card">
+            <div className="mem-reading-spinner-wrap">
+              <Spinner animation="border" style={{ color: "#2563eb", width: "3rem", height: "3rem" }} />
+            </div>
+            <h3 className="mem-reading-title">
+              {stage === STAGE_FIRST_READ ? "Escuche con atención" : "Escuche nuevamente"}
+            </h3>
+            <p className="mem-reading-desc">
+              {stage === STAGE_FIRST_READ
+                ? "Se está leyendo la lista de palabras. Préstele atención para poder recordarlas."
+                : "Repasando la lista de palabras..."}
+            </p>
+            <div className="mem-reading-waves">
+              {[4, 8, 6, 10, 7, 5, 9, 6, 4, 8].map((h, i) => (
+                <div key={i} className="mem-reading-wave-bar" style={{ animationDelay: `${i * 0.1}s`, height: `${h * 4}px` }} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   // ─── PANTALLA RECALL ──────────────────────────────────────────────────────
   if ((stage === STAGE_FIRST_RECALL || stage === STAGE_SECOND_RECALL) && !message) {
@@ -398,115 +398,115 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
         </div>
 
         <div className="mem-recall-wrapper">
-        <div className="mem-recall-card">
-          <h2 className="mem-recall-title">Dígame todas las palabras que recuerde</h2>
-          <p className="mem-recall-subtitle">Puede usar el micrófono o escribir las palabras manualmente.</p>
+          <div className="mem-recall-card">
+            <h2 className="mem-recall-title">Dígame todas las palabras que recuerde</h2>
+            <p className="mem-recall-subtitle">Puede usar el micrófono o escribir las palabras manualmente.</p>
 
-          {/* Micrófono */}
-          {!showButtons && (
-            <div className="mem-recall-mic-section">
-              {listening ? (
-                <>
-                  <button className="mem-recall-mic-btn mem-recall-mic-active" onClick={handleStopListening}>
-                    <FaMicrophone size={28} color="#fff" />
-                  </button>
-                  <p className="mem-recall-mic-label">ESCUCHANDO...</p>
-                </>
-              ) : (
-                <>
-                  <button
-                    className="mem-recall-mic-btn"
-                    onClick={handleStartRecall}
-                    disabled={!recognitionSupported}
-                  >
-                    <FaMicrophone size={28} color="#fff" />
-                  </button>
-                  <p className="mem-recall-mic-label">TOCAR PARA HABLAR</p>
-                </>
-              )}
-            </div>
-          )}
-
-          {/* Confirmación voz */}
-          {showButtons && (
-            <div className="mem-recall-confirm">
-              <div className="mem-recall-confirm-bubble">
-                <p className="mem-recall-confirm-q">¿Es correcta la palabra escuchada?</p>
-                <p className="mem-recall-confirm-word">"{transcript}"</p>
+            {/* Micrófono */}
+            {!showButtons && (
+              <div className="mem-recall-mic-section">
+                {listening ? (
+                  <>
+                    <button className="mem-recall-mic-btn mem-recall-mic-active" onClick={handleStopListening}>
+                      <FaMicrophone size={28} color="#fff" />
+                    </button>
+                    <p className="mem-recall-mic-label">ESCUCHANDO...</p>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      className="mem-recall-mic-btn"
+                      onClick={handleStartRecall}
+                      disabled={!recognitionSupported}
+                    >
+                      <FaMicrophone size={28} color="#fff" />
+                    </button>
+                    <p className="mem-recall-mic-label">TOCAR PARA HABLAR</p>
+                  </>
+                )}
               </div>
-              <div className="mem-recall-confirm-actions">
-                <button className="mem-recall-retry-btn" onClick={handleRetry}>
-                  Reintentar
-                </button>
-                <button className="mem-recall-yes-btn" onClick={handleConfirmWord}>
-                  Sí, agregar
-                </button>
+            )}
+
+            {/* Confirmación voz */}
+            {showButtons && (
+              <div className="mem-recall-confirm">
+                <div className="mem-recall-confirm-bubble">
+                  <p className="mem-recall-confirm-q">¿Es correcta la palabra escuchada?</p>
+                  <p className="mem-recall-confirm-word">"{transcript}"</p>
+                </div>
+                <div className="mem-recall-confirm-actions">
+                  <button className="mem-recall-retry-btn" onClick={handleRetry}>
+                    Reintentar
+                  </button>
+                  <button className="mem-recall-yes-btn" onClick={handleConfirmWord}>
+                    Sí, agregar
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Input manual */}
+            <div className="mem-recall-input-row">
+              <div className="mem-recall-input-wrap">
+                <span className="mem-recall-input-icon">✏️</span>
+                <input
+                  type="text"
+                  className="mem-recall-input"
+                  placeholder="Escribir palabra..."
+                  value={manualWords}
+                  onChange={(e) => setManualWords(e.target.value.toUpperCase())}
+                  onKeyPress={handleManualKeyPress}
+                />
+              </div>
+              <button className="mem-recall-add-btn" onClick={handleAddManualWords}>
+                <FaPlus className="me-1" size={13} /> Agregar
+              </button>
+            </div>
+
+            {/* Palabras registradas */}
+            <div className="mem-recall-words-section">
+              <p className="mem-recall-words-label">PALABRAS REGISTRADAS</p>
+              <div className="mem-recall-chips">
+                {responses.map((word, i) => (
+                  <span key={i} className="mem-recall-chip">
+                    {word}
+                    <button className="mem-recall-chip-remove" onClick={() => handleRemoveWord(i)}>
+                      <FaTimes size={11} />
+                    </button>
+                  </span>
+                ))}
+                {responses.length < 5 && (
+                  <span className="mem-recall-chip-placeholder">Esperando más palabras...</span>
+                )}
               </div>
             </div>
-          )}
+          </div>
 
-          {/* Input manual */}
-          <div className="mem-recall-input-row">
-            <div className="mem-recall-input-wrap">
-              <span className="mem-recall-input-icon">✏️</span>
-              <input
-                type="text"
-                className="mem-recall-input"
-                placeholder="Escribir palabra..."
-                value={manualWords}
-                onChange={(e) => setManualWords(e.target.value.toUpperCase())}
-                onKeyPress={handleManualKeyPress}
-              />
-            </div>
-            <button className="mem-recall-add-btn" onClick={handleAddManualWords}>
-              <FaPlus className="me-1" size={13} /> Agregar
+          {/* Botones inferiores */}
+          <div className="cubo-footer mt-4">
+            <button
+              className="cubo-undo-button"
+              onClick={onPrevious}
+              disabled={isFirstModule}
+              style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+              Regresar
+            </button>
+
+            <button className="mem-recall-no-more-btn me-2" onClick={handleNoMoreWords}>
+              ❓ No recuerdo más
+            </button>
+
+            <button className="cubo-continue-button" onClick={handleNext}>
+              Siguiente Pregunta
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </button>
           </div>
-
-          {/* Palabras registradas */}
-          <div className="mem-recall-words-section">
-            <p className="mem-recall-words-label">PALABRAS REGISTRADAS</p>
-            <div className="mem-recall-chips">
-              {responses.map((word, i) => (
-                <span key={i} className="mem-recall-chip">
-                  {word}
-                  <button className="mem-recall-chip-remove" onClick={() => handleRemoveWord(i)}>
-                    <FaTimes size={11} />
-                  </button>
-                </span>
-              ))}
-              {responses.length < 5 && (
-                <span className="mem-recall-chip-placeholder">Esperando más palabras...</span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Botones inferiores */}
-        <div className="cubo-footer mt-4">
-          <button
-            className="cubo-undo-button"
-            onClick={onPrevious}
-            disabled={isFirstModule}
-            style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            Regresar
-          </button>
-
-          <button className="mem-recall-no-more-btn me-2" onClick={handleNoMoreWords}>
-            ❓ No recuerdo más
-          </button>
-
-          <button className="cubo-continue-button" onClick={handleNext}>
-            Siguiente Pregunta
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </button>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   // ─── PANTALLA FINAL ───────────────────────────────────────────────────────
   return (

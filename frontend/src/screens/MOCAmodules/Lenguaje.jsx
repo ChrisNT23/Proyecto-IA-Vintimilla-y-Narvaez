@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Form, Spinner, Alert, Row, Col } from "react-bootstrap";
-import { FaPlay, FaStop, FaMicrophone } from "react-icons/fa";
+import { FaPlay, FaStop, FaMicrophone, FaPlus, FaTimes, FaArrowRight, FaCheckCircle } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { buildMocaResult } from './helpers/mocaResultBuilder';
 import '../../assets/styles/mocamodules.css';
@@ -151,8 +151,9 @@ const RepeticionFrasesActivity = ({ onComplete }) => {
 
       console.log("Lenguaje - Repeticion de Frases Score calculated:", totalScore);
 
-      const standardResults = [buildMocaResult("Repeticion", totalScore)];
-      onComplete(totalScore, {
+      const finalRepetitionScore = totalScore >= 2 ? 1 : 0;
+      const standardResults = [buildMocaResult("Repetición", finalRepetitionScore)];
+      onComplete(finalRepetitionScore, {
         activityScore: totalScore,
         phraseAnswers: [
           ...activityAnswers,
@@ -162,7 +163,6 @@ const RepeticionFrasesActivity = ({ onComplete }) => {
       });
     }
   };
-
 
   const handleRetry = () => {
     setTranscript("");
@@ -180,113 +180,138 @@ const RepeticionFrasesActivity = ({ onComplete }) => {
   };
 
   return (
-    <div className="module-container">
-      <div className="d-flex align-items-center mb-2">
-        <h4 className="mb-0">Repetición de Frases</h4>
-        <Button
-          variant="link"
-          onClick={() =>
-            speakPhrase(
-              "Ahora le leeré una frase y me gustaría que la repitiera."
-            )
-          }
-          disabled={isSpeakingLocal}
-          className="listen-button ms-3 text-decoration-none"
-        >
-          <FaPlay /> Escuchar<br />Instrucciones
-        </Button>
+    <div className="w-100 d-flex flex-column align-items-center">
+      {/* Breadcrumb Section */}
+      <div className="cubo-section-breadcrumb text-center">
+        SECCIÓN 5: LENGUAJE
       </div>
 
-      <p>Repita exactamente la frase que escuche.</p>
+      {/* Header Section */}
+      <div className="cubo-header text-center">
+        <h1 className="cubo-title">
+          Lenguaje <span className="text-primary">(Repetición de Frases)</span>
+        </h1>
+        <p className="cubo-subtitle">Módulo de Lenguaje - Actividad 1</p>
+      </div>
 
-      {!confirmation && (
-        <div className="text-center mt-3">
-          <Button
-            className="activity-button mb-3 d-block mx-auto"
-            onClick={() => speakPhrase(phrases[currentPhraseIndex])}
-            disabled={isSpeakingLocal || hasHeardPhrase}
-            style={{ minWidth: "180px" }}
-          >
-            Escuchar la frase
-          </Button>
-
-          <Form
-            onSubmit={(e) => e.preventDefault()}
-            className="mt-3 d-flex flex-column align-items-center"
-          >
-            <Form.Control
-              type="text"
-              placeholder="Escriba aquí su respuesta"
-              value={manualInput}
-              onChange={(e) => setManualInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              disabled={!hasHeardPhrase || listening}
-              style={{ maxWidth: "400px" }}
-            />
-            <Button
-              className="activity-button me-2 mt-2"
-              variant="success"
-              onClick={() => setConfirmation(true)}
-              disabled={!manualInput.trim() || !hasHeardPhrase}
-              style={{ minWidth: "150px" }}
+      {/* Intro / Instructions Card */}
+      {!hasHeardPhrase && !isSpeakingLocal && !confirmation && (
+        <div className="mem-intro-card">
+          <div className="mem-intro-icon-col">
+            <div className="mem-intro-icon-person">
+              <svg width="60" height="70" viewBox="0 0 60 70" fill="none">
+                <circle cx="28" cy="18" r="14" fill="#2563eb" opacity="0.85" />
+                <path d="M4 60 C4 42 52 42 52 60" stroke="#2563eb" strokeWidth="5" strokeLinecap="round" fill="none" opacity="0.85" />
+                <path d="M40 22 Q46 28 40 34" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+              </svg>
+            </div>
+          </div>
+          <div className="mem-intro-content-col">
+            <div className="mem-intro-step-badge">
+              <span className="mem-intro-step-num">{currentPhraseIndex + 1}</span>
+              <h2 className="mem-intro-step-title">Repita la frase</h2>
+            </div>
+            <p className="mem-intro-desc">
+              Presione el botón para escuchar una frase y luego repítala exactamente como la oyó.
+            </p>
+            <button
+              className="mem-intro-listen-btn mt-2"
+              onClick={() => speakPhrase(phrases[currentPhraseIndex])}
             >
-              Confirmar
-            </Button>
-          </Form>
-
-          {useVoice && !confirmation && (
-            listening ? (
-              <div className="mt-3">
-                <Spinner animation="grow" variant="primary" />
-                <p className="mt-2">Escuchando...</p>
-                <Button
-                  className="activity-button"
-                  variant="danger"
-                  onClick={handleStop}
-                  style={{ minWidth: "150px" }}
-                >
-                  Detener
-                </Button>
-              </div>
-            ) : (
-              <Button
-                className="activity-button mt-3"
-                variant="primary"
-                onClick={handleListen}
-                disabled={!hasHeardPhrase}
-                style={{ minWidth: "150px" }}
-              >
-                <FaMicrophone className="me-2" />
-                Hablar
-              </Button>
-            )
-          )}
+              <span className="mem-intro-listen-icon"><FaPlay size={12} /></span>
+              Escuchar la frase
+            </button>
+          </div>
         </div>
       )}
 
+      {/* Reading state animation */}
+      {isSpeakingLocal && (
+        <div className="mem-reading-wrapper">
+          <div className="mem-reading-card">
+            <div className="mem-reading-spinner-wrap">
+              <Spinner animation="border" style={{ color: "#2563eb", width: "3rem", height: "3rem" }} />
+            </div>
+            <h3 className="mem-reading-title">Escuche con atención</h3>
+            <p className="mem-reading-desc">Se está leyendo la frase. Prepárese para repetirla.</p>
+            <div className="mem-reading-waves">
+              {[6, 10, 8, 12, 9, 7, 11, 8, 6, 9].map((h, i) => (
+                <div key={i} className="mem-reading-wave-bar" style={{ animationDelay: `${i * 0.1}s`, height: `${h * 4}px` }} />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Recall state */}
+      {hasHeardPhrase && !isSpeakingLocal && !confirmation && (
+        <div className="mem-recall-wrapper">
+          <div className="mem-recall-card">
+            <h2 className="mem-recall-title">Repita la frase ahora</h2>
+            <p className="mem-recall-subtitle">Puede hablar usando el micrófono o escribirla.</p>
+
+            {/* Micrófono */}
+            <div className="mem-recall-mic-section">
+              {listening ? (
+                <>
+                  <button className="mem-recall-mic-btn mem-recall-mic-active" onClick={handleStop}>
+                    <FaMicrophone size={28} color="#fff" />
+                  </button>
+                  <p className="mem-recall-mic-label">ESCUCHANDO...</p>
+                </>
+              ) : (
+                <>
+                  <button className="mem-recall-mic-btn" onClick={handleListen}>
+                    <FaMicrophone size={28} color="#fff" />
+                  </button>
+                  <p className="mem-recall-mic-label">TOCAR PARA HABLAR</p>
+                </>
+              )}
+            </div>
+
+            {/* Input manual */}
+            <div className="mem-recall-input-row mt-4">
+              <div className="mem-recall-input-wrap">
+                <span className="mem-recall-input-icon">✏️</span>
+                <input
+                  type="text"
+                  className="mem-recall-input"
+                  placeholder="Escriba aquí su respuesta..."
+                  value={manualInput}
+                  onChange={(e) => setManualInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                />
+              </div>
+              <button
+                className="mem-recall-add-btn"
+                onClick={() => setConfirmation(true)}
+                disabled={!manualInput.trim()}
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Bubble */}
       {confirmation && (
-        <div className="text-center mt-3">
-          <Alert variant="secondary">
-            <p>¿Es correcta su respuesta?</p>
-            <strong>"{transcript || manualInput}"</strong>
-          </Alert>
-          <div className="d-flex justify-content-center">
-            <Button
-              className="activity-button me-3"
-              variant="warning"
-              onClick={handleRetry}
-              style={{ minWidth: "100px" }}
-            >
-              Reintentar
-            </Button>
-            <Button
-              className="activity-button"
-              variant="success"
-              onClick={handleConfirm}
-              style={{ minWidth: "100px" }}
-            >
-              Sí
-            </Button>
+        <div className="mem-recall-wrapper">
+          <div className="mem-recall-card">
+            <div className="mem-recall-confirm">
+              <div className="mem-recall-confirm-bubble">
+                <p className="mem-recall-confirm-q">¿Es correcta su respuesta?</p>
+                <p className="mem-recall-confirm-word">"{transcript || manualInput}"</p>
+              </div>
+              <div className="mem-recall-confirm-actions">
+                <button className="mem-recall-retry-btn" onClick={handleRetry}>
+                  Reintentar
+                </button>
+                <button className="mem-recall-yes-btn" onClick={handleConfirm}>
+                  Sí, continuar
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -349,7 +374,6 @@ const FluidezVerbalActivity = ({ onComplete }) => {
       recognition.onerror = (event) => {
         const errorType = event.error;
         console.warn("Recognition error:", errorType);
-        // Si es un error común como silencio o cancelado, no hacemos nada y dejamos que onend lo gestione
         if (errorType === 'no-speech' || errorType === 'aborted') {
           return;
         }
@@ -361,7 +385,6 @@ const FluidezVerbalActivity = ({ onComplete }) => {
       };
 
       recognition.onend = () => {
-        // Solo reiniciar si el usuario aún tiene activo el micrófono y hay tiempo
         if (wantListening.current && timer > 0) {
           try {
             recognition.start();
@@ -476,7 +499,7 @@ const FluidezVerbalActivity = ({ onComplete }) => {
     setListening(true);
     try {
       recognitionRef.current.start();
-    } catch(e) {
+    } catch (e) {
       console.warn("Mic already active");
     }
   };
@@ -494,7 +517,7 @@ const FluidezVerbalActivity = ({ onComplete }) => {
       (w) => w.toLowerCase().trim().startsWith("p") && w.length > 1
     );
     const score = validWords.length >= 11 ? 1 : 0;
-    
+
     console.log(`Lenguaje - Fluidez Verbal: ${validWords.length} palabras válidas. Puntaje: ${score}`);
 
     const standardResults = [buildMocaResult("Fluidez Verbal", score)];
@@ -507,157 +530,171 @@ const FluidezVerbalActivity = ({ onComplete }) => {
     });
   };
 
-
   return (
-    <div className="module-container">
-      <div className="d-flex align-items-center mb-2">
-        <h4 className="mb-0">Fluidez Verbal</h4>
-        <Button
-          variant="link"
-          onClick={speakInstructions}
-          disabled={isSpeakingLocal}
-          className="listen-button ms-3 text-decoration-none"
-          style={{ whiteSpace: "nowrap", minWidth: "220px" }}
-        >
-          {isSpeakingLocal ? <FaStop /> : <FaPlay />} Escuchar Instrucciones
-        </Button>
+    <div className="w-100 d-flex flex-column align-items-center">
+      {/* Breadcrumb Section */}
+      <div className="cubo-section-breadcrumb text-center">
+        SECCIÓN 5: LENGUAJE
       </div>
 
-      <p>
-        Tiene 60 segundos para decir o escribir palabras que comiencen con "p" y tengan más de una letra.
-      </p>
+      {/* Header Section */}
+      <div className="cubo-header text-center">
+        <h1 className="cubo-title">
+          Lenguaje <span className="text-primary">(Fluidez Verbal)</span>
+        </h1>
+        <p className="cubo-subtitle">Módulo de Lenguaje - Actividad 2</p>
+      </div>
 
       {!isRunning ? (
-        <div className="text-center">
-          <Button
-            className="activity-button"
-            variant="primary"
-            onClick={handleStart}
-            style={{ minWidth: "180px" }}
-          >
-            Iniciar
-          </Button>
-        </div>
-      ) : (
-        <>
-          <div className="text-center mb-3">
-            <h5>Tiempo restante: {timer}s</h5>
-          </div>
-
-          <div className="d-flex justify-content-center align-items-center mb-4">
-            {useVoice && !listening ? (
-              <Button
-                className="activity-button me-3"
-                variant="primary"
-                onClick={handleListen}
-                style={{ minWidth: "120px" }}
-              >
-                <FaMicrophone className="me-1" />
-                Hablar
-              </Button>
-            ) : listening ? (
-              <div className="d-flex align-items-center me-3">
-                <Spinner animation="grow" variant="primary" className="me-2" />
-                <Button
-                  className="activity-button"
-                  variant="danger"
-                  onClick={handleStopListening}
-                  style={{ minWidth: "100px" }}
-                >
-                  Detener
-                </Button>
-              </div>
-            ) : null}
-
-            <Form onSubmit={(e) => e.preventDefault()} className="d-flex">
-              <Form.Control
-                type="text"
-                placeholder="Escriba una palabra"
-                value={inputWord}
-                onChange={handleInputChange}
-                onKeyPress={handleKeyPress}
-                style={{ minWidth: "180px" }}
-              />
-              <Button
-                className="activity-button ms-2"
-                variant="success"
-                onClick={handleAddWord}
-                style={{ minWidth: "100px" }}
-              >
-                Agregar
-              </Button>
-            </Form>
-          </div>
-
-          <div className="mt-4">
-            <h5 className="mb-3 d-flex align-items-center">
-              Palabras válidas registradas
-              <span className="badge bg-primary ms-2 rounded-pill px-3">{wordList.length}</span>
-            </h5>
-            <div className="d-flex flex-wrap gap-2 justify-content-center p-4" style={{ 
-              backgroundColor: '#f1f5f9',
-              borderRadius: '20px',
-              minHeight: '140px',
-              border: '2px solid #e2e8f0',
-              overflowY: 'auto',
-              maxHeight: '350px',
-              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
-            }}>
-              {wordList.map((word, index) => (
-                <span key={index} 
-                  className="animate__animated animate__fadeInUp"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    padding: '10px 20px',
-                    borderRadius: '12px',
-                    backgroundColor: 'white',
-                    color: '#0f172a',
-                    fontWeight: '600',
-                    fontSize: '1rem',
-                    border: '1px solid #cbd5e1',
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)',
-                    transition: 'transform 0.2s',
-                    cursor: 'default'
-                  }}
-                  onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                  onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                >
-                  <span style={{ 
-                    color: '#2563eb', 
-                    marginRight: '6px',
-                    fontSize: '1.1rem'
-                  }}>
-                    P
-                  </span>
-                  {word.substring(1)}
-                </span>
-              ))}
-              {wordList.length === 0 && (
-                <div className="d-flex flex-column align-items-center justify-content-center w-100 text-muted">
-                  <div style={{
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: '50%',
-                    backgroundColor: '#e2e8f0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: '1rem'
-                  }}>
-                    <FaMicrophone size={24} className="opacity-50" />
-                  </div>
-                  <p className="mb-0 fw-medium">Diga o escriba palabras que comiencen con P</p>
-                  <small className="opacity-75">Las palabras deben tener más de una letra</small>
-                </div>
-              )}
+        <div className="mem-intro-card">
+          <div className="mem-intro-icon-col">
+            <div className="mem-intro-icon-person" style={{ background: '#eff6ff', borderRadius: '50%', padding: '1rem' }}>
+              <FaCheckCircle size={40} color="#2563eb" />
             </div>
           </div>
-        </>
+          <div className="mem-intro-content-col">
+            <div className="mem-intro-step-badge">
+              <span className="mem-intro-step-num">2</span>
+              <h2 className="mem-intro-step-title">Instrucciones</h2>
+            </div>
+            <p className="mem-intro-desc">
+              Tiene 60 segundos para decir o escribir todas las palabras que pueda que empiecen con la letra <span className="text-primary font-weight-bold">"P"</span>.
+            </p>
+            <div className="d-flex gap-2 mt-2">
+              <button className="mem-intro-listen-btn" onClick={speakInstructions} disabled={isSpeakingLocal}>
+                <FaPlay size={12} className="me-1" /> Oír Instrucciones
+              </button>
+              <button className="cubo-continue-button" style={{ padding: '0.65rem 1.5rem' }} onClick={handleStart}>
+                Empezar (60s)
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="mem-recall-wrapper">
+          <div className="mem-recall-card">
+            <div className="moca-timer-container">
+              <div className={`moca-timer-circle ${timer <= 10 ? 'warning' : ''}`}>
+                {timer}
+              </div>
+              <p className="moca-timer-label">Palabras con la letra "P"</p>
+            </div>
+
+            <div className="d-flex flex-column align-items-center gap-3 w-100">
+              {useVoice && (
+                <div className="mem-recall-mic-section">
+                  {listening ? (
+                    <>
+                      <button className="mem-recall-mic-btn mem-recall-mic-active" onClick={handleStopListening}>
+                        <FaMicrophone size={28} color="#fff" />
+                      </button>
+                      <p className="mem-recall-mic-label">ESCUCHANDO...</p>
+                    </>
+                  ) : (
+                    <>
+                      <button className="mem-recall-mic-btn" onClick={handleListen}>
+                        <FaMicrophone size={28} color="#fff" />
+                      </button>
+                      <p className="mem-recall-mic-label">MODO VOZ</p>
+                    </>
+                  )}
+                </div>
+              )}
+
+              <div className="mt-4">
+                <h5 className="mb-3 d-flex align-items-center">
+                  Palabras válidas registradas
+                  <span className="badge bg-primary ms-2 rounded-pill px-3">{wordList.length}</span>
+                </h5>
+                <div className="d-flex flex-wrap gap-2 justify-content-center p-4" style={{
+                  backgroundColor: '#f1f5f9',
+                  borderRadius: '20px',
+                  minHeight: '140px',
+                  border: '2px solid #e2e8f0',
+                  overflowY: 'auto',
+                  maxHeight: '350px',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
+                }}>
+                  {wordList.map((word, index) => (
+                    <span key={index}
+                      className="animate__animated animate__fadeInUp"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        padding: '10px 20px',
+                        borderRadius: '12px',
+                        backgroundColor: 'white',
+                        color: '#0f172a',
+                        fontWeight: '600',
+                        fontSize: '1rem',
+                        border: '1px solid #cbd5e1',
+                        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)',
+                        transition: 'transform 0.2s',
+                        cursor: 'default'
+                      }}
+                      onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                      onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
+                      <span style={{
+                        color: '#2563eb',
+                        marginRight: '6px',
+                        fontSize: '1.1rem'
+                      }}>
+                        P
+                      </span>
+                      {word.substring(1)}
+                    </span>
+                  ))}
+                  {wordList.length === 0 && (
+                    <div className="d-flex flex-column align-items-center justify-content-center w-100 text-muted">
+                      <div style={{
+                        width: '60px',
+                        height: '60px',
+                        borderRadius: '50%',
+                        backgroundColor: '#e2e8f0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '1rem'
+                      }}>
+                        <FaMicrophone size={24} className="opacity-50" />
+                      </div>
+                      <p className="mb-0 fw-medium">Diga o escriba palabras que comiencen con P</p>
+                      <small className="opacity-75">Las palabras deben tener más de una letra</small>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Input manual de palabras */}
+              <div className="mem-recall-input-row mt-3">
+                <div className="mem-recall-input-wrap">
+                  <span className="mem-recall-input-icon">✏️</span>
+                  <input
+                    type="text"
+                    className="mem-recall-input"
+                    placeholder="Escriba una palabra con P..."
+                    value={inputWord}
+                    onChange={handleInputChange}
+                    onKeyPress={handleKeyPress}
+                  />
+                </div>
+                <button
+                  className="mem-recall-add-btn"
+                  onClick={handleAddWord}
+                  disabled={!inputWord.trim()}
+                >
+                  Agregar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
 };
+
 
 /* ==============================================
    MÓDULO PRINCIPAL DE LENGUAJE
@@ -697,29 +734,25 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
       return;
     }
 
-    // Si se llama desde el botón (onClick) en la última actividad, lastScore será un objeto Event.
-    // En ese caso, usamos los valores acumulados en el estado (activity2Data).
+    // Score y resultados de la actividad 1 (si se saltó, valen 0)
+    const s1 = activity1Data?.activityScore || 0;
+    const r1 = activity1Data?.standardResults || [buildMocaResult("Repetición", 0)];
+
+    // Score y resultados de la actividad 2
     const s2 = (typeof lastScore === 'number') ? lastScore : (activity2Data?.activityScore || 0);
     const r2 = Array.isArray(lastStandardResults) ? lastStandardResults : (activity2Data?.standardResults || []);
 
-    const totalScore = (activity1Data?.activityScore || 0) + s2;
-
-    const standardResults = [
-      ...(activity1Data?.standardResults || []),
-      ...r2
-    ];
+    const totalScore = s1 + s2;
+    const standardResults = [...r1, ...r2];
 
     console.log("Lenguaje Module - Final Score calculated:", totalScore);
 
-    onComplete(
+    onComplete(totalScore, {
       totalScore,
-      {
-        totalScore,
-        activity1: activity1Data,
-        activity2: activity2Data,
-        standardResults
-      }
-    );
+      activity1: activity1Data || { activityScore: 0, standardResults: r1 },
+      activity2: activity2Data || { activityScore: s2, standardResults: r2 },
+      standardResults
+    });
   };
 
   const handlePrevious = () => {
@@ -730,9 +763,8 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
     }
   };
 
-
   return (
-    <div className="module-container">
+    <div className="w-100">
       {currentActivityIndex === 0 && (
         <RepeticionFrasesActivity
           onComplete={handleActivity1Complete}
@@ -747,7 +779,7 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
       )}
 
       {/* Unified Navigation Footer */}
-      <div className="cubo-footer mt-5">
+      <div className="cubo-footer mt-5 mx-auto" style={{ maxWidth: '700px' }}>
         <button
           className="cubo-undo-button"
           onClick={handlePrevious}
@@ -771,17 +803,17 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
       {isAdmin && (
         <div className="d-flex justify-content-center mt-4">
           <Button
-            variant="info"
+            variant="outline-info"
             onClick={() => setCurrentActivityIndex(0)}
             className="me-2"
-            style={{ minWidth: "120px" }}
+            style={{ borderRadius: '10px' }}
           >
             Ir a Actividad 1
           </Button>
           <Button
-            variant="info"
+            variant="outline-info"
             onClick={() => setCurrentActivityIndex(1)}
-            style={{ minWidth: "120px" }}
+            style={{ borderRadius: '10px' }}
           >
             Ir a Actividad 2
           </Button>

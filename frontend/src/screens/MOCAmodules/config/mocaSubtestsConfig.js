@@ -4,9 +4,7 @@ export const MOCA_SUBTESTS_CONFIG = {
   "Reloj": { module: "Visuoespacial", maxScore: 3 },
   "Identificacion": { module: "Identificacion", maxScore: 3 },
   "Memoria": { module: "Memoria", maxScore: 5 },
-  "Digitos": { module: "Atencion", maxScore: 2 },
-  "Vigilancia": { module: "Atencion", maxScore: 1 },
-  "Sustraccion Seriada": { module: "Atencion", maxScore: 3 },
-  "Repeticion": { module: "Lenguaje", maxScore: 2 },
+  "Digitos": { module: "Atencion", maxScore: 1 },
+  "Repetición": { module: "Lenguaje", maxScore: 1 },
   "Fluidez Verbal": { module: "Lenguaje", maxScore: 1 }
 };

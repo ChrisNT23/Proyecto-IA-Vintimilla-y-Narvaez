@@ -38,7 +38,7 @@ const DashboardIAScreen = () => {
         skip: !selectedEvalId
     });
 
-    const targetPatientId = patientId || mocaRecord?.patient;
+    const targetPatientId = patientId || (mocaRecord?.patient?._id || mocaRecord?.patient);
     const { data: patient, isLoading: loadingPatient } = useGetPatientByIdQuery(targetPatientId, {
         skip: !targetPatientId
     });

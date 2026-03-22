@@ -21,10 +21,8 @@ export const buildMocaSummary = (userId, results) => {
     }
   });
 
-  // Calcular el puntaje máximo siempre en base a la configuración oficial (22)
-  const totalMaxScore = Object.values(MOCA_SUBTESTS_CONFIG).reduce(
-    (acc, test) => acc + (test.maxScore || 0), 0
-  );
+  // Puntaje máximo oficial es 16 según config personalizada
+  const totalMaxScore = 16;
 
   return {
     userId: userId || "desconocido",

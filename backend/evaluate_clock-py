@@ -78,7 +78,14 @@ def evaluate_clock():
             "contour_score": int(contour_score),
             "numbers_score": int(numbers_score),
             "hands_score": int(hands_score),
-            "total_score": int(total_score)
+            "total_score": int(total_score),
+            "score": int(total_score),
+            "imageUrl": image_data,
+            "detail": {
+                "contorno": "Correcto" if contour_score else "No cumple",
+                "numeros": "Correcto" if numbers_score else "No cumple",
+                "agujas": "Correcto" if hands_score else "No cumple"
+            }
         })
 
     except Exception as e:
