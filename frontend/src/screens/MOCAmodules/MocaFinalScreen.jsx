@@ -16,6 +16,8 @@ import {
 import { useSelector } from "react-redux";
 import { useGetMocaSelfByIdQuery } from "../../slices/mocaSelfApiSlice"; // Asegúrate de que la ruta sea correcta
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { FaCheckCircle, FaHome } from "react-icons/fa";
+
 
 // Colores para los gráficos de pastel y badges
 const COLORS = ['#FF4C4C', '#FFC107', '#28A745']; // Rojo, Amarillo, Verde
@@ -352,13 +354,93 @@ const MocaFinalScreen = () => {
         </>
       ) : (
         // Vista para el Paciente
-        <Row className="justify-content-center">
-          <Col md={8} className="text-center">
-            <h2 className="mb-4">Prueba MoCA Completada</h2>
-            <p>Has completado la evaluación MoCA. Puedes regresar al inicio.</p>
-            <Button variant="primary" onClick={handleGoHome}>
-              Ir al Inicio
-            </Button>
+        <Row className="justify-content-center align-items-center" style={{ minHeight: '75vh' }}>
+          <Col md={10} lg={8} xl={6} className="text-center">
+            <div 
+              className="p-5"
+              style={{
+                background: 'white',
+                borderRadius: '24px',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.08)',
+                border: '1px solid rgba(255,255,255,0.4)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              {/* Círculos decorativos de fondo */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  top: '-50px',
+                  right: '-50px',
+                  width: '200px',
+                  height: '200px',
+                  background: 'linear-gradient(135deg, rgba(74, 222, 128, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%)',
+                  borderRadius: '50%',
+                  filter: 'blur(30px)',
+                  zIndex: 0
+                }}
+              />
+              <div 
+                style={{
+                  position: 'absolute',
+                  bottom: '-50px',
+                  left: '-50px',
+                  width: '150px',
+                  height: '150px',
+                  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)',
+                  borderRadius: '50%',
+                  filter: 'blur(30px)',
+                  zIndex: 0
+                }}
+              />
+              
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div className="mb-4 animate__animated animate__bounceIn">
+                  <FaCheckCircle color="#10b981" size={90} style={{ filter: 'drop-shadow(0px 8px 16px rgba(16, 185, 129, 0.4))' }}/>
+                </div>
+                
+                <h1 className="mb-3 fw-bold animate__animated animate__fadeInUp" style={{ color: '#0f172a', fontSize: '2.5rem', letterSpacing: '-0.5px' }}>
+                  ¡Evaluación Completada!
+                </h1>
+                
+                <p className="text-muted mb-5 animate__animated animate__fadeInUp" style={{ fontSize: '1.25rem', lineHeight: '1.6', animationDelay: '0.2s', padding: '0 20px' }}>
+                  Has finalizado la prueba MoCA con éxito. Tus resultados han sido guardados de manera segura y serán revisados por tu especialista médico. <br/><br/><strong>¡Agradecemos mucho tu esfuerzo!</strong>
+                </p>
+                
+                <button 
+                  className="animate__animated animate__fadeInUp"
+                  onClick={handleGoHome}
+                  style={{
+                    background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '16px 48px',
+                    borderRadius: '50px',
+                    fontSize: '1.2rem',
+                    fontWeight: '600',
+                    boxShadow: '0 10px 20px -5px rgba(37, 99, 235, 0.5)',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    cursor: 'pointer',
+                    animationDelay: '0.4s'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 15px 25px -5px rgba(37, 99, 235, 0.6)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 10px 20px -5px rgba(37, 99, 235, 0.5)';
+                  }}
+                >
+                  <FaHome size={24} />
+                  Regresar al Inicio
+                </button>
+              </div>
+            </div>
           </Col>
         </Row>
       )}

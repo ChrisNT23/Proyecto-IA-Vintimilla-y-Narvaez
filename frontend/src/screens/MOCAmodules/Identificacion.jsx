@@ -157,10 +157,12 @@ const Identificacion = ({ onComplete, onPrevious, isFirstModule }) => {
       (ans) => inputText === normalizeText(ans)
     );
 
-    setScores((prevScores) => ({
-      ...prevScores,
+    const updatedScores = {
+      ...scores,
       [currentAnimal.id]: isCorrect ? 1 : 0,
-    }));
+    };
+
+    setScores(updatedScores);
 
     setManualInput("");
     setTranscript("");
@@ -169,7 +171,7 @@ const Identificacion = ({ onComplete, onPrevious, isFirstModule }) => {
     if (currentAnimalIndex < animals.length - 1) {
       setCurrentAnimalIndex(currentAnimalIndex + 1);
     } else {
-      handleNext();
+      handleNext(updatedScores);
     }
   };
 
@@ -189,11 +191,14 @@ const Identificacion = ({ onComplete, onPrevious, isFirstModule }) => {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = (finalScores = scores) => {
+    // Si se llama desde el botón (onClick), finalScores será un objeto Event.
+    // En ese caso, usamos el objeto 'scores' del estado.
+    const scoresToUse = (finalScores && finalScores.nativeEvent) ? scores : finalScores;
     let totalScore = 0;
     animals.forEach((animal) => {
-      if (scores[animal.id]) {
-        totalScore += scores[animal.id];
+      if (scoresToUse[animal.id]) {
+        totalScore += scoresToUse[animal.id];
       }
     });
 
@@ -201,12 +206,15 @@ const Identificacion = ({ onComplete, onPrevious, isFirstModule }) => {
       buildMocaResult("Identificacion", totalScore)
     ];
 
+    console.log("Identificacion - Total Score calculated:", totalScore);
+
     onComplete(totalScore, {
-      ...scores,
+      ...scoresToUse,
       totalScore,
       standardResults
     });
   };
+
 
   const handlePreviousAnimal = () => {
     if (currentAnimalIndex > 0) {
@@ -384,7 +392,7 @@ const Identificacion = ({ onComplete, onPrevious, isFirstModule }) => {
           Regresar
         </button>
 
-        <button className="cubo-continue-button" onClick={handleNext}>
+        <button className="cubo-continue-button" onClick={() => handleNext()}>
           Siguiente Pregunta
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
         </button>

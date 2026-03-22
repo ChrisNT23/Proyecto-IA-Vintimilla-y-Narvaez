@@ -50,11 +50,14 @@ const Visuoespacial = ({ onComplete, onPrevious, isFirstModule, patientId }) => 
       const totalScore =
         (alternanciaScore || 0) + (cubeScore || 0) + (clockScore || 0);
 
+      console.log("Visuoespacial Module - Total Score calculated:", totalScore);
+
       const standardResults = [
         buildMocaResult("Alternancia Conceptual", alternanciaScore),
         buildMocaResult("Cubo", cubeScore),
         buildMocaResult("Reloj", clockScore)
       ];
+
 
       onComplete(totalScore, {
         alternancia: alternanciaScore,
@@ -295,8 +298,10 @@ const AlternanciaConceptualActivity = ({
       console.log("Respuesta completa del servidor:", data);
 
       const numericScore = Number(data.score);
+      console.log("Visuoespacial - Alternancia Score calculated:", numericScore);
       setScore(numericScore);
       setAlternanciaScore(numericScore);
+
 
       if (numericScore === 1) {
         setAlertMessage('¡Excelente! La secuencia es correcta.');
@@ -674,8 +679,10 @@ const CuboActivity = ({
 
       const data = await response.json();
       const numericScore = Number(data.score);
+      console.log("Visuoespacial - Cubo Score calculated:", numericScore);
       setCubeScore(numericScore);
       if (data.imageUrl) setCubeImageUrl(data.imageUrl);
+
 
       if (Number(data.score) === 1) {
         setAlertMessage('¡Buen trabajo! El dibujo del cubo cumple los criterios establecidos.');
@@ -829,7 +836,7 @@ const CuboActivity = ({
         </button>
         <button
           className="cubo-continue-button"
-          onClick={handleNext}
+          onClick={() => handleNext()}
           style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
         >
           Siguiente Pregunta
@@ -966,9 +973,11 @@ const RelojActivity = ({
       const data = await response.json();
 
       if (typeof data.score === 'number') {
+        console.log("Visuoespacial - Reloj Score calculated:", data.score);
         setClockScore(data.score);
         if (data.imageUrl) setClockImageUrl(data.imageUrl);
         setEvaluated(true);
+
 
         if (data.score === 3) {
           setAlertMessage('¡Perfecto! Contorno, números y agujas correctos (3 pts).');

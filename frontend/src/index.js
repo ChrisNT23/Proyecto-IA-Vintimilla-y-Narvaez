@@ -81,6 +81,7 @@ import PatientsProgress from "./screens/Reports/PatientsProgress.jsx";
 import DashboardScreen from "./screens/DashboardScreen.jsx";
 import PatientSelectionScreen from "./screens/Reports/PatientSelectionScreen.jsx";
 import DashboardIAScreen from "./screens/Reports/DashboardIAScreen.jsx";
+import HistorialMocaScreen from "./screens/Reports/HistorialMocaScreen.jsx";
 import MocaScreen from "./screens/Reports/MocaScreen.jsx";
 import MocaPanel from "./screens/MocaScreen.jsx";
 import MocaRegisterResults from "./screens/MocaRegisterResults.jsx";
@@ -220,6 +221,7 @@ const router = createBrowserRouter(
         <Route path="/reports/dashboard-ia/selection" element={<PatientSelectionScreen />} />
         <Route path="/reports/dashboard-ia/:patientId" element={<DashboardIAScreen />} />
         <Route path="/reports/dashboard-ia/eval/:id" element={<DashboardIAScreen />} />
+        <Route path="/reports/historial-moca" element={<HistorialMocaScreen />} />
       </Route>
 
       {/* Rutas de Evaluación MoCA */}

@@ -27,6 +27,7 @@ const ReportsScreen = () => {
     /*{ title: 'Progreso del Paciente', img: progresoPacienteImg, route: '/progreso-paciente' },*/
     { title: 'Resultados de Estado de Ánimo', img: estadoAnimoImg, route: '/estado-animo' },
     { title: 'Dashboard IA', img: dashboardIAImg, route: '/reports/dashboard-ia/selection' },
+    { title: 'Historial MoCA', img: dashboardIAImg, route: '/reports/historial-moca' },
     { title: 'Dashboard', img: progresoPacienteImg, route: '/dashboard' },
   ];
 

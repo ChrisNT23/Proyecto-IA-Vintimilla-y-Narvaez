@@ -619,36 +619,25 @@ const MocaStart = () => {
                       <ListGroup className="mt-3">
                         {/* Memoria */}
                         <ListGroup.Item>
-                          <p>Memoria (1 pto)</p>
+                          <p>Memoria (0-5 pts)</p>
                           <div className="score-buttons">
-                            <Button
-                              size="sm"
-                              className={`toggle-button ${
-                                memoryScore === 1 ? "active" : ""
-                              }`}
-                              variant={
-                                memoryScore === 1
-                                  ? "success"
-                                  : "outline-success"
-                              }
-                              onClick={() => handleScoreChange(1, memoryScore, setMemoryScore)}
-                            >
-                              +1
-                            </Button>
-                            <Button
-                              size="sm"
-                              className={`toggle-button ${
-                                memoryScore === 0 ? "active" : ""
-                              }`}
-                              variant={
-                                memoryScore === 0
-                                  ? "danger"
-                                  : "outline-danger"
-                              }
-                              onClick={() => handleScoreChange(0, memoryScore, setMemoryScore)}
-                            >
-                              0
-                            </Button>
+                            {[5, 4, 3, 2, 1, 0].map((val) => (
+                              <Button
+                                key={val}
+                                size="sm"
+                                className={`toggle-button ${
+                                  memoryScore === val ? "active" : ""
+                                }`}
+                                variant={
+                                  memoryScore === val
+                                    ? "success"
+                                    : "outline-success"
+                                }
+                                onClick={() => handleScoreChange(val, memoryScore, setMemoryScore)}
+                              >
+                                {val}
+                              </Button>
+                            ))}
                           </div>
                         </ListGroup.Item>
 

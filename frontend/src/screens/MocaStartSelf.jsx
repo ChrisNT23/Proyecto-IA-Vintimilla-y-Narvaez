@@ -34,6 +34,7 @@ import {
   FaSpinner,
   FaEye,
   FaEyeSlash,
+  FaCheckCircle
 } from "react-icons/fa";
 import * as faceapi from "face-api.js";
 import "../assets/styles/MocaTest.css";
@@ -399,12 +400,14 @@ const MocaStartSelf = () => {
       const savedRecord = await createMocaSelf(mocaData).unwrap();
       alert("Resultados guardados exitosamente.");
 
-      try {
-        await updatePatient({ id: selectedPatient._id, mocaAssigned: false }).unwrap();
-        alert("Estado de MOCA actualizado correctamente.");
-      } catch (err) {
-        console.error(err);
-        alert("Error al actualizar el estado de MOCA.");
+      if (isAdmin) {
+        try {
+          await updatePatient({ id: selectedPatient._id, mocaAssigned: false }).unwrap();
+          alert("Estado de MOCA actualizado correctamente.");
+        } catch (err) {
+          console.error(err);
+          alert("Error al actualizar el estado de MOCA.");
+        }
       }
 
       navigate(`/moca-final/${savedRecord._id}`);
@@ -473,15 +476,17 @@ const MocaStartSelf = () => {
 
       alert("Resultados simulados guardados exitosamente.");
 
-      try {
-        await updatePatient({
-          id: selectedPatient._id,
-          mocaAssigned: false,
-        }).unwrap();
-        alert("Estado de MOCA actualizado correctamente.");
-      } catch (err) {
-        console.error(err);
-        alert("Error al actualizar el estado de MOCA.");
+      if (isAdmin) {
+        try {
+          await updatePatient({
+            id: selectedPatient._id,
+            mocaAssigned: false,
+          }).unwrap();
+          alert("Estado de MOCA actualizado correctamente.");
+        } catch (err) {
+          console.error(err);
+          alert("Error al actualizar el estado de MOCA.");
+        }
       }
 
       navigate(`/moca-final/${savedRecord._id}`);
@@ -656,164 +661,247 @@ const MocaStartSelf = () => {
     <Container className="moca-container my-5">
       {/* Inicio de la prueba */}
       {!testStarted ? (
-        <div className="instructions-container">
-          <Row>
-            <Col md={6} className="instructions-text">
-              <h2>Instrucciones para la Prueba MoCA</h2>
-              <Button
-                variant="link"
-                onClick={handleTestDescription}
-                disabled={isSpeakingInstructions}
-                className="mb-3 text-decoration-none listen-button"
-              >
-                {isSpeakingInstructions ? <FaStop /> : <FaPlay />} Escuchar Instrucciones
-              </Button>
-              <p>
-                Bienvenido a la Evaluación Cognitiva Montreal (MoCA). Esta prueba
-                está dividida en varios módulos, y cada módulo consta de diferentes
-                actividades. Por favor, sigue las instrucciones de cada actividad
-                cuidadosamente. En ciertas actividades, tendrás que dar respuestas
-                habladas o escritas. Asegúrate de tener tu micrófono funcionando
-                correctamente antes de iniciar la prueba.
-              </p>
-              <Form.Group controlId="educationCheckbox" className="mb-3">
-                <Form.Check
-                  type="checkbox"
-                  label="¿Tiene 12 años o menos de estudios? (Por ejemplo, educación primaria, secundaria, etc.)"
-                  checked={hasLessThan12YearsOfEducation}
-                  onChange={(e) =>
-                    setHasLessThan12YearsOfEducation(e.target.checked)
-                  }
-                />
-              </Form.Group>
-              {selectedPatient && (
-                <>
-                  <p>
-                    <strong>Paciente:</strong> {selectedPatient.user?.name}
-                  </p>
-                  <p>
-                    <strong>ID del Paciente:</strong> {selectedPatient._id}
-                  </p>
-                </>
-              )}
-              <div className="verification-section">
-                <h4>Verificación de Audio y Micrófono</h4>
-                <p>
-                  Por favor, verifica que tu audio y micrófono funcionan
-                  correctamente.
-                </p>
-                <Button
-                  variant="info"
-                  onClick={handleVerifyAudio}
-                  disabled={isSpeakingInstructions || listening}
-                  className="verify-audio-button"
-                >
-                  {isSpeakingInstructions ? (
-                    <FaSpinner className="spin" />
-                  ) : (
-                    "Verificar Audio"
-                  )}
-                </Button>
-                {verificationMessage && (
-                  <Alert
-                    variant={audioVerified ? "success" : "danger"}
-                    className="mt-3"
-                  >
-                    {verificationMessage}
-                  </Alert>
-                )}
-              </div>
-            </Col>
-
-            <Col md={6} className="microphone-test">
-              <h4>Prueba de Audio y Micrófono</h4>
-              <p>
-                Utiliza estos botones para asegurarte de que tu audio y micrófono
-                funcionan correctamente.
-              </p>
-              <div className="button-group">
-                <Button
-                  variant="link"
-                  onClick={() =>
-                    speakInstructions("Esta es una prueba de audio.")
-                  }
-                  disabled={isSpeakingInstructions}
-                  className="instruction-button listen-audio-button"
-                >
-                  {isSpeakingInstructions ? <FaStop /> : <FaPlay />} Escuchar
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleStartListening}
-                  className="instruction-button speak-button"
-                >
-                  <FaMicrophone className="me-2" />
-                  Hablar
-                </Button>
-              </div>
-              {listening && (
-                <div className="listening-indicator">
-                  <Spinner animation="grow" variant="primary" className="mb-2" />
-                  <p>Escuchando...</p>
-                </div>
-              )}
-              {showButtons && (
-                <div className="confirmation-buttons">
-                  <Alert variant="secondary">
-                    <p>¿Es correcta su palabra?</p>
-                    <strong>{transcript}</strong>
-                  </Alert>
-                  <Row>
-                    <Col className="d-flex justify-content-center">
-                      <Button variant="warning" onClick={handleRetry} className="me-2">
-                        Reintentar
-                      </Button>
-                      <Button variant="success" onClick={handleConfirmWord}>
-                        Sí
-                      </Button>
-                    </Col>
-                  </Row>
-                </div>
-              )}
-
-              {isSpeakingInstructions && (
-                <div className="audio-playing">
-                  <Spinner animation="border" variant="info" className="me-2" />
-                  <span>Reproduciendo audio...</span>
-                </div>
-              )}
-              {verificationMessage && !audioVerified && (
-                <div className="additional-help">
-                  <Alert variant="warning" className="mt-3">
-                    <p>No has verificado tu audio correctamente.</p>
-                    <Button variant="link" onClick={() => navigate("/chat")}>
-                      Necesito ayuda adicional
-                    </Button>
-                    <p>O visita la sección de <strong>chat</strong> para conversar con el doctor.</p>
-                  </Alert>
-                </div>
-              )}
-            </Col>
-          </Row>
-
-          <div className="text-center mt-4">
-            <Button
-              variant="success"
-              size="lg"
-              onClick={handleStartTest}
-              disabled={!selectedPatient || !audioVerified}
-              className="start-button"
+        <Row className="justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+          <Col md={12} lg={11} xl={10}>
+            <div 
+              className="p-4 p-md-5 animate__animated animate__fadeIn"
+              style={{
+                background: 'white',
+                borderRadius: '24px',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.08)',
+                border: '1px solid rgba(255,255,255,0.4)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
             >
-              Iniciar Prueba
-            </Button>
-            {verificationMessage && !audioVerified && (
-              <Alert variant="warning" className="mt-3">
-                Por favor, verifica que tu audio y micrófono funcionen
-                correctamente antes de iniciar la prueba.
-              </Alert>
-            )}
-          </div>
-        </div>
+              {/* Círculos decorativos de fondo */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  top: '-80px',
+                  right: '-80px',
+                  width: '250px',
+                  height: '250px',
+                  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)',
+                  borderRadius: '50%',
+                  filter: 'blur(40px)',
+                  zIndex: 0
+                }}
+              />
+              <div 
+                style={{
+                  position: 'absolute',
+                  bottom: '-80px',
+                  left: '-80px',
+                  width: '200px',
+                  height: '200px',
+                  background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(14, 165, 233, 0.15) 100%)',
+                  borderRadius: '50%',
+                  filter: 'blur(40px)',
+                  zIndex: 0
+                }}
+              />
+
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <Row className="gy-5">
+                  {/* Columna Izquierda: Instrucciones y Datos */}
+                  <Col md={6} className="d-flex flex-column justify-content-center pe-md-4">
+                    <h1 className="fw-bold mb-4" style={{ color: '#1e293b', fontSize: '2.2rem', letterSpacing: '-0.5px' }}>
+                      Instrucciones para la Prueba MoCA
+                    </h1>
+                    
+                    <div className="mb-4">
+                      <button
+                        onClick={handleTestDescription}
+                        disabled={isSpeakingInstructions}
+                        style={{
+                          background: '#fef3c7',
+                          color: '#b45309',
+                          border: 'none',
+                          padding: '10px 24px',
+                          borderRadius: '50px',
+                          fontSize: '1rem',
+                          fontWeight: '600',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          cursor: isSpeakingInstructions ? 'not-allowed' : 'pointer',
+                          transition: 'all 0.2s ease',
+                          boxShadow: '0 4px 6px -1px rgba(251, 191, 36, 0.4)'
+                        }}
+                        onMouseOver={(e) => !isSpeakingInstructions && (e.currentTarget.style.transform = 'translateY(-2px)')}
+                        onMouseOut={(e) => !isSpeakingInstructions && (e.currentTarget.style.transform = 'translateY(0)')}
+                      >
+                        {isSpeakingInstructions ? <FaSpinner className="spin" /> : <FaPlay />}
+                        Escuchar Instrucciones
+                      </button>
+                    </div>
+
+                    <p className="text-muted mb-4" style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
+                      Bienvenido a la Evaluación Cognitiva Montreal (MoCA). Esta prueba está dividida en varios módulos que evaluarán distintos aspectos cognitivos. Ciertas actividades requerirán respuestas habladas.
+                    </p>
+
+                    {selectedPatient && (
+                      <div className="p-3 mb-4" style={{ background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                        <div className="d-flex align-items-center">
+                          <div style={{ width: '45px', height: '45px', borderRadius: '50%', background: '#e0e7ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', marginRight: '15px' }}>
+                            {selectedPatient.user?.name?.charAt(0) || 'P'}
+                          </div>
+                          <div>
+                            <p className="mb-0 fw-bold" style={{ fontSize: '1.1rem', color: '#0f172a' }}>{selectedPatient.user?.name}</p>
+                            <p className="mb-0 text-muted" style={{ fontSize: '0.85rem' }}>ID: {selectedPatient._id}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="p-3 mb-3" style={{ background: 'white', border: '1px solid #cbd5e1', borderRadius: '12px' }}>
+                      <Form.Check
+                        type="checkbox"
+                        id="educationCheckbox"
+                        className="custom-checkbox m-0"
+                        label={<span style={{ fontWeight: '500', color: '#475569', fontSize: '0.95rem' }}>¿Tiene 12 años o menos de estudios? (Ej. educación primaria, secundaria, etc.)</span>}
+                        checked={hasLessThan12YearsOfEducation}
+                        onChange={(e) => setHasLessThan12YearsOfEducation(e.target.checked)}
+                      />
+                    </div>
+                  </Col>
+
+                  {/* Columna Derecha: Verificación */}
+                  <Col md={6}>
+                    <div className="h-100 p-4 d-flex flex-column align-items-center text-center" 
+                         style={{ 
+                           background: audioVerified ? '#ecfdf5' : '#f8fafc', 
+                           borderRadius: '20px', 
+                           border: `2px solid ${audioVerified ? '#a7f3d0' : '#e2e8f0'}`,
+                           transition: 'all 0.3s ease'
+                         }}>
+                      
+                      <div className="mb-3" style={{ background: audioVerified ? '#10b981' : '#3b82f6', color: 'white', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '1.5rem', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
+                        <FaMicrophone />
+                      </div>
+
+                      <h3 className="fw-bold mb-3" style={{ color: audioVerified ? '#065f46' : '#1e293b' }}>Prueba de Micrófono</h3>
+                      <p className="text-muted mb-4 px-3" style={{ fontSize: '1rem' }}>
+                        Verifica que tu audio y micrófono funcionan correctamente. Haz clic en <strong>Verificar Audio</strong> (el sistema dirá un color) y luego presiona <strong>Hablar</strong> para repetirlo.
+                      </p>
+
+                      <div className="d-flex flex-column w-100 gap-3 px-md-4 mb-4">
+                        <button
+                          onClick={handleVerifyAudio}
+                          disabled={isSpeakingInstructions || listening}
+                          style={{
+                            background: audioVerified ? 'white' : '#eff6ff',
+                            color: '#2563eb',
+                            border: `1px solid ${audioVerified ? '#a7f3d0' : '#bfdbfe'}`,
+                            padding: '12px',
+                            borderRadius: '12px',
+                            fontWeight: '600',
+                            transition: 'all 0.2s ease'
+                          }}
+                        >
+                          {isSpeakingInstructions ? <FaSpinner className="spin me-2" /> : <FaPlay className="me-2" />}
+                          1. Verificar Audio
+                        </button>
+
+                        <button
+                          onClick={handleStartListening}
+                          disabled={!expectedColor || listening}
+                          style={{
+                            background: audioVerified ? '#10b981' : '#2563eb',
+                            color: 'white',
+                            border: 'none',
+                            padding: '12px',
+                            borderRadius: '12px',
+                            fontWeight: '600',
+                            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+                            transition: 'all 0.2s ease',
+                            opacity: (!expectedColor || listening) ? 0.6 : 1
+                          }}
+                        >
+                          <FaMicrophone className="me-2" />
+                          2. Hablar
+                        </button>
+                      </div>
+
+                      {listening && (
+                        <div className="d-flex align-items-center text-primary mb-3">
+                          <Spinner animation="grow" size="sm" className="me-2" />
+                          <span className="fw-medium">Escuchando... repite el color</span>
+                        </div>
+                      )}
+
+                      {showButtons && (
+                        <div className="mt-2 w-100 p-3" style={{ background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                          <p className="mb-1 text-muted fw-medium" style={{ fontSize: '0.9rem' }}>¿Es correcta tu palabra?</p>
+                          <h4 className="mb-3 text-dark fw-bold">"{transcript}"</h4>
+                          <div className="d-flex justify-content-center gap-2">
+                            <Button variant="outline-warning" onClick={handleRetry} style={{ borderRadius: '50px', padding: '6px 20px', fontWeight: '500' }}>Reintentar</Button>
+                            <Button variant="success" onClick={handleConfirmWord} style={{ borderRadius: '50px', padding: '6px 20px', fontWeight: '500' }}>Confirmar</Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {verificationMessage && (
+                        <div className={`mt-3 px-4 py-2 rounded-pill ${audioVerified ? 'bg-success text-white' : 'bg-danger text-white'}`} style={{ fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                          {audioVerified && <FaCheckCircle />}
+                          {verificationMessage}
+                        </div>
+                      )}
+
+                      {verificationMessage && !audioVerified && (
+                        <div className="mt-3 text-muted" style={{ fontSize: '0.9rem' }}>
+                          ¿Problemas? <span onClick={() => navigate("/chat")} style={{ color: '#2563eb', cursor: 'pointer', fontWeight: '500', textDecoration: 'underline' }}>Pide ayuda en el chat</span>
+                        </div>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+
+                <div className="text-center mt-5 pt-3 border-top position-relative">
+                  <div style={{ position: 'absolute', top: '-1px', left: '50%', transform: 'translateX(-50%)', width: '100px', height: '2px', background: '#3b82f6' }}></div>
+                  <button
+                    onClick={handleStartTest}
+                    disabled={!selectedPatient || !audioVerified}
+                    style={{
+                      background: (!selectedPatient || !audioVerified) ? '#cbd5e1' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      color: 'white',
+                      border: 'none',
+                      padding: '16px 60px',
+                      borderRadius: '50px',
+                      fontSize: '1.25rem',
+                      fontWeight: '700',
+                      letterSpacing: '0.5px',
+                      boxShadow: (!selectedPatient || !audioVerified) ? 'none' : '0 10px 25px -5px rgba(16, 185, 129, 0.4)',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      cursor: (!selectedPatient || !audioVerified) ? 'not-allowed' : 'pointer',
+                      marginTop: '1.5rem'
+                    }}
+                    onMouseOver={(e) => {
+                      if(selectedPatient && audioVerified) {
+                        e.currentTarget.style.transform = 'translateY(-3px)';
+                        e.currentTarget.style.boxShadow = '0 15px 30px -5px rgba(16, 185, 129, 0.5)';
+                      }
+                    }}
+                    onMouseOut={(e) => {
+                      if(selectedPatient && audioVerified) {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 10px 25px -5px rgba(16, 185, 129, 0.4)';
+                      }
+                    }}
+                  >
+                    Iniciar Evaluación
+                  </button>
+                  {(!selectedPatient || !audioVerified) && ( // Muestra mensaje si falta
+                    <p className="mt-3 text-danger fw-medium" style={{ fontSize: '0.95rem' }}>
+                      <FaCheckCircle className="me-1 opacity-50" /> * Debes verificar completamente tu audio antes de continuar.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Col>
+        </Row>
       ) : (
         // Contenido de la prueba
         <>

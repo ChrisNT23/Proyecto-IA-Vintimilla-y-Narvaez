@@ -22,6 +22,23 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
   const firstSequence = ["5", "3", "8", "1", "6"];
   const secondSequence = ["2", "4", "7"];
 
+  const spanishNumbersMap = {
+    "cero": "0", "uno": "1", "dos": "2", "tres": "3", "cuatro": "4",
+    "cinco": "5", "seis": "6", "siete": "7", "ocho": "8", "nueve": "9"
+  };
+
+  const processInput = (text) => {
+    return text
+      .toLowerCase()
+      .replace(/[.,]/g, " ")
+      .split(/[\s,]+/)
+      .map(word => {
+        const cleaned = word.trim();
+        return spanishNumbersMap[cleaned] || cleaned;
+      })
+      .filter(x => /^\d+$/.test(x)); // Only keep digits
+  };
+
   const [stage, setStage] = useState(STAGE_FIRST_SEQUENCE_READ);
   const [responses, setResponses] = useState({ first: [], second: [] });
   const [listening, setListening] = useState(false);
@@ -56,7 +73,12 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
         setShowButtons(true);
       };
 
-      recognition.onerror = () => {
+      recognition.onerror = (event) => {
+        const errorType = event.error;
+        if (errorType === 'no-speech' || errorType === 'aborted' || errorType === 'audio-capture') {
+          setListening(false);
+          return;
+        }
         setListening(false);
         alert("Error al reconocer la voz. Intente de nuevo.");
       };
@@ -147,7 +169,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
       setIsSpeakingLocal(false);
     } else {
       const text =
-        "Módulo de atención, Actividad 1. Escuche una serie de nâ”œâ•‘meros y repâ”œÂ¡talos.";
+        "Módulo de atención, Actividad 1. Escuche una serie de números y repítalos.";
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "es-ES";
       utterance.onend = () => setIsSpeakingLocal(false);
@@ -158,7 +180,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
 
   const handleStartRecall = () => {
     if (!recognitionSupported) {
-      alert("El reconocimiento de voz no está­ disponible en su navegador.");
+      alert("El reconocimiento de voz no está disponible en su navegador.");
       return;
     }
     setListening(true);
@@ -182,17 +204,18 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
   };
 
   const handleConfirmResponse = () => {
-    const number = transcript.trim();
-    if (number) {
-      setResponses((prev) => {
-        const updated = { ...prev };
-        if (stage === STAGE_FIRST_SEQUENCE_RECALL) {
-          updated.first.push(number);
-        } else if (stage === STAGE_SECOND_SEQUENCE_RECALL) {
-          updated.second.push(number);
-        }
-        return updated;
-      });
+    if (transcript) {
+      const digits = processInput(transcript);
+      if (digits.length > 0) {
+        setResponses((prev) => {
+          if (stage === STAGE_FIRST_SEQUENCE_RECALL) {
+            return { ...prev, first: [...prev.first, ...digits] };
+          } else if (stage === STAGE_SECOND_SEQUENCE_RECALL) {
+            return { ...prev, second: [...prev.second, ...digits] };
+          }
+          return prev;
+        });
+      }
     }
     setTranscript("");
     setShowButtons(false);
@@ -200,20 +223,16 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
 
   const handleAddManualSequence = () => {
     if (!manualInputValue.trim()) return;
-    const splitted = manualInputValue
-      .split(/[\s,]+/)
-      .map((x) => x.trim())
-      .filter(Boolean);
+    const digits = processInput(manualInputValue);
 
-    if (splitted.length > 0) {
+    if (digits.length > 0) {
       setResponses((prev) => {
-        const updated = { ...prev };
         if (stage === STAGE_FIRST_SEQUENCE_RECALL) {
-          updated.first.push(...splitted);
+          return { ...prev, first: [...prev.first, ...digits] };
         } else if (stage === STAGE_SECOND_SEQUENCE_RECALL) {
-          updated.second.push(...splitted);
+          return { ...prev, second: [...prev.second, ...digits] };
         }
-        return updated;
+        return prev;
       });
     }
     setManualInputValue("");
@@ -231,20 +250,29 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
       setStage(STAGE_SECOND_SEQUENCE_READ);
     } else if (stage === STAGE_SECOND_SEQUENCE_RECALL) {
       setStage(STAGE_FINAL);
-      setMessage("Ha completado la Actividad 1 de Atenciâ”œâ”‚n.");
+      setMessage("Ha completado la Actividad 1 de Atención.");
     }
   };
 
   const handleNext = () => {
+    if (stage === STAGE_FIRST_SEQUENCE_RECALL) {
+      setStage(STAGE_SECOND_SEQUENCE_READ);
+      return;
+    }
+
     const { first, second } = responses;
     let score = 0;
-    if (arraysEqual(first, firstSequence)) {
-      score += 1;
-    }
     const expectedSecond = [...secondSequence].reverse();
-    if (arraysEqual(second, expectedSecond)) {
-      score += 1;
+    
+    // Si cualquiera de las dos secuencias es correcta, suma 1 punto (según config sobre 16)
+    if (arraysEqual(first, firstSequence) || arraysEqual(second, expectedSecond)) {
+      score = 1;
     }
+
+    console.log("Atencion - Actividad 1 (Digitos) Score calculated:", score);
+    console.log(" - First Sequence Expected:", firstSequence, " - Got:", first, " - Match:", arraysEqual(first, firstSequence));
+    console.log(" - Second Sequence Expected:", expectedSecond, " - Got:", second, " - Match:", arraysEqual(second, expectedSecond));
+    
     const standardResults = [buildMocaResult("Digitos", score)];
     onComplete(score, { ...responses, standardResults });
   };
@@ -345,78 +373,81 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
               )}
 
               {/* Entrada manual */}
-              <div className="mem-recall-input-row">
-                <div className="mem-recall-input-wrap">
-                  <span className="mem-recall-input-icon">✏️</span>
-                  <input
-                    type="text"
-                    className="mem-recall-input"
-                    placeholder="Escriba los números separados por espacios..."
-                    value={manualInputValue}
-                    onChange={(e) => setManualInputValue(e.target.value)}
-                    onKeyPress={handleManualKeyPress}
-                  />
-                </div>
-                <button className="mem-recall-add-btn" onClick={handleAddManualSequence}>
-                  <FaPlus className="me-1" size={13} /> Agregar
-                </button>
-              </div>
+              <Form
+                onSubmit={(e) => e.preventDefault()}
+                className="mt-3 d-flex flex-column align-items-center"
+              >
+                <Form.Control
+                  type="text"
+                  placeholder="Escriba los números separados por espacios o comas"
+                  value={manualInputValue}
+                  onChange={(e) => setManualInputValue(e.target.value)}
+                  onKeyPress={handleManualKeyPress}
+                  style={{ maxWidth: "350px" }}
+                />
+                <Button
+                  className="activity-button mt-2"
+                  variant="success"
+                  onClick={handleAddManualSequence}
+                >
+                  Agregar
+                </Button>
+              </Form>
 
-              {/* Números recordados */}
-              <div className="mem-recall-words-section">
-                <p className="mem-recall-words-label">NÚMEROS REGISTRADOS</p>
-                <div className="mem-recall-chips">
+              <div className="mt-3">
+                <p className="fw-bold mb-2">Números recordados:</p>
+                <div className="d-flex flex-wrap justify-content-center gap-2">
                   {(stage === STAGE_FIRST_SEQUENCE_RECALL
                     ? responses.first
                     : responses.second
                   ).map((number, index) => (
-                    <span key={index} className="mem-recall-chip">
+                    <span key={index} className="identificacion-badge" style={{
+                      display: 'inline-block',
+                      padding: '8px 16px',
+                      borderRadius: '50%',
+                      backgroundColor: '#eff6ff',
+                      color: '#2563eb',
+                      fontWeight: 'bold',
+                      fontSize: '1.2rem',
+                      border: '1px solid #dbeafe',
+                      minWidth: '45px',
+                      height: '45px',
+                      lineHeight: '28px'
+                    }}>
                       {number}
                     </span>
                   ))}
-                  {(stage === STAGE_FIRST_SEQUENCE_RECALL ? responses.first.length : responses.second.length) === 0 && (
-                    <span className="mem-recall-chip-placeholder">Esperando números...</span>
-                  )}
                 </div>
               </div>
 
-              <button className="mem-recall-no-more-btn mt-3" onClick={handleNoMoreWords}>
-                ❓ No recuerdo más
-              </button>
+              <Button
+                className="activity-button mt-3 mx-auto d-block"
+                variant="secondary"
+                onClick={handleNoMoreWords}
+              >
+                No recuerdo más
+              </Button>
             </div>
           </div>
         )}
-      {/* Pantalla Final */}
-      {stage === STAGE_FINAL && (
-        <div className="mem-final-wrapper">
-          <div className="mem-final-card">
-            <div className="mem-final-icon">✅</div>
-            <h2 className="mem-final-title">¡Actividad Completada!</h2>
-            <p className="mem-final-message">{message}</p>
-          </div>
-        </div>
-      )}
 
       {/* Unified Navigation Footer */}
-      <div className="cubo-footer mt-5" style={{ width: '100%', maxWidth: '700px' }}>
-        <button
-          className="cubo-undo-button"
-          onClick={onPrevious}
-          disabled={isFirstModule}
-          style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-          Regresar
-        </button>
+        <div className="cubo-footer mt-4">
+          <button
+            className="cubo-undo-button"
+            onClick={onPrevious}
+            disabled={isFirstModule}
+            style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Regresar
+          </button>
 
-        <button
-          className="cubo-continue-button"
-          onClick={handleNext}
-        >
-          Siguiente Pregunta
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </button>
-      </div>
+          <button className="cubo-continue-button" onClick={handleNext}>
+            Siguiente Pregunta
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
     </div>
   );
 };
@@ -427,6 +458,7 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
    ============================================== */
 const Atencion = ({ onComplete, onPrevious, isFirstModule }) => {
   const handleActivity1Complete = (score, data) => {
+    console.log("Atencion Module - Activity 1 Complete. Score:", score);
     onComplete(score, {
       activity1: score,
       standardResults: data.standardResults,
@@ -445,4 +477,3 @@ const Atencion = ({ onComplete, onPrevious, isFirstModule }) => {
 };
 
 export default Atencion;
-

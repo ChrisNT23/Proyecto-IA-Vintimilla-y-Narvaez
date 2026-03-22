@@ -1,0 +1,510 @@
+/* HistorialMocaScreen.css */
+
+/* ─── Container ──────────────────────────────────────── */
+.historial-container {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 0 0 3rem 0;
+}
+
+/* ─── Header ─────────────────────────────────────────── */
+.historial-header {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+  padding: 2.5rem 2rem 2rem;
+  color: white;
+  margin-bottom: 2rem;
+}
+.historial-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.historial-back-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s;
+}
+.historial-back-btn:hover { background: rgba(255,255,255,0.25); }
+.historial-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+.historial-subtitle {
+  font-size: 1rem;
+  opacity: 0.8;
+  margin: 0.25rem 0 0;
+}
+
+/* ─── Body ───────────────────────────────────────────── */
+.historial-body {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ─── Search ─────────────────────────────────────────── */
+.historial-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.historial-search-bar input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 1rem;
+  color: #334155;
+  background: transparent;
+}
+.historial-search-icon { color: #94a3b8; font-size: 1rem; }
+
+/* ─── Patient Grid ───────────────────────────────────── */
+.historial-patient-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+/* ─── Patient Card ───────────────────────────────────── */
+.hm-patient-card {
+  background: white;
+  border-radius: 18px;
+  padding: 1.5rem;
+  border: 1px solid #e8f0fe;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.hm-patient-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(37,99,235,0.12);
+}
+.hm-patient-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.hm-patient-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e7ff;
+}
+.hm-patient-info { flex: 1; margin-left: 0.75rem; }
+.hm-patient-name { font-weight: 700; font-size: 1rem; color: #1e293b; margin: 0; }
+.hm-patient-id { font-size: 0.8rem; color: #64748b; }
+
+/* Risk Badge */
+.hm-risk-badge {
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.hm-risk-badge.bajo    { background: #dcfce7; color: #166534; }
+.hm-risk-badge.moderado { background: #fef9c3; color: #854d0e; }
+.hm-risk-badge.alto    { background: #fee2e2; color: #991b1b; }
+.hm-risk-badge.pendiente { background: #f1f5f9; color: #64748b; }
+
+/* Stats Row */
+.hm-patient-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.hm-stat { text-align: center; }
+.hm-stat-label { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+.hm-stat-value { font-size: 1.1rem; font-weight: 700; color: #1e293b; }
+
+.hm-view-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s;
+}
+.hm-view-btn:hover { opacity: 0.88; }
+
+/* ─── Eval Cards Grid ────────────────────────────────── */
+.hm-eval-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ─── Eval Card ──────────────────────────────────────── */
+.hm-eval-card {
+  background: white;
+  border-radius: 18px;
+  padding: 1.5rem;
+  border: 1px solid #e8f0fe;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.hm-eval-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(37,99,235,0.12);
+}
+.hm-eval-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hm-eval-number {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #2563eb;
+  background: #eff6ff;
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.hm-eval-date {
+  font-size: 0.82rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.hm-eval-score-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.hm-eval-score-big {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1;
+}
+.hm-eval-score-max {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+.hm-eval-score-label { font-size: 0.78rem; color: #94a3b8; }
+
+/* Score bar */
+.hm-score-bar { height: 6px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
+.hm-score-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+.hm-score-fill.bajo    { background: linear-gradient(90deg, #4ade80, #16a34a); }
+.hm-score-fill.moderado { background: linear-gradient(90deg, #facc15, #d97706); }
+.hm-score-fill.alto    { background: linear-gradient(90deg, #f87171, #dc2626); }
+
+.hm-eval-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+.hm-eval-view-btn {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 1.1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: opacity 0.2s;
+}
+.hm-eval-view-btn:hover { opacity: 0.88; }
+
+/* ─── Evolution Mini Chart ───────────────────────────── */
+.hm-evolution-section {
+  background: white;
+  border-radius: 18px;
+  padding: 1.5rem;
+  border: 1px solid #e8f0fe;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.06);
+  margin-bottom: 1.5rem;
+}
+.hm-evolution-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ─── Patient Header (Vista B) ───────────────────────── */
+.hm-patient-header {
+  background: white;
+  border-radius: 18px;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #e8f0fe;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.06);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.hm-patient-header-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e7ff;
+}
+.hm-patient-header-name { font-size: 1.2rem; font-weight: 700; color: #1e293b; margin: 0; }
+.hm-patient-header-meta { font-size: 0.85rem; color: #64748b; margin: 0; }
+.hm-section-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+}
+
+/* ─── Empty State ────────────────────────────────────── */
+.hm-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #94a3b8;
+}
+.hm-empty h3 { color: #475569; margin-bottom: 0.5rem; }
+
+/* ─── Spinner ────────────────────────────────────────── */
+.hm-spinner-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+/* ─── Resultados button (alongside view btn) ─────────── */
+.hm-results-btn {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background 0.2s, color 0.2s;
+}
+.hm-results-btn:hover { background: #e2e8f0; color: #1e293b; }
+
+/* ─── Eval footer fix (three items) ─────────────────── */
+.hm-eval-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+/* ─── Modal Backdrop ─────────────────────────────────── */
+.hm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ─── Modal Container ────────────────────────────────── */
+.hm-modal {
+  background: white;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.hm-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.5rem 1.5rem 0;
+  gap: 1rem;
+}
+.hm-modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0.25rem 0 0;
+}
+.hm-modal-subtitle { font-size: 0.82rem; color: #64748b; margin: 0.2rem 0 0; }
+.hm-modal-close {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 1rem;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.hm-modal-close:hover { background: #e2e8f0; }
+
+.hm-modal-score-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  background: #f8fafc;
+  margin: 1rem 1.5rem;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
+.hm-modal-score-main { display: flex; align-items: baseline; gap: 0.4rem; }
+
+.hm-modal-section { padding: 0 1.5rem 1.5rem; }
+.hm-modal-section-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.75rem;
+}
+
+/* ─── Accordion / Dropdowns (Results Modal) ─────────── */
+.hm-accordion { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.hm-acc-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.hm-acc-item.active { 
+  border-color: #2563eb; 
+  background: white; 
+  box-shadow: 0 4px 12px rgba(37,99,235,0.08); 
+}
+
+.hm-acc-header {
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+.hm-acc-header:hover { background: #f1f5f9; }
+.hm-acc-item.active .hm-acc-header:hover { background: white; }
+
+.hm-acc-header-left { display: flex; align-items: baseline; gap: 0.75rem; }
+.hm-acc-mod-name { font-weight: 700; color: #1e293b; font-size: 0.95rem; }
+.hm-acc-mod-score { 
+  font-weight: 700; 
+  color: #2563eb; 
+  font-size: 0.8rem; 
+  background: #eff6ff;
+  padding: 0.1rem 0.5rem;
+  border-radius: 6px;
+}
+
+.hm-acc-header-right { display: flex; align-items: center; gap: 1rem; }
+.hm-acc-mini-bar { width: 50px; height: 5px; background: #e2e8f0; border-radius: 99px; overflow: hidden; display: none; }
+@media (min-width: 400px) { .hm-acc-mini-bar { display: block; } }
+.hm-acc-mini-fill { height: 100%; background: #2563eb; border-radius: 99px; }
+
+.hm-acc-chevron { 
+  color: #94a3b8; 
+  transition: transform 0.3s ease; 
+  transform: rotate(180deg); /* FaArrowLeft facing right (default state) */
+}
+.hm-acc-item.active .hm-acc-chevron { 
+  transform: rotate(270deg); /* Points down */
+  color: #2563eb; 
+}
+
+.hm-acc-body { 
+  padding: 0.5rem 1.25rem 1.25rem; 
+  border-top: 1px solid #f1f5f9; 
+  background: #fcfdfe; 
+  animation: slideDown 0.2s ease-out;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Activity rows inside accordion */
+.hm-activity-rows { display: flex; flex-direction: column; gap: 0.4rem; }
+.hm-activity-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.75rem;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #f1f5f9;
+}
+.hm-activity-icon { flex-shrink: 0; }
+.hm-activity-icon.pass { color: #16a34a; }
+.hm-activity-icon.fail { color: #dc2626; }
+.hm-activity-name { flex: 1; font-size: 0.87rem; color: #475569; font-weight: 500; }
+.hm-activity-score {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #64748b;
+  white-space: nowrap;
+}
+
