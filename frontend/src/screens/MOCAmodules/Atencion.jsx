@@ -1,8 +1,8 @@
-﻿// src/screens/MOCAmodules/Atencion.jsx
+// src/screens/MOCAmodules/Atencion.jsx
 
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Row, Col, Form, Alert, Spinner } from "react-bootstrap";
-import { FaPlay, FaStop, FaMicrophone } from "react-icons/fa";
+import { FaPlay, FaStop, FaMicrophone, FaPlus, FaTimes, FaArrowRight } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { buildMocaResult } from './helpers/mocaResultBuilder';
 import '../../assets/styles/mocamodules.css';
@@ -250,143 +250,155 @@ const NumberSequenceActivity = ({ onComplete, onPrevious, isFirstModule }) => {
   };
 
   return (
-    <div className="module-container">
-      <div className="d-flex align-items-center mb-2">
-        <h5 className="mb-0">Actividad 1: Secuencia Numérica</h5>
-        <Button
-          variant="link"
-          onClick={speakInstructions}
-          disabled={isSpeakingLocal}
-          className="listen-button ms-3 text-decoration-none"
-        >
-          <FaPlay /> Escuchar<br />Instrucciones
-        </Button>
+    <div className="w-100 d-flex flex-column align-items-center">
+      {/* Breadcrumb Section */}
+      <div className="cubo-section-breadcrumb text-center">
+        SECCIÓN 4: ATENCIÓN
+      </div>
+
+      {/* Header Section */}
+      <div className="cubo-header text-center">
+        <h1 className="cubo-title">
+          Atención <span className="text-primary">(Secuencia Numérica)</span>
+        </h1>
+        <p className="cubo-subtitle">Módulo de Atención - Actividad 1</p>
       </div>
 
       {/* Mostrando lectura de secuencia */}
       {(stage === STAGE_FIRST_SEQUENCE_READ ||
         stage === STAGE_SECOND_SEQUENCE_READ) && (
-          <div className="text-center mt-3">
-            <Spinner animation="grow" variant="primary" />
-            <p className="mt-3">
-              {stage === STAGE_FIRST_SEQUENCE_READ
-                ? "Le leerá una serie de números, repítalos en el mismo orden."
-                : "Le leerá otra serie de números, repítalos en orden inverso."}
-            </p>
+          <div className="mem-reading-wrapper">
+            <div className="mem-reading-card">
+              <div className="mem-reading-spinner-wrap">
+                <Spinner animation="border" style={{ color: "#2563eb", width: "3rem", height: "3rem" }} />
+              </div>
+              <h3 className="mem-reading-title">
+                {stage === STAGE_FIRST_SEQUENCE_READ ? "Escuche con atención" : "Escuche nuevamente"}
+              </h3>
+              <p className="mem-reading-desc">
+                {stage === STAGE_FIRST_SEQUENCE_READ
+                  ? "Le leeré una serie de números, repítalos en el mismo orden."
+                  : "Le leerá otra serie de números, repítalos en orden inverso."}
+              </p>
+              <div className="mem-reading-waves">
+                {[4, 8, 6, 10, 7, 5, 9, 6, 4, 8].map((h, i) => (
+                  <div key={i} className="mem-reading-wave-bar" style={{ animationDelay: `${i * 0.1}s`, height: `${h * 4}px` }} />
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
       {/* Usuario repite secuencia */}
       {(stage === STAGE_FIRST_SEQUENCE_RECALL ||
         stage === STAGE_SECOND_SEQUENCE_RECALL) && !message && (
-          <div className="text-center mt-3">
-            <p>
-              {stage === STAGE_FIRST_SEQUENCE_RECALL
-                ? "Repita los números en el mismo orden."
-                : "Repita los números en orden inverso."}
-            </p>
-            {listening ? (
-              <div>
-                <Spinner animation="grow" variant="primary" />
-                <p className="mt-2">Escuchando...</p>
-                <Button
-                  className="activity-button"
-                  variant="danger"
-                  onClick={handleStopListening}
-                >
-                  Detener
-                </Button>
-              </div>
-            ) : (
-              <Button
-                className="activity-button d-flex align-items-center justify-content-center mx-auto mb-3"
-                onClick={handleStartRecall}
-                disabled={!recognitionSupported}
-              >
-                <FaMicrophone className="me-2" />
-                Hablar
-              </Button>
-            )}
+          <div className="mem-recall-wrapper">
+            <div className="mem-recall-card">
+              <h2 className="mem-recall-title">
+                {stage === STAGE_FIRST_SEQUENCE_RECALL
+                  ? "Repita los números en el mismo orden"
+                  : "Repita los números en orden inverso"}
+              </h2>
+              <p className="mem-recall-subtitle">Puede usar el micrófono o escribir los números manualmente.</p>
 
-            {showButtons && (
-              <div className="mt-3">
-                <Alert variant="secondary">
-                  <p>¿Es correcta su respuesta?</p>
-                  <strong>{transcript}</strong>
-                </Alert>
-                <Row>
-                  <Col className="d-flex justify-content-start">
-                    <Button
-                      className="activity-button me-3"
-                      variant="warning"
-                      onClick={() => {
-                        setTranscript("");
-                        setShowButtons(false);
-                        handleStartRecall();
-                      }}
-                    >
+              {/* Micrófono */}
+              {!showButtons && (
+                <div className="mem-recall-mic-section">
+                  {listening ? (
+                    <>
+                      <button className="mem-recall-mic-btn mem-recall-mic-active" onClick={handleStopListening}>
+                        <FaMicrophone size={28} color="#fff" />
+                      </button>
+                      <p className="mem-recall-mic-label">ESCUCHANDO...</p>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        className="mem-recall-mic-btn"
+                        onClick={handleStartRecall}
+                        disabled={!recognitionSupported}
+                      >
+                        <FaMicrophone size={28} color="#fff" />
+                      </button>
+                      <p className="mem-recall-mic-label">TOCAR PARA HABLAR</p>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* Confirmación voz */}
+              {showButtons && (
+                <div className="mem-recall-confirm">
+                  <div className="mem-recall-confirm-bubble">
+                    <p className="mem-recall-confirm-q">¿Es correcta su respuesta?</p>
+                    <p className="mem-recall-confirm-word">"{transcript}"</p>
+                  </div>
+                  <div className="mem-recall-confirm-actions">
+                    <button className="mem-recall-retry-btn" onClick={() => { setTranscript(""); setShowButtons(false); handleStartRecall(); }}>
                       Reintentar
-                    </Button>
-                  </Col>
-                  <Col className="d-flex justify-content-end">
-                    <Button
-                      className="activity-button"
-                      variant="success"
-                      onClick={handleConfirmResponse}
-                    >
-                      Sí
-                    </Button>
-                  </Col>
-                </Row>
+                    </button>
+                    <button className="mem-recall-yes-btn" onClick={handleConfirmResponse}>
+                      Sí, agregar
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Entrada manual */}
+              <div className="mem-recall-input-row">
+                <div className="mem-recall-input-wrap">
+                  <span className="mem-recall-input-icon">✏️</span>
+                  <input
+                    type="text"
+                    className="mem-recall-input"
+                    placeholder="Escriba los números separados por espacios..."
+                    value={manualInputValue}
+                    onChange={(e) => setManualInputValue(e.target.value)}
+                    onKeyPress={handleManualKeyPress}
+                  />
+                </div>
+                <button className="mem-recall-add-btn" onClick={handleAddManualSequence}>
+                  <FaPlus className="me-1" size={13} /> Agregar
+                </button>
               </div>
-            )}
 
-            {/* Entrada manual */}
-            <Form
-              onSubmit={(e) => e.preventDefault()}
-              className="mt-3 d-flex flex-column align-items-center"
-            >
-              <Form.Control
-                type="text"
-                placeholder="Escriba los números separados por espacios o comas"
-                value={manualInputValue}
-                onChange={(e) => setManualInputValue(e.target.value)}
-                onKeyPress={handleManualKeyPress}
-                style={{ maxWidth: "350px" }}
-              />
-              <Button
-                className="activity-button mt-2"
-                variant="success"
-                onClick={handleAddManualSequence}
-              >
-                Agregar
-              </Button>
-            </Form>
+              {/* Números recordados */}
+              <div className="mem-recall-words-section">
+                <p className="mem-recall-words-label">NÚMEROS REGISTRADOS</p>
+                <div className="mem-recall-chips">
+                  {(stage === STAGE_FIRST_SEQUENCE_RECALL
+                    ? responses.first
+                    : responses.second
+                  ).map((number, index) => (
+                    <span key={index} className="mem-recall-chip">
+                      {number}
+                    </span>
+                  ))}
+                  {(stage === STAGE_FIRST_SEQUENCE_RECALL ? responses.first.length : responses.second.length) === 0 && (
+                    <span className="mem-recall-chip-placeholder">Esperando números...</span>
+                  )}
+                </div>
+              </div>
 
-            <div className="mt-3">
-              <p>Números recordados:</p>
-              <ul>
-                {(stage === STAGE_FIRST_SEQUENCE_RECALL
-                  ? responses.first
-                  : responses.second
-                ).map((number, index) => (
-                  <li key={index}>{number}</li>
-                ))}
-              </ul>
+              <button className="mem-recall-no-more-btn mt-3" onClick={handleNoMoreWords}>
+                ❓ No recuerdo más
+              </button>
             </div>
-
-            <Button
-              className="activity-button mt-3 mx-auto d-block"
-              variant="secondary"
-              onClick={handleNoMoreWords}
-            >
-              No recuerdo más
-            </Button>
           </div>
         )}
+      {/* Pantalla Final */}
+      {stage === STAGE_FINAL && (
+        <div className="mem-final-wrapper">
+          <div className="mem-final-card">
+            <div className="mem-final-icon">✅</div>
+            <h2 className="mem-final-title">¡Actividad Completada!</h2>
+            <p className="mem-final-message">{message}</p>
+          </div>
+        </div>
+      )}
 
       {/* Unified Navigation Footer */}
-      <div className="cubo-footer mt-5">
+      <div className="cubo-footer mt-5" style={{ width: '100%', maxWidth: '700px' }}>
         <button
           className="cubo-undo-button"
           onClick={onPrevious}
