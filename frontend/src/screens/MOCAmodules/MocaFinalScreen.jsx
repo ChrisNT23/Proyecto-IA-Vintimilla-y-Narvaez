@@ -213,14 +213,12 @@ const MocaFinalScreen = () => {
 
   // Función para interpretar el puntaje total
   const interpretTotalScore = (score) => {
-    if (score >= 26) {
-      return { text: "Normal", variant: "success" };
-    } else if (score >= 18 && score <= 25) {
-      return { text: "Deterioro Cognitivo Leve", variant: "warning" };
-    } else if (score >= 10 && score <= 17) {
-      return { text: "Deterioro Cognitivo Moderado", variant: "danger" };
-    } else if (score < 10) {
-      return { text: "Deterioro Cognitivo Severo", variant: "dark" };
+    if (score >= 13) {
+      return { text: "Leve", variant: "success" };
+    } else if (score >= 7 && score <= 12) {
+      return { text: "Moderado", variant: "warning" };
+    } else if (score < 7) {
+      return { text: "Grave", variant: "danger" };
     } else {
       return { text: "Puntaje Indeterminado", variant: "secondary" };
     }

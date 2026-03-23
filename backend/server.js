@@ -58,19 +58,7 @@ app.post('/api/evaluate-cube', async (req, res) => {
       return res.status(400).json({ error: 'No se proporcionó la imagen.' });
     }
 
-    // 1. Guardar la imagen en disco
-    const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
-    const filename = `cube-${Date.now()}.png`;
-    const uploadPath = path.join(__dirname, 'uploads', 'moca_drawings');
-    
-    // Asegurar que el directorio existe
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-
-    const filepath = path.join(uploadPath, filename);
-    fs.writeFileSync(filepath, base64Data, 'base64');
-    const imageUrl = `/uploads/moca_drawings/${filename}`;
+    const imageUrl = ""; // No longer saving to local disk
 
     // 2. Enviar la imagen al servidor Flask
     const flaskResponse = await axios.post('http://localhost:5001/api/evaluate-cube', { image }, {
@@ -84,7 +72,8 @@ app.post('/api/evaluate-cube', async (req, res) => {
     if (flaskResponse.data && typeof flaskResponse.data.score === 'number') {
       return res.json({ 
         score: flaskResponse.data.score,
-        imageUrl: imageUrl 
+        imageUrl: imageUrl,
+        imageData: image
       });
     } else {
       return res.status(500).json({ error: 'Respuesta inesperada del servidor de IA.' });
@@ -155,16 +144,7 @@ app.post('/api/evaluate-clock', async (req, res) => {
 
     // 1. Guardar la imagen en disco
     const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
-    const filename = `clock-${Date.now()}.png`;
-    const uploadPath = path.join(__dirname, 'uploads', 'moca_drawings');
-    
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-
-    const filepath = path.join(uploadPath, filename);
-    fs.writeFileSync(filepath, base64Data, 'base64');
-    const imageUrl = `/uploads/moca_drawings/${filename}`;
+    const imageUrl = ""; // No longer saving to local disk
 
     // 2. Enviar al servidor Flask
     const flaskResponse = await axios.post('http://localhost:5001/api/evaluate-clock', { image }, {
@@ -176,7 +156,8 @@ app.post('/api/evaluate-clock', async (req, res) => {
       res.json({ 
         score: flaskResponse.data.score,
         detail: flaskResponse.data.detail,
-        imageUrl: imageUrl 
+        imageUrl: imageUrl,
+        imageData: image
       });
     } else {
       res.status(500).json({ error: 'Respuesta inesperada del servidor de IA.' });

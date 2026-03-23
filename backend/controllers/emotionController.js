@@ -15,11 +15,6 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Directorio para guardar las imágenes de emociones
-const EMOTIONS_DIR = path.join(__dirname, "..", "emotion_captures");
-if (!fs.existsSync(EMOTIONS_DIR)) {
-  fs.mkdirSync(EMOTIONS_DIR, { recursive: true });
-}
 
 // @desc    Capturar foto con emoción
 // @route   POST /api/emotions/capture
@@ -42,14 +37,7 @@ const captureEmotion = asyncHandler(async (req, res) => {
     throw new Error("Faltan datos requeridos");
   }
 
-  // --- 1. Guardar imagen en disco ---
-  const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
-  const imageBuffer = Buffer.from(base64Data, "base64");
-  const imageFilename = `${patientId}_${Date.now()}.jpg`;
-  const imagePath = path.join(EMOTIONS_DIR, imageFilename);
-  fs.writeFileSync(imagePath, imageBuffer);
-
-  console.log(`✅ Imagen guardada en disco: ${imageFilename}`);
+  // --- 1. Preparar datos de la captura (Ya no se guarda en disco) ---
 
   // --- 2. Preparar datos de la captura ---
   const confidenceNum = parseFloat(confidence);
@@ -74,7 +62,8 @@ const captureEmotion = asyncHandler(async (req, res) => {
     captureType,
     currentModule: currentModule || null,
     moduleIndex: moduleIndex !== undefined && moduleIndex !== null ? Number(moduleIndex) : null,
-    imageUrl: `/emotion_captures/${imageFilename}`,
+    imageUrl: "",
+    imageData: image,
     emotionProbabilities: {},
     cnnFeatures: [],
     frameIndex,
@@ -127,7 +116,7 @@ const captureEmotion = asyncHandler(async (req, res) => {
 
   const lastCapture = emotionData.captures[emotionData.captures.length - 1];
 
-  console.log(`✅ Emoción guardada en BD: ${emotionLabel} | imageUrl: /emotion_captures/${imageFilename}`);
+  console.log(`✅ Emoción guardada en BD: ${emotionLabel}`);
 
   res.status(201).json({
     success: true,
@@ -137,7 +126,7 @@ const captureEmotion = asyncHandler(async (req, res) => {
     emotion,
     confidence: confidenceNum,
     emotionLabel,
-    imageUrl: `/emotion_captures/${imageFilename}`,
+    imageUrl: "",
   });
 });
 
@@ -376,15 +365,10 @@ const processEmotionSequence = asyncHandler(async (req, res) => {
     const image = images[i];
     const timestamp = timestamps ? new Date(timestamps[i]) : new Date();
 
-    // Guardar imagen
-    const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
-    const imageBuffer = Buffer.from(base64Data, "base64");
-    const imageFilename = `${patientId}_${Date.now()}_${i}.jpg`;
-    const imagePath = path.join(EMOTIONS_DIR, imageFilename);
-    fs.writeFileSync(imagePath, imageBuffer);
+    // --- 1. Preparar captura (Ya no se guarda en disco) ---
 
-    // Procesar con CNN
-    const cnnResult = await processImageWithCNN(imagePath, image);
+    // Procesar con CNN usando Base64 directamente
+    const cnnResult = await processImageWithCNN(null, image);
     const cnnFeatures = await extractCNNFeatures(image);
 
     const captureData = {
@@ -393,7 +377,8 @@ const processEmotionSequence = asyncHandler(async (req, res) => {
       timestamp,
       captureType: 'during_test',
       currentModule: currentModule || null,
-      imageUrl: `/emotion_captures/${imageFilename}`,
+      imageUrl: "",
+      imageData: image,
       emotionProbabilities: cnnResult?.emotionProbabilities || new Map(),
       cnnFeatures: cnnFeatures,
       frameIndex: i,

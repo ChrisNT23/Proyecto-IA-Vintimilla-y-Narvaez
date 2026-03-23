@@ -37,7 +37,11 @@ const emotionCaptureSchema = mongoose.Schema(
     },
     imageUrl: {
       type: String,
-      required: true,
+      required: false,
+    },
+    imageData: {
+      type: String, // Store Base64 string directly
+      default: null,
     },
     // Nuevos campos para características extraídas
     emotionProbabilities: {

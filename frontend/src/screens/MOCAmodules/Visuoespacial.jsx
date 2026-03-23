@@ -18,6 +18,8 @@ const Visuoespacial = ({ onComplete, onPrevious, isFirstModule, patientId }) => 
   const [clockScore, setClockScore] = useState(null);
   const [cubeImageUrl, setCubeImageUrl] = useState(null);
   const [clockImageUrl, setClockImageUrl] = useState(null);
+  const [cubeImageData, setCubeImageData] = useState(null);
+  const [clockImageData, setClockImageData] = useState(null);
 
   // TTS
   const [ttsSupported, setTtsSupported] = useState(true);
@@ -65,6 +67,8 @@ const Visuoespacial = ({ onComplete, onPrevious, isFirstModule, patientId }) => 
         clock: clockScore,
         cubeImageUrl,
         clockImageUrl,
+        cubeImageData,
+        clockImageData,
         standardResults
       });
     }
@@ -104,6 +108,7 @@ const Visuoespacial = ({ onComplete, onPrevious, isFirstModule, patientId }) => 
           cubeScore={cubeScore}
           setCubeScore={setCubeScore}
           setCubeImageUrl={setCubeImageUrl}
+          setCubeImageData={setCubeImageData}
           handleNext={handleNext}
           handlePrevious={handlePrevious}
           isSpeaking={isSpeaking}
@@ -117,6 +122,7 @@ const Visuoespacial = ({ onComplete, onPrevious, isFirstModule, patientId }) => 
           clockScore={clockScore}
           setClockScore={setClockScore}
           setClockImageUrl={setClockImageUrl}
+          setClockImageData={setClockImageData}
           handleNext={handleNext}
           handlePrevious={handlePrevious}
           isSpeaking={isSpeaking}
@@ -380,152 +386,152 @@ const AlternanciaConceptualActivity = ({
       >
 
 
-      {/* Canvas Container */}
-      <div ref={containerRef} className="p-4 mb-4 position-relative d-flex flex-column align-items-center justify-content-center" style={{ backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 2px 15px rgba(0,0,0,0.03)', minHeight: '600px', width: '100%', maxWidth: '800px' }}>
-        <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundImage: 'radial-gradient(#E2E8F0 2px, transparent 2px)',
-          backgroundSize: '50px 50px',
-          opacity: 0.6,
-          borderRadius: '16px',
-          pointerEvents: 'none'
-        }} />
+        {/* Canvas Container */}
+        <div ref={containerRef} className="p-4 mb-4 position-relative d-flex flex-column align-items-center justify-content-center" style={{ backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 2px 15px rgba(0,0,0,0.03)', minHeight: '600px', width: '100%', maxWidth: '800px' }}>
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+            backgroundImage: 'radial-gradient(#E2E8F0 2px, transparent 2px)',
+            backgroundSize: '50px 50px',
+            opacity: 0.6,
+            borderRadius: '16px',
+            pointerEvents: 'none'
+          }} />
 
-        <div className="d-flex justify-content-end mb-2 w-100 position-relative" style={{ zIndex: 10 }}>
-          <Button
-            variant="light"
-            size="sm"
-            className="d-flex align-items-center bg-white rounded shadow-sm border"
-            style={{ fontSize: '11px', fontWeight: '600', color: '#666', letterSpacing: '0.5px' }}
-            onClick={toggleFullScreen}
-          >
-            <FaExpand className="me-2" /> PANTALLA COMPLETA
-          </Button>
-        </div>
+          <div className="d-flex justify-content-end mb-2 w-100 position-relative" style={{ zIndex: 10 }}>
+            <Button
+              variant="light"
+              size="sm"
+              className="d-flex align-items-center bg-white rounded shadow-sm border"
+              style={{ fontSize: '11px', fontWeight: '600', color: '#666', letterSpacing: '0.5px' }}
+              onClick={toggleFullScreen}
+            >
+              <FaExpand className="me-2" /> PANTALLA COMPLETA
+            </Button>
+          </div>
 
-        <div className="d-flex justify-content-center flex-grow-1 align-items-center my-4 w-100" style={{ position: 'relative', zIndex: 1 }}>
-          <svg
-            width="100%"
-            height="100%"
-            viewBox="0 0 500 500"
-            preserveAspectRatio="xMidYMid meet"
-            style={{ backgroundColor: 'transparent', maxWidth: '750px', minHeight: '550px' }}
-            onMouseMove={handleMouseMove}
-          >
-            {connections.map((conn, idx) => {
-              const fromMarker = markers[conn.from];
-              const toMarker = markers[conn.to];
-              if (!fromMarker || !toMarker) return null;
-              return (
+          <div className="d-flex justify-content-center flex-grow-1 align-items-center my-4 w-100" style={{ position: 'relative', zIndex: 1 }}>
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 500 500"
+              preserveAspectRatio="xMidYMid meet"
+              style={{ backgroundColor: 'transparent', maxWidth: '750px', minHeight: '550px' }}
+              onMouseMove={handleMouseMove}
+            >
+              {connections.map((conn, idx) => {
+                const fromMarker = markers[conn.from];
+                const toMarker = markers[conn.to];
+                if (!fromMarker || !toMarker) return null;
+                return (
+                  <line
+                    key={idx}
+                    x1={fromMarker.x}
+                    y1={fromMarker.y}
+                    x2={toMarker.x}
+                    y2={toMarker.y}
+                    stroke="#00A0E3"
+                    strokeWidth="2"
+                    strokeDasharray="6,4"
+                  />
+                );
+              })}
+
+              {selectedMarker !== null && mousePosition && (
                 <line
-                  key={idx}
-                  x1={fromMarker.x}
-                  y1={fromMarker.y}
-                  x2={toMarker.x}
-                  y2={toMarker.y}
+                  x1={markers[selectedMarker].x}
+                  y1={markers[selectedMarker].y}
+                  x2={mousePosition.x}
+                  y2={mousePosition.y}
                   stroke="#00A0E3"
                   strokeWidth="2"
                   strokeDasharray="6,4"
                 />
-              );
-            })}
+              )}
 
-            {selectedMarker !== null && mousePosition && (
-              <line
-                x1={markers[selectedMarker].x}
-                y1={markers[selectedMarker].y}
-                x2={mousePosition.x}
-                y2={mousePosition.y}
-                stroke="#00A0E3"
-                strokeWidth="2"
-                strokeDasharray="6,4"
-              />
-            )}
+              {markers.map((marker, idx) => {
+                const isConnected = connections.some(c => c.from === idx || c.to === idx) || selectedMarker === idx;
 
-            {markers.map((marker, idx) => {
-              const isConnected = connections.some(c => c.from === idx || c.to === idx) || selectedMarker === idx;
-
-              return (
-                <g
-                  key={idx}
-                  onClick={() => handleMarkerClick(idx)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <circle
-                    cx={marker.x}
-                    cy={marker.y}
-                    r="22"
-                    fill={isConnected ? '#2DAAE1' : 'white'}
-                    stroke="#2DAAE1"
-                    strokeWidth="1.5"
-                  />
-                  <text
-                    x={marker.x}
-                    y={marker.y + 5}
-                    textAnchor="middle"
-                    fontSize="14"
-                    fontWeight="bold"
-                    fill={isConnected ? 'white' : '#2DAAE1'}
+                return (
+                  <g
+                    key={idx}
+                    onClick={() => handleMarkerClick(idx)}
+                    style={{ cursor: 'pointer' }}
                   >
-                    {marker.label}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
+                    <circle
+                      cx={marker.x}
+                      cy={marker.y}
+                      r="22"
+                      fill={isConnected ? '#2DAAE1' : 'white'}
+                      stroke="#2DAAE1"
+                      strokeWidth="1.5"
+                    />
+                    <text
+                      x={marker.x}
+                      y={marker.y + 5}
+                      textAnchor="middle"
+                      fontSize="14"
+                      fontWeight="bold"
+                      fill={isConnected ? 'white' : '#2DAAE1'}
+                    >
+                      {marker.label}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+
+          {/* Canvas controls */}
+          <div className="d-flex justify-content-center gap-4 mt-4 pt-3" style={{ position: 'relative', zIndex: 50, borderTop: '1px solid #F0F0F0' }}>
+            <Button
+              variant="light"
+              className="rounded-circle shadow-sm bg-white border d-flex justify-content-center align-items-center p-0"
+              style={{ width: '50px', height: '50px' }}
+              onClick={handleUndo}
+              title="Deshacer (Atrás)"
+            >
+              <FaUndo style={{ display: 'block', width: '20px', height: '20px', color: '#6c757d' }} />
+            </Button>
+            <Button
+              variant="light"
+              className="rounded-circle shadow-sm bg-white border d-flex justify-content-center align-items-center p-0"
+              style={{ width: '50px', height: '50px' }}
+              onClick={handleReset}
+              title="Borrar (Reiniciar)"
+            >
+              <FaTrash style={{ display: 'block', width: '20px', height: '20px', color: '#dc3545' }} />
+            </Button>
+          </div>
+
+          {showAlert && (
+            <Alert
+              variant={alertVariant}
+              onClose={() => setShowAlert(false)}
+              dismissible
+              className="mt-3 text-center position-relative"
+              style={{ zIndex: 10 }}
+            >
+              {alertMessage}
+            </Alert>
+          )}
+
+          {error && (
+            <Alert variant="danger" className="mt-3 text-center position-relative" style={{ zIndex: 10 }}>
+              {error}
+            </Alert>
+          )}
         </div>
 
-        {/* Canvas controls */}
-        <div className="d-flex justify-content-center gap-4 mt-4 pt-3" style={{ position: 'relative', zIndex: 50, borderTop: '1px solid #F0F0F0' }}>
-          <Button
-            variant="light"
-            className="rounded-circle shadow-sm bg-white border d-flex justify-content-center align-items-center p-0"
-            style={{ width: '50px', height: '50px' }}
-            onClick={handleUndo}
-            title="Deshacer (Atrás)"
-          >
-            <FaUndo style={{ display: 'block', width: '20px', height: '20px', color: '#6c757d' }} />
-          </Button>
-          <Button
-            variant="light"
-            className="rounded-circle shadow-sm bg-white border d-flex justify-content-center align-items-center p-0"
-            style={{ width: '50px', height: '50px' }}
-            onClick={handleReset}
-            title="Borrar (Reiniciar)"
-          >
-            <FaTrash style={{ display: 'block', width: '20px', height: '20px', color: '#dc3545' }} />
-          </Button>
-        </div>
-
-        {showAlert && (
-          <Alert
-            variant={alertVariant}
-            onClose={() => setShowAlert(false)}
-            dismissible
-            className="mt-3 text-center position-relative"
-            style={{ zIndex: 10 }}
-          >
-            {alertMessage}
-          </Alert>
+        {isAdmin && (
+          <div className="mt-3 text-center">
+            <Form.Group className="mb-3">
+              <Form.Label><strong>Respuestas seleccionadas (Admin):</strong></Form.Label>
+              {answers.map((item, i) => (
+                <div key={i}>{item}</div>
+              ))}
+            </Form.Group>
+          </div>
         )}
-
-        {error && (
-          <Alert variant="danger" className="mt-3 text-center position-relative" style={{ zIndex: 10 }}>
-            {error}
-          </Alert>
-        )}
-      </div>
-
-      {isAdmin && (
-        <div className="mt-3 text-center">
-          <Form.Group className="mb-3">
-            <Form.Label><strong>Respuestas seleccionadas (Admin):</strong></Form.Label>
-            {answers.map((item, i) => (
-              <div key={i}>{item}</div>
-            ))}
-          </Form.Group>
-        </div>
-      )}
 
       </div>
 
@@ -560,6 +566,7 @@ const CuboActivity = ({
   cubeScore,
   setCubeScore,
   setCubeImageUrl,
+  setCubeImageData,
   handleNext,
   handlePrevious,
   isSpeaking,
@@ -667,6 +674,7 @@ const CuboActivity = ({
 
     try {
       const imageData = canvas.toDataURL("image/png");
+      setCubeImageData(imageData);
       const response = await fetch('/api/evaluate-cube', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -853,6 +861,7 @@ const RelojActivity = ({
   clockScore,
   setClockScore,
   setClockImageUrl,
+  setClockImageData,
   handleNext,
   handlePrevious,
   isSpeaking,
@@ -960,7 +969,8 @@ const RelojActivity = ({
 
     try {
       const imageData = canvas.toDataURL("image/png");
-      const response = await fetch('http://localhost:5001/api/evaluate-clock', {
+      setClockImageData(imageData);
+      const response = await fetch('/api/evaluate-clock', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: imageData })

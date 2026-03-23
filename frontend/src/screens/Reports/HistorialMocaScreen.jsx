@@ -17,9 +17,9 @@ import '../../assets/styles/HistorialMocaScreen.css';
 // ─── Helper functions ─────────────────────────────────────────────────────────
 const getRiskInfo = (score) => {
   if (score === null || score === undefined) return { label: 'PENDIENTE', cls: 'pendiente' };
-  if (score >= 26) return { label: 'BAJO', cls: 'bajo' };
-  if (score >= 18) return { label: 'MODERADO', cls: 'moderado' };
-  return { label: 'ALTO', cls: 'alto' };
+  if (score >= 13) return { label: 'LEVE', cls: 'bajo' };
+  if (score >= 7) return { label: 'MODERADO', cls: 'moderado' };
+  return { label: 'GRAVE', cls: 'alto' };
 };
 
 const calcAge = (birthdate) =>
@@ -56,7 +56,7 @@ const ResultsModal = ({ evalRecord, attemptNum, onClose }) => {
 
   const score = evalRecord?.totalScore ?? 0;
   // Usar el totalMaxScore del registro si existe, sino 30
-  const maxScore = evalRecord?.totalMaxScore ?? 30;
+  const maxScore = evalRecord?.totalMaxScore ?? 16;
   const risk = getRiskInfo(score);
   const pct = Math.round((score / maxScore) * 100);
 
@@ -226,7 +226,7 @@ const PatientCard = ({ patient, onSelect }) => {
 const EvalCard = ({ evalRecord, index, total, onShowResults }) => {
   const navigate = useNavigate();
   const score = evalRecord.totalScore ?? 0;
-  const maxScore = evalRecord.totalMaxScore ?? 30;
+  const maxScore = evalRecord.totalMaxScore ?? 16;
   const risk = getRiskInfo(score);
   const pct = Math.round((score / maxScore) * 100);
   const attemptNum = total - index;
