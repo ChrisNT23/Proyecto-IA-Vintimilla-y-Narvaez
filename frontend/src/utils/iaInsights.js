@@ -17,7 +17,7 @@ export const generateIAInsights = (mocaRecord, history = []) => {
     const visuo = modules.Visuoespacial || {};
     
     // Hallazgo general original
-    if (visuo.total !== undefined && visuo.total < 5) {
+    if (visuo.total !== undefined && visuo.total < 4) {
         findings.push({
             title: "Error visoespacial detectado",
             description: "Se observan distorsiones significativas en la representación de profundidad y posicionamiento temporal en las pruebas de dibujo.",
@@ -215,9 +215,9 @@ export const generateIAInsights = (mocaRecord, history = []) => {
 export const calculateDeteriorationRisk = (currentScore, history = []) => {
     let baseRisk = 0;
     
-    // Riesgo base por puntaje
-    if (currentScore >= 26) baseRisk = 15;
-    else if (currentScore >= 18) baseRisk = 45;
+    // Riesgo base por puntaje (Escala 13-16 Leve, 7-12 Moderado, 0-6 Grave)
+    if (currentScore >= 13) baseRisk = 15;
+    else if (currentScore >= 7) baseRisk = 45;
     else baseRisk = 75;
 
     // Ajuste por tendencia

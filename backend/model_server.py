@@ -123,6 +123,17 @@ def preprocess_for_emotions(img):
                 
                 face_img = img_array[start_y:end_y, start_x:end_x]
                 if face_img.size > 0:
+                    # Aplicar CLAHE para resaltar rasgos sutiles (cejas, boca)
+                    try:
+                        lab = cv2.cvtColor(face_img, cv2.COLOR_RGB2LAB)
+                        l, a, b = cv2.split(lab)
+                        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+                        cl = clahe.apply(l)
+                        limg = cv2.merge((cl, a, b))
+                        face_img = cv2.cvtColor(limg, cv2.COLOR_LAB2RGB)
+                    except Exception as e:
+                        logger.warning(f"Error applying CLAHE: {e}")
+                    
                     img = Image.fromarray(face_img).resize((224, 224))
                 else:
                     img = img.resize((224, 224))
@@ -280,17 +291,34 @@ def evaluate_emotion():
         img_array = preprocess_for_emotions(img)
         preds = model_emotions.predict(img_array, verbose=0)[0]
         
-        idx = int(np.argmax(preds))
-        confidence = float(preds[idx])
+        # --- Aplicar Pesos de Sensibilidad para Tristeza y Enojo ---
+        # Si estas emociones superan un umbral de ruido, les damos un boost (1.2x)
+        weights = {
+            'angry': 1.25,
+            'sad': 1.2,
+            'neutral': 0.9  # Reducimos ligeramente neutral para evitar que "se coma" a las demás
+        }
+        
+        weighted_preds = np.copy(preds)
+        for i, cls in enumerate(EMOTION_CLASSES):
+            if cls in weights:
+                weighted_preds[i] *= weights[cls]
+        
+        # Normalizar de nuevo para que sumen 1
+        weighted_preds = weighted_preds / np.sum(weighted_preds)
+        
+        idx = int(np.argmax(weighted_preds))
+        confidence = float(weighted_preds[idx])
         emotion = EMOTION_CLASSES[idx]
         
-        all_probs = {EMOTION_CLASSES[i]: round(float(preds[i]), 4) for i in range(len(EMOTION_CLASSES))}
+        all_probs = {EMOTION_CLASSES[i]: round(float(weighted_preds[i]), 4) for i in range(len(EMOTION_CLASSES))}
         
-        logger.info(f"[EMOTION] Detected: {emotion} ({confidence:.2f})")
+        logger.info(f"[EMOTION] Detected: {emotion} ({confidence:.2f}) - Adjusted logic applied")
         return jsonify({
             "emotion": emotion,
             "confidence": confidence,
-            "all_emotions": all_probs
+            "all_emotions": all_probs,
+            "original_top": EMOTION_CLASSES[int(np.argmax(preds))] # Para debug
         })
     except Exception as e:
         logger.error(f"Error in evaluate-emotion: {str(e)}")
