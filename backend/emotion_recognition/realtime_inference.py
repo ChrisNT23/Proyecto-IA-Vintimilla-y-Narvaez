@@ -110,7 +110,7 @@ class EmotionDetector:
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Real-time Emotion Recognition")
-    parser.add_argument("--model", type=str, default="models/emotion_model_final.h5", help="Path to trained model")
+    parser.add_argument("--model", type=str, default="backend/ai_models/emotion_model_final.h5", help="Path to trained model")
     args = parser.parse_args()
     
     detector = EmotionDetector(args.model)

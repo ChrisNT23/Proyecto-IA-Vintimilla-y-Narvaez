@@ -15,6 +15,7 @@ import treatmentRoutes from "./routes/treatmentRoutes.js";
 import assignmentRoutes from "./routes/assignmentRoutes.js";
 import mocaSelfRoutes from "./routes/mocaSelfRoutes.js";
 import emotionRoutes from "./routes/emotionRoutes.js";
+import multimodalRoutes from "./routes/multimodalRoutes.js";
 import fs from "fs";
 import axios from "axios"; // Importar axios para realizar solicitudes HTTP
 
@@ -44,6 +45,7 @@ app.use("/api/patients", patientRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/mocaSelf", mocaSelfRoutes);
 app.use("/api/emotions", emotionRoutes);
+app.use("/api/multimodal", multimodalRoutes);
 
 // Montar las rutas de tratamientos y asignaciones en sus respectivas rutas
 app.use('/api/treatments', treatmentRoutes);

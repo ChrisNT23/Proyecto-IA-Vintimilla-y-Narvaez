@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Spinner, Alert, Badge } from 'react-bootstrap';
+import { Box, Grid } from '@mui/material';
 import {
     FaUser, FaDownload, FaShareAlt, FaBrain, FaExclamationTriangle,
     FaChartBar, FaClock, FaHistory, FaCheckCircle, FaTimesCircle,
@@ -18,7 +19,10 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { useGetMocaSelfByIdQuery, useGetAllMocaSelfsQuery } from '../../slices/mocaSelfApiSlice';
 import { useGetPatientByIdQuery } from '../../slices/patientApiSlice';
+import { useGetMultimodalAnalysisMutation } from '../../slices/multimodalApiSlice';
 import { generateIAInsights, calculateDeteriorationRisk } from '../../utils/iaInsights';
+import MultimodalInsightsCard from '../../components/MultimodalInsightsCard';
+import SynthesisTextPanel from '../../components/SynthesisTextPanel';
 import '../../assets/styles/DashboardIAScreen.css';
 
 const DashboardIAScreen = () => {
@@ -28,6 +32,8 @@ const DashboardIAScreen = () => {
     const section2Ref = React.useRef(null);
     const [findingPage, setFindingPage] = useState(0);
     const [isExporting, setIsExporting] = useState(false);
+    const [multimodalData, setMultimodalData] = useState(null);
+    const [isPredictiveMode, setIsPredictiveMode] = useState(false);
     const FINDINGS_PER_PAGE = 3;
 
     // 1. Fetch Data
@@ -43,10 +49,57 @@ const DashboardIAScreen = () => {
         skip: !selectedEvalId
     });
 
+    const [getMultimodalAnalysis, { isLoading: loadingMultimodal }] = useGetMultimodalAnalysisMutation();
+
     const targetPatientId = patientId || (mocaRecord?.patient?._id || mocaRecord?.patient);
     const { data: patient, isLoading: loadingPatient } = useGetPatientByIdQuery(targetPatientId, {
         skip: !targetPatientId
     });
+
+    // 1.1 Fetch Multimodal Analysis when mocaRecord is ready
+    React.useEffect(() => {
+        if (mocaRecord) {
+            const fetchMultimodal = async () => {
+                const payload = {
+                    moca: {
+                        total_score: mocaRecord.totalScore,
+                        domain_scores: mocaRecord.domainScores || {
+                            visuoespacial: mocaRecord.modulesData?.Visuoespacial?.totalScore || 0,
+                            atencion: mocaRecord.modulesData?.Atencion?.totalScore || 0
+                        },
+                        deterioro_label: mocaRecord.totalScore >= 13 ? 'Leve' : mocaRecord.totalScore >= 7 ? 'Moderado' : 'Grave'
+                    },
+                    emotions: {
+                        distribution: mocaRecord.emotionData?.derivedVariables?.averageEmotionProbabilities || {},
+                        volatility: mocaRecord.emotionData?.derivedVariables?.emotionalVolatility || 0,
+                        dominant_emotion: (mocaRecord.emotionData?.derivedVariables?.dominantEmotion || 'neutral').toLowerCase(),
+                        stress_index: mocaRecord.emotionData?.derivedVariables?.stressIndex || 0.5
+                    },
+                    clock: {
+                        score: mocaRecord.modulesData?.Visuoespacial?.clock || 0,
+                        detail: mocaRecord.modulesData?.Visuoespacial?.clockDetail || {}
+                    },
+                    cube: {
+                        score: mocaRecord.modulesData?.Visuoespacial?.cube || 0
+                    },
+                    history: {
+                        score_trend: mocaHistory && mocaHistory.length > 1 ? 'estable' : 'desconocido'
+                    }
+                };
+
+                try {
+                    const result = await getMultimodalAnalysis({ 
+                        data: payload, 
+                        mode: isPredictiveMode ? 'predictive' : 'rules' 
+                    }).unwrap();
+                    setMultimodalData(result);
+                } catch (err) {
+                    console.error("Error fetching multimodal analysis:", err);
+                }
+            };
+            fetchMultimodal();
+        }
+    }, [mocaRecord, isPredictiveMode, getMultimodalAnalysis, mocaHistory]);
 
     // 2. Process Data for Charts
     const cognitiveData = useMemo(() => {
@@ -368,8 +421,8 @@ const DashboardIAScreen = () => {
                         </div>
                     </div>
 
-                    {/* Riesgo de Deterioro */}
                     <div className="dashboard-card col-risk">
+                        {/* Riesgo de Deterioro actual se mantiene */}
                         <h3 className="card-title">Riesgo de Deterioro</h3>
                         <div className="risk-analysis-content">
                             <ResponsiveContainer width="100%" height={150}>
@@ -394,10 +447,33 @@ const DashboardIAScreen = () => {
                             >
                                 {riskPercentage >= 70 ? 'GRAVE' : riskPercentage >= 40 ? 'MODERADO' : 'LEVE'}
                             </Badge>
-                            <p className="risk-trend-desc">
-                                El nivel de riesgo ha aumentado un 5% en los últimos 3 meses debido a la variabilidad emocional detectada.
-                            </p>
                         </div>
+                    </div>
+
+                    {/* SECCIÓN MIIM: INTEGRACIÓN Y SÍNTESIS */}
+                    <div className="dashboard-card col-multimodal" style={{ background: 'transparent', boxShadow: 'none', padding: 0 }}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12} lg={5}>
+                                <div className="dashboard-card h-100" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                        <h3 className="card-title" style={{ margin: 0 }}><FaBrain /> Índices MIIM</h3>
+                                        <button 
+                                            className={`btn-mode-toggle ${isPredictiveMode ? 'active' : ''}`}
+                                            onClick={() => setIsPredictiveMode(!isPredictiveMode)}
+                                            style={{ fontSize: '0.65rem' }}
+                                        >
+                                            {isPredictiveMode ? '⚙️ Investigación' : '✅ Producción'}
+                                        </button>
+                                    </Box>
+                                    <MultimodalInsightsCard data={multimodalData} loading={loadingMultimodal} />
+                                </div>
+                            </Grid>
+                            <Grid item xs={12} lg={7}>
+                                <div className="dashboard-card h-100" style={{ padding: '1.5rem' }}>
+                                    <SynthesisTextPanel data={multimodalData} loading={loadingMultimodal} />
+                                </div>
+                            </Grid>
+                        </Grid>
                     </div>
 
                     {/* Distribución de Emociones y Galería */}

@@ -23,13 +23,13 @@ Prepare your dataset in a folder with `train`, `val`, and `test` subdirectories.
 
 Run the training pipeline from the root directory:
 ```bash
-python -m emotion_recognition.train --data_dir /path/to/dataset --epochs 25
+python -m backend.emotion_recognition.train --data_dir /path/to/dataset --epochs 25
 ```
 
 ### 2. Real-time Inference
-Once the model is trained (saved in `models/emotion_model_final.h5`), run:
+Once the model is trained (saved in `backend/ai_models/emotion_model_final.h5`), run:
 ```bash
-python -m emotion_recognition.realtime_inference
+python -m backend.emotion_recognition.realtime_inference
 ```
 
 ## Features
