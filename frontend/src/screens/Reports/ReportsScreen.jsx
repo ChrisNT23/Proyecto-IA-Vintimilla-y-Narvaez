@@ -16,8 +16,9 @@ import '../../assets/styles/ReportsScreen.css';
 // Importar las imágenes
 import resultadosMocaImg from '../../images/Reports/resultados-moca.webp';
 import progresoPacienteImg from '../../images/Reports/progreso-paciente.webp';
-import estadoAnimoImg from '../../images/Reports/estado-ánimo.webp'; 
+import estadoAnimoImg from '../../images/Reports/estado-ánimo.webp';
 import dashboardIAImg from '../../images/Reports/dashboard-ia.png';
+import mocaHistoryCoverImg from '../../images/Reports/moca_history_cover.jpg';
 
 const ReportsScreen = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const ReportsScreen = () => {
     /*{ title: 'Progreso del Paciente', img: progresoPacienteImg, route: '/progreso-paciente' },*/
     { title: 'Resultados de Estado de Ánimo', img: estadoAnimoImg, route: '/estado-animo' },
     { title: 'Dashboard IA', img: dashboardIAImg, route: '/reports/dashboard-ia/selection' },
-    { title: 'Historial MoCA', img: dashboardIAImg, route: '/reports/historial-moca' },
+    { title: 'Historial MoCA', img: mocaHistoryCoverImg, route: '/reports/historial-moca' },
     { title: 'Dashboard', img: progresoPacienteImg, route: '/dashboard' },
   ];
 
@@ -37,7 +38,7 @@ const ReportsScreen = () => {
       <Typography variant="h4" align="center" gutterBottom>
         Seleccionar Reporte
       </Typography>
-      
+
       {/* Grid de Reportes */}
       <Grid container spacing={4} justifyContent="center">
         {reportOptions.map((option, index) => (
@@ -77,7 +78,7 @@ const ReportsScreen = () => {
                     }}
                   />
                 </Box>
-                
+
                 {/* Contenido de la Tarjeta */}
                 <CardContent>
                   <Typography gutterBottom variant="h6" component="div" align="center">
