@@ -542,9 +542,8 @@ const DashboardScreen = () => {
                         <ListItem key={patient._id} className="patient-list-item">
                           <ListItemText
                             primary={`${patient.user?.name} ${patient.user?.lastName}`}
-                            secondary={`Estado: ${
-                              patient.user?.isActive ? 'Activo' : 'Inactivo'
-                            }`}
+                            secondary={`Estado: ${patient.user?.isActive ? 'Activo' : 'Inactivo'
+                              }`}
                           />
                         </ListItem>
                       ))}

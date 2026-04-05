@@ -15,7 +15,7 @@ export const generateIAInsights = (mocaRecord, history = []) => {
 
     // --- 1. Hallazgos Visuoespaciales Granulares ---
     const visuo = modules.Visuoespacial || {};
-    
+
     // Hallazgo general original
     if (visuo.total !== undefined && visuo.total < 4) {
         findings.push({
@@ -82,10 +82,10 @@ export const generateIAInsights = (mocaRecord, history = []) => {
     if (mocaRecord.emotionData?.derivedVariables) {
         const { stressIndex, emotionalVariabilityIndex } = mocaRecord.emotionData.derivedVariables;
         const captures = mocaRecord.emotionData.captures || [];
-        
+
         // Buscar si hubo picos de tristeza/enojo/miedo en módulos específicos
         const negativeCaptures = captures.filter(c => ['sad', 'angry', 'fear', 'disgust'].includes(c.emotion.toLowerCase()));
-        
+
         if (negativeCaptures.length >= 3) {
             const problematicModule = negativeCaptures[0].currentModule;
             findings.push({
@@ -105,7 +105,7 @@ export const generateIAInsights = (mocaRecord, history = []) => {
 
         // --- Nuevos Hallazgos Emocionales Profundos ---
         const probs = mocaRecord.emotionData.derivedVariables.averageEmotionProbabilities || {};
-        
+
         // 1. Aplanamiento Afectivo (Exceso de Neutralidad)
         if (probs.neutral > 0.85) {
             findings.push({
@@ -150,7 +150,7 @@ export const generateIAInsights = (mocaRecord, history = []) => {
     if (history.length > 1) {
         const sortedHistory = [...history].sort((a, b) => new Date(b.testDate) - new Date(a.testDate));
         const latestOnes = sortedHistory.slice(1, 4); // Las 3 anteriores
-        
+
         // A. Persistencia de errores (ej: Reloj)
         const clockFailures = latestOnes.filter(h => h.modulesData?.Visuoespacial?.clock < 3).length;
         if (visuo.clock < 3 && clockFailures >= 2) {
@@ -214,7 +214,7 @@ export const generateIAInsights = (mocaRecord, history = []) => {
  */
 export const calculateDeteriorationRisk = (currentScore, history = []) => {
     let baseRisk = 0;
-    
+
     // Riesgo base por puntaje (Escala 13-16 Leve, 7-12 Moderado, 0-6 Grave)
     if (currentScore >= 13) baseRisk = 15;
     else if (currentScore >= 7) baseRisk = 45;
