@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import { useGetDoctorWithPatientsQuery } from '../../slices/doctorApiSlice';
 import { useGetAllMocaSelfsQuery } from '../../slices/mocaSelfApiSlice';
+import mocaHistoryCoverImg from '../../images/Reports/moca_history_cover.jpg';
 import '../../assets/styles/HistorialMocaScreen.css';
 
 // ─── Helper functions ─────────────────────────────────────────────────────────
@@ -390,8 +391,16 @@ const HistorialMocaScreen = () => {
 
   return (
     <div className="historial-container">
-      {/* Header */}
-      <div className="historial-header">
+      {/* Header with Cover Image */}
+      <div 
+        className="historial-header" 
+        style={{ 
+          backgroundImage: `url(${mocaHistoryCoverImg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
+        <div className="historial-header-overlay"></div>
         <div className="historial-header-inner">
           {selectedPatient && (
             <button className="historial-back-btn" onClick={handleBack}>

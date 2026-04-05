@@ -460,6 +460,9 @@ const DashboardIAScreen = () => {
                             >
                                 {riskPercentage >= 70 ? 'GRAVE' : riskPercentage >= 40 ? 'MODERADO' : 'LEVE'}
                             </Badge>
+                            <p className="risk-explanation mt-3" style={{ fontSize: '0.75rem', color: '#64748b', textAlign: 'center', lineHeight: '1.4' }}>
+                                Probabilidad calculada por la IA basada en el desempeño del test MoCA y el progreso histórico del paciente.
+                            </p>
                         </div>
                     </div>
 
