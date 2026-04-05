@@ -33,7 +33,8 @@ def plot_history(history, filename='training_history.png'):
     plt.legend()
     
     plt.tight_layout()
-    plt.savefig(os.path.join('reports', filename))
+    reports_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'reports')
+    plt.savefig(os.path.join(reports_dir, filename))
     plt.close()
 
 def evaluate_model(model, test_gen, class_names=None):
@@ -41,8 +42,7 @@ def evaluate_model(model, test_gen, class_names=None):
     Evaluates the model and generates reports.
     """
     # Get current working directory or base path
-    base_path = os.getcwd()
-    reports_dir = os.path.join(base_path, 'reports')
+    reports_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'reports')
     ensure_dir(reports_dir)
     
     if class_names is None:

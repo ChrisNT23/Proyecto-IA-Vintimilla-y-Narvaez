@@ -15,11 +15,15 @@ def train(data_dir, epochs_initial=25, epochs_finetune=30, batch_size=32):
     EfficientNetB0 + 224x224 Resolution + Transfer Learning
     """
     # 1. Preparations
-    base_path = os.getcwd()
-    models_dir = os.path.join(base_path, 'models')
+    # This file is now in /backend/emotion_recognition/
+    # We'll use paths relative to this script for logic and reports
+    package_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(package_dir))
+    
+    models_dir = os.path.join(project_root, 'backend', 'ai_models')
     ensure_dir(models_dir)
-    ensure_dir(os.path.join(base_path, 'logs'))
-    ensure_dir(os.path.join(base_path, 'reports'))
+    ensure_dir(os.path.join(package_dir, 'logs'))
+    ensure_dir(os.path.join(package_dir, 'reports'))
     
     logger.info("Starting RAF-DB Training: EfficientNetB0 @ 224x224")
 
@@ -82,7 +86,7 @@ def train(data_dir, epochs_initial=25, epochs_finetune=30, batch_size=32):
     plot_history(history_initial, filename='history_initial.png')
     plot_history(history_finetune, filename='history_finetune.png')
     
-    logger.info(f"DONE. Model saved in 'models/' and all reports in 'reports/'.")
+    logger.info(f"DONE. Model saved in project root 'models/' and all reports in package 'reports/'.")
     
     return model
 

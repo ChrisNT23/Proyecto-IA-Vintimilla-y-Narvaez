@@ -1,0 +1,257 @@
+{
+    "emotions": {
+        "correct": [
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\emotion_recognition/data/test\\angry\\test_1059_aligned.jpg",
+                "true": "angry",
+                "pred": "angry",
+                "conf": 0.9964685440063477
+            },
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\emotion_recognition/data/test\\angry\\test_1301_aligned.jpg",
+                "true": "angry",
+                "pred": "angry",
+                "conf": 0.8789148926734924
+            },
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\emotion_recognition/data/test\\angry\\test_1683_aligned.jpg",
+                "true": "angry",
+                "pred": "angry",
+                "conf": 0.9818243384361267
+            },
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\emotion_recognition/data/test\\angry\\test_1741_aligned.jpg",
+                "true": "angry",
+                "pred": "angry",
+                "conf": 0.989283561706543
+            },
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\emotion_recognition/data/test\\angry\\test_1944_aligned.jpg",
+                "true": "angry",
+                "pred": "angry",
+                "conf": 0.9893774390220642
+            }
+        ],
+        "incorrect": [
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\emotion_recognition/data/test\\angry\\test_0321_aligned.jpg",
+                "true": "angry",
+                "pred": "neutral",
+                "conf": 0.7830196619033813
+            },
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\emotion_recognition/data/test\\angry\\test_0585_aligned.jpg",
+                "true": "angry",
+                "pred": "disgust",
+                "conf": 0.310545951128006
+            },
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\emotion_recognition/data/test\\angry\\test_1534_aligned.jpg",
+                "true": "angry",
+                "pred": "sad",
+                "conf": 0.4118069112300873
+            },
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\emotion_recognition/data/test\\angry\\test_1689_aligned.jpg",
+                "true": "angry",
+                "pred": "sad",
+                "conf": 0.5499598383903503
+            },
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\emotion_recognition/data/test\\angry\\test_1957_aligned.jpg",
+                "true": "angry",
+                "pred": "fear",
+                "conf": 0.8316165208816528
+            }
+        ],
+        "robustness": [
+            {
+                "original": "angry",
+                "pred_noisy": "angry",
+                "pred_bright": "angry"
+            },
+            {
+                "original": "angry",
+                "pred_noisy": "sad",
+                "pred_bright": "angry"
+            },
+            {
+                "original": "angry",
+                "pred_noisy": "sad",
+                "pred_bright": "angry"
+            },
+            {
+                "original": "angry",
+                "pred_noisy": "angry",
+                "pred_bright": "angry"
+            },
+            {
+                "original": "angry",
+                "pred_noisy": "angry",
+                "pred_bright": "angry"
+            }
+        ]
+    },
+    "cube": {
+        "correct": [],
+        "incorrect": [],
+        "robustness": []
+    },
+    "clock": {
+        "correct": [
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\backend/data_clock/val\\incorrect/reloj_041.png",
+                "true": [
+                    0,
+                    0,
+                    0
+                ],
+                "pred": [
+                    0,
+                    0,
+                    0
+                ]
+            },
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\backend/data_clock/val\\correct/reloj_016.png",
+                "true": [
+                    0,
+                    0,
+                    1
+                ],
+                "pred": [
+                    0,
+                    0,
+                    1
+                ]
+            },
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\backend/data_clock/val\\incorrect/reloj_028.png",
+                "true": [
+                    0,
+                    0,
+                    0
+                ],
+                "pred": [
+                    0,
+                    0,
+                    0
+                ]
+            },
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\backend/data_clock/val\\incorrect/reloj_263.jpg",
+                "true": [
+                    0,
+                    0,
+                    0
+                ],
+                "pred": [
+                    0,
+                    0,
+                    0
+                ]
+            },
+            {
+                "path": "C:\\Users\\chris\\OneDrive\\Documentos\\Maestr\u00eda\\Proyecto\\Proeycto\\Proyecto-IA-Vintimilla-y-Narvaez\\backend/data_clock/val\\incorrect/reloj_277.jpg",
+                "true": [
+                    0,
+                    0,
+                    0
+                ],
+                "pred": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ],
+        "incorrect": [],
+        "robustness": [
+            {
+                "original": [
+                    0,
+                    0,
+                    0
+                ],
+                "pred_noisy": [
+                    0,
+                    0,
+                    0
+                ],
+                "pred_bright": [
+                    0,
+                    0,
+                    0
+                ]
+            },
+            {
+                "original": [
+                    0,
+                    0,
+                    1
+                ],
+                "pred_noisy": [
+                    0,
+                    0,
+                    0
+                ],
+                "pred_bright": [
+                    0,
+                    0,
+                    1
+                ]
+            },
+            {
+                "original": [
+                    0,
+                    0,
+                    0
+                ],
+                "pred_noisy": [
+                    0,
+                    0,
+                    0
+                ],
+                "pred_bright": [
+                    0,
+                    0,
+                    0
+                ]
+            },
+            {
+                "original": [
+                    0,
+                    0,
+                    0
+                ],
+                "pred_noisy": [
+                    0,
+                    0,
+                    0
+                ],
+                "pred_bright": [
+                    0,
+                    0,
+                    0
+                ]
+            },
+            {
+                "original": [
+                    0,
+                    0,
+                    0
+                ],
+                "pred_noisy": [
+                    0,
+                    0,
+                    0
+                ],
+                "pred_bright": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ]
+    }
+}

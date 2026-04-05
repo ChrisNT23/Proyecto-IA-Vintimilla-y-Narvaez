@@ -23,8 +23,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 MODEL_CUBE_PATH = os.path.join(BASE_DIR, 'model_cube.h5')
 MODEL_CLOCK_PATH = os.path.join(BASE_DIR, 'model_clock.keras')
-# Link to the newly trained emotion model
-MODEL_EMOTIONS_PATH = os.path.join(ROOT_DIR, 'models', 'emotion_model_final.keras')
+# Link to the newly trained emotion model in ai_models
+MODEL_EMOTIONS_PATH = os.path.join(BASE_DIR, 'ai_models', 'emotion_model_final.keras')
 
 # Global variables for models and detectors
 model_cube = None
@@ -350,6 +350,106 @@ def extract_features():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Multimodal Integration Module (MIIM) Import
+from multimodal_engine import run_multimodal_analysis
+import pickle
+
+# Path for Multimodal Model in ai_models
+MODEL_MULTIMODAL_PATH = os.path.join(BASE_DIR, 'ai_models', 'multimodal_dtree_model.pkl')
+multimodal_model_data = None
+
+def load_multimodal_model():
+    global multimodal_model_data
+    if not os.path.exists(MODEL_MULTIMODAL_PATH):
+        logger.warning(f"MIIM Predictive model not found at {MODEL_MULTIMODAL_PATH}. Camino B will be disabled.")
+        return None
+    try:
+        with open(MODEL_MULTIMODAL_PATH, 'rb') as f:
+            data = pickle.load(f)
+            logger.info("✅ Success: MIIM Predictive model loaded")
+            return data
+    except Exception as e:
+        logger.error(f"❌ Error loading MIIM model: {e}")
+        return None
+
+multimodal_model_data = load_multimodal_model()
+
+@app.route('/api/multimodal-integration', methods=['POST'])
+def multimodal_integration():
+    """
+    Endpoint principal para la integración e interpretación multimodal.
+    Soporta:
+    - mode='rules' (Camino A - Motor de Reglas, Default)
+    - mode='predictive' (Camino B - Árbol de Decisión)
+    """
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        mode = request.args.get('mode', 'rules') # 'rules' o 'predictive'
+        
+        # Ejecutar análisis core (Camino A ya calcule todo lo necesario)
+        analysis_result = run_multimodal_analysis(data)
+        
+        # Si el modo es predictivo, sobreescribir confiabilidad con la predicción del modelo
+        if mode == 'predictive':
+            if multimodal_model_data is None:
+                analysis_result['predictive_model_status'] = "Model not loaded, falling back to rules"
+            else:
+                try:
+                    clf = multimodal_model_data['model']
+                    le = multimodal_model_data['label_encoder']
+                    features_list = multimodal_model_data['features']
+                    
+                    # Preparar vector de características
+                    # FEATURES = ['moca_total_score','negative_emotion_ratio','emotion_volatility',
+                    #             'clock_score','cube_score','stress_index','dominant_emotion_encoded']
+                    
+                    moca_score = data.get('moca', {}).get('total_score', 0)
+                    emotions = data.get('emotions', {})
+                    dist = emotions.get('distribution', {})
+                    neg_ratio = sum([dist.get(e, 0) for e in ['angry', 'fear', 'sad', 'disgust']])
+                    volatility = emotions.get('volatility', 0)
+                    clock_score = data.get('clock', {}).get('score', 0)
+                    cube_score = data.get('cube', {}).get('score', 0)
+                    stress = emotions.get('stress_index', 0.5)
+                    dom_em = emotions.get('dominant_emotion', 'neutral')
+                    
+                    # Codificar emoción dominante
+                    dom_em_encoded = le.transform([dom_em])[0] if dom_em in le.classes_ else le.transform(['neutral'])[0]
+                    
+                    feature_vector = np.array([[
+                        moca_score, neg_ratio, volatility, 
+                        clock_score, cube_score, stress, dom_em_encoded
+                    ]])
+                    
+                    prediction = clf.predict(feature_vector)[0]
+                    # Convertir etiqueta de predicción a confiabilidad
+                    # label: 'posiblemente_sesgado' | 'confiable'
+                    analysis_result['predictive_reliability'] = "baja/media" if prediction == 'posiblemente_sesgado' else "alta"
+                    analysis_result['result_reliability'] = analysis_result['predictive_reliability'] # Override
+                    analysis_result['analysis_mode'] = "predictive (Camino B)"
+                    
+                except Exception as e:
+                    logger.error(f"Error in predictive mode: {e}")
+                    analysis_result['predictive_error'] = str(e)
+                    analysis_result['analysis_mode'] = "rules (fallback due to error)"
+        else:
+            analysis_result['analysis_mode'] = "rules (Camino A)"
+            
+        logger.info(f"[MULTIMODAL] Analysis complete. Mode: {mode}, Reliability: {analysis_result['result_reliability']}")
+        return jsonify(analysis_result)
+
+    except Exception as e:
+        logger.error(f"Multimodal integration error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     logger.info("Starting refined Model Server on port 5001...")
+    # Add project root to sys path to ensure multimodal_engine is importable
+    import sys
+    sys.path.append(BASE_DIR)
     app.run(host='0.0.0.0', port=5001, debug=False)

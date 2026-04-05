@@ -59,6 +59,14 @@ module.exports = {
         };
       }
 
+      // Resolver errores de 'fs', 'path', 'os' en face-api.js (entorno navegador)
+      webpackConfig.resolve.fallback = {
+        ...webpackConfig.resolve.fallback,
+        fs: false,
+        path: false,
+        os: false,
+      };
+
       return webpackConfig;
     },
   },
