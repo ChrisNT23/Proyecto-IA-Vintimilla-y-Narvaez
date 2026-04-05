@@ -6,6 +6,7 @@ from PIL import Image
 import tensorflow as tf
 from flask_cors import CORS
 import os
+import sys
 import time
 import logging
 import cv2
@@ -21,8 +22,8 @@ CORS(app)
 # Paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
-MODEL_CUBE_PATH = os.path.join(BASE_DIR, 'model_cube.h5')
-MODEL_CLOCK_PATH = os.path.join(BASE_DIR, 'model_clock.keras')
+MODEL_CUBE_PATH = os.path.join(BASE_DIR, 'ai_models', 'model_cube.h5')
+MODEL_CLOCK_PATH = os.path.join(BASE_DIR, 'ai_models', 'model_clock.keras')
 # Link to the newly trained emotion model in ai_models
 MODEL_EMOTIONS_PATH = os.path.join(BASE_DIR, 'ai_models', 'emotion_model_final.keras')
 
@@ -294,13 +295,13 @@ def evaluate_emotion():
         # --- Aplicar Pesos de Sensibilidad para Tristeza y Enojo ---
         # Si estas emociones superan un umbral de ruido, les damos un boost (1.2x)
         weights = {
-            'angry': 1.25,
-            'sad': 1.2,
-            'neutral': 0.9, # Reducimos ligeramente neutral para evitar que "se coma" a las demás
-            'disgust': 0.55 # Penalti para reducir falsos positivos de disgusto
+            'happy': 1.25, 
+            'angry': 1.15,
+            'sad': 1.0, 
+            'neutral': 0.55, 
+            'disgust': 0.55 
         }
         
-        # Mapping for EMOTION_CLASSES
         EMOTION_MAP = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
         
         weighted_preds = np.copy(preds)
@@ -322,7 +323,7 @@ def evaluate_emotion():
             "emotion": emotion,
             "confidence": confidence,
             "all_emotions": all_probs,
-            "original_top": EMOTION_CLASSES[int(np.argmax(preds))] # Para debug
+            "original_top": EMOTION_CLASSES[int(np.argmax(preds))] 
         })
     except Exception as e:
         logger.error(f"Error in evaluate-emotion: {str(e)}")
@@ -343,9 +344,6 @@ def extract_features():
         
         img_array = preprocess_for_emotions(img)
         
-        # We target the layer before the last two (Dense 128)
-        # MobileNetV2 output -> GAP -> Dense 128 -> Dropout -> Dense 7
-        # So layers[-4] would be GAP or similar. Let's find GAP.
         gap_layer = next(l for l in reversed(model_emotions.layers) if 'global_average_pooling2d' in l.name)
         feat_model = tf.keras.Model(inputs=model_emotions.input, outputs=gap_layer.output)
         features = feat_model.predict(img_array, verbose=0)[0]
@@ -355,6 +353,7 @@ def extract_features():
         return jsonify({"error": str(e)}), 500
 
 # Multimodal Integration Module (MIIM) Import
+sys.path.append(os.path.join(BASE_DIR, 'multimodal-ia'))
 from multimodal_engine import run_multimodal_analysis
 import pickle
 
