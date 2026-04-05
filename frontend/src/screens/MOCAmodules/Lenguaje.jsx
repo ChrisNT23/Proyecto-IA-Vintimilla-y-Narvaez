@@ -706,6 +706,7 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
   const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
   const [activity1Data, setActivity1Data] = useState(null);
   const [activity2Data, setActivity2Data] = useState(null);
+  const hasCompletedRef = useRef(false);
 
   const handleActivity1Complete = (score, data) => {
     setActivity1Data({
@@ -717,6 +718,7 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
   };
 
   const handleActivity2Complete = (score, data) => {
+    if (hasCompletedRef.current) return;
     setActivity2Data({
       activityScore: score,
       words: data.words || [],
@@ -727,11 +729,18 @@ const Lenguaje = ({ onComplete, onPrevious, isFirstModule }) => {
   };
 
   const handleNext = (lastScore, lastStandardResults) => {
+    if (hasCompletedRef.current) return;
+
     // Si estamos en la primera actividad y se activó por el botón de navegación (lastScore es Evento),
     // avanzamos a la segunda actividad interna en lugar de terminar el módulo.
     if (currentActivityIndex === 0 && (typeof lastScore !== 'number')) {
       setCurrentActivityIndex(1);
       return;
+    }
+
+    // Si llegamos aquí al final del test (Actividad 2)
+    if (currentActivityIndex === 1 || typeof lastScore === 'number') {
+      hasCompletedRef.current = true;
     }
 
     // Score y resultados de la actividad 1 (si se saltó, valen 0)

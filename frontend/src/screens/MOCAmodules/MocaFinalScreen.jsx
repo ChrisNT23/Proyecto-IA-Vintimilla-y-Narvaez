@@ -2,16 +2,16 @@
 
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { 
-  Button, 
-  Container, 
-  Row, 
-  Col, 
-  Table, 
-  Alert, 
-  Spinner, 
-  Accordion, 
-  Badge 
+import {
+  Button,
+  Container,
+  Row,
+  Col,
+  Table,
+  Alert,
+  Spinner,
+  Accordion,
+  Badge
 } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useGetMocaSelfByIdQuery } from "../../slices/mocaSelfApiSlice"; // Asegúrate de que la ruta sea correcta
@@ -46,7 +46,7 @@ const MocaFinalScreen = () => {
   // Agrupar resultados por módulo (debe ir antes de los retornos tempranos)
   const groupedResults = React.useMemo(() => {
     if (!mocaRecord || !Array.isArray(mocaRecord.consolidatedResults)) return {};
-    
+
     return mocaRecord.consolidatedResults.reduce((acc, result) => {
       const { module } = result;
       if (!acc[module]) {
@@ -214,11 +214,11 @@ const MocaFinalScreen = () => {
   // Función para interpretar el puntaje total
   const interpretTotalScore = (score) => {
     if (score >= 13) {
-      return { text: "Leve", variant: "success" };
+      return { text: "LEVE", variant: "success" };
     } else if (score >= 7 && score <= 12) {
-      return { text: "Moderado", variant: "warning" };
+      return { text: "MODERADO", variant: "warning" };
     } else if (score < 7) {
-      return { text: "Grave", variant: "danger" };
+      return { text: "GRAVE", variant: "danger" };
     } else {
       return { text: "Puntaje Indeterminado", variant: "secondary" };
     }
@@ -262,7 +262,7 @@ const MocaFinalScreen = () => {
       {isAdmin ? (
         <>
           <h2 className="text-center mb-4">Resultados Finales del MoCA Self</h2>
-          
+
           {/* Tabla Resumen de Puntajes Totales */}
           <Row className="mb-4">
             <Col>
@@ -339,8 +339,8 @@ const MocaFinalScreen = () => {
           {/* Botón para regresar */}
           <Row className="mt-4">
             <Col className="d-flex justify-content-end">
-              <button 
-                className="cubo-undo-button" 
+              <button
+                className="cubo-undo-button"
                 onClick={handleBack}
                 style={{ padding: '0.8rem 1.5rem', fontSize: '1rem' }}
               >
@@ -354,7 +354,7 @@ const MocaFinalScreen = () => {
         // Vista para el Paciente
         <Row className="justify-content-center align-items-center" style={{ minHeight: '75vh' }}>
           <Col md={10} lg={8} xl={6} className="text-center">
-            <div 
+            <div
               className="p-5"
               style={{
                 background: 'white',
@@ -366,7 +366,7 @@ const MocaFinalScreen = () => {
               }}
             >
               {/* Círculos decorativos de fondo */}
-              <div 
+              <div
                 style={{
                   position: 'absolute',
                   top: '-50px',
@@ -379,7 +379,7 @@ const MocaFinalScreen = () => {
                   zIndex: 0
                 }}
               />
-              <div 
+              <div
                 style={{
                   position: 'absolute',
                   bottom: '-50px',
@@ -392,21 +392,45 @@ const MocaFinalScreen = () => {
                   zIndex: 0
                 }}
               />
-              
+
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div className="mb-4 animate__animated animate__bounceIn">
-                  <FaCheckCircle color="#10b981" size={90} style={{ filter: 'drop-shadow(0px 8px 16px rgba(16, 185, 129, 0.4))' }}/>
+                  <FaCheckCircle color="#10b981" size={90} style={{ filter: 'drop-shadow(0px 8px 16px rgba(16, 185, 129, 0.4))' }} />
                 </div>
-                
+
                 <h1 className="mb-3 fw-bold animate__animated animate__fadeInUp" style={{ color: '#0f172a', fontSize: '2.5rem', letterSpacing: '-0.5px' }}>
                   ¡Evaluación Completada!
                 </h1>
-                
-                <p className="text-muted mb-5 animate__animated animate__fadeInUp" style={{ fontSize: '1.25rem', lineHeight: '1.6', animationDelay: '0.2s', padding: '0 20px' }}>
-                  Has finalizado la prueba MoCA con éxito. Tus resultados han sido guardados de manera segura y serán revisados por tu especialista médico. <br/><br/><strong>¡Agradecemos mucho tu esfuerzo!</strong>
+
+                <p className="text-muted mb-4 animate__animated animate__fadeInUp" style={{ fontSize: '1.25rem', lineHeight: '1.6', animationDelay: '0.2s', padding: '0 20px' }}>
+                  Has finalizado la prueba MoCA con éxito. Tus resultados han sido guardados de manera segura y serán revisados por tu especialista médico.
                 </p>
-                
-                <button 
+
+                <div className="animate__animated animate__fadeInUp mb-5" style={{ animationDelay: '0.3s' }}>
+                  <div style={{
+                    display: 'inline-block',
+                    padding: '20px 40px',
+                    backgroundColor: '#f8fafc',
+                    borderRadius: '20px',
+                    border: '2px solid #e2e8f0'
+                  }}>
+                    <span style={{ fontSize: '1.1rem', color: '#64748b', display: 'block', marginBottom: '8px', fontWeight: '500' }}>Puntaje Total</span>
+                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center' }}>
+                      <span style={{ fontSize: '3.5rem', fontWeight: '800', color: '#2563eb' }}>{mocaRecord.totalScore || 0}</span>
+                      <span style={{ fontSize: '1.5rem', color: '#94a3b8', margin: '0 5px' }}>/</span>
+                      <span style={{ fontSize: '1.5rem', fontWeight: '600', color: '#64748b' }}>{mocaRecord.totalMaxScore || 30}</span>
+                    </div>
+                    <Badge bg={interpretTotalScore(mocaRecord.totalScore).variant} style={{ fontSize: '0.9rem', marginTop: '10px' }}>
+                      {interpretTotalScore(mocaRecord.totalScore).text}
+                    </Badge>
+                  </div>
+                </div>
+
+                <p className="text-muted mb-5 animate__animated animate__fadeInUp" style={{ animationDelay: '0.4s' }}>
+                  <strong>¡Agradecemos mucho tu esfuerzo!</strong>
+                </p>
+
+                <button
                   className="animate__animated animate__fadeInUp"
                   onClick={handleGoHome}
                   style={{

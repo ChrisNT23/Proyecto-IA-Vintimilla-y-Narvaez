@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 import { useGetPatientsQuery, useUpdatePatientMutation } from "../slices/patientApiSlice";
 import { useCreateMocaSelfMutation } from "../slices/mocaSelfApiSlice";
 import { buildMocaSummary } from "./MOCAmodules/helpers/mocaSummaryBuilder";
+import { toast } from "react-toastify";
 import EmotionCapture from "../components/EmotionCapture";
 import Visuoespacial from "./MOCAmodules/Visuoespacial";
 import Identificacion from "./MOCAmodules/Identificacion";
@@ -79,6 +80,7 @@ const MocaStartSelf = () => {
   // Ref que siempre apunta al módulo actual (soluciona bug de closure en setInterval)
   const currentModuleIndexRef = useRef(0);
   const emotionDataIdRef = useRef(null);
+  const isSavingInProgress = useRef(false);
 
   const [
     updatePatient,
@@ -332,10 +334,13 @@ const MocaStartSelf = () => {
       setTestCompleted(true);
       // 🔥 Si es paciente (no admin), guardar automáticamente al completar el último módulo
       if (!isAdmin) {
-        handleSaveResults(newCurrentScore, {
-          ...individualScores,
-          [MODULES[moduleId].name]: { ...activityScores, total: moduleScore },
-        });
+        // Pequeño delay para asegurar que el estado de testCompleted se propague si es necesario
+        setTimeout(() => {
+          handleSaveResults(newCurrentScore, {
+            ...individualScores,
+            [MODULES[moduleId].name]: { ...activityScores, total: moduleScore },
+          });
+        }, 500);
       }
     }
   };
@@ -360,14 +365,19 @@ const MocaStartSelf = () => {
 
   // Guardar resultados en la base de datos
   const handleSaveResults = async (scoreParam, updatedIndividualScores) => {
+    // Evitar múltiples llamadas simultáneas
+    if (isSavingInProgress.current) return;
+    
     // Si no se pasa scoreParam, usar currentScore
     const finalScore = scoreParam ?? currentScore;
     const finalIndividualScores = updatedIndividualScores ?? individualScores;
 
     if (!selectedPatient) {
-      alert("Paciente no seleccionado.");
+      toast.error("Paciente no seleccionado.");
       return;
     }
+
+    isSavingInProgress.current = true;
 
     let adjustedScore = finalScore;
     if (hasLessThan12YearsOfEducation && adjustedScore < 30) {
@@ -398,24 +408,27 @@ const MocaStartSelf = () => {
 
     try {
       const savedRecord = await createMocaSelf(mocaData).unwrap();
-      alert("Resultados guardados exitosamente.");
-
+      
       if (isAdmin) {
         try {
           await updatePatient({ id: selectedPatient._id, mocaAssigned: false }).unwrap();
-          alert("Estado de MOCA actualizado correctamente.");
+          toast.success("Resultados guardados y estado de MOCA actualizado.");
         } catch (err) {
           console.error(err);
-          alert("Error al actualizar el estado de MOCA.");
+          toast.warning("Resultados guardados, pero hubo un error al actualizar el estado del paciente.");
         }
+      } else {
+        toast.success("¡Evaluación completada con éxito!");
       }
 
-      navigate(`/moca-final/${savedRecord._id}`);
+      // Navegar después de un pequeño delay para que vean el toast
+      setTimeout(() => {
+        navigate(`/moca-final/${savedRecord._id}`);
+      }, 1500);
     } catch (err) {
       console.error("Error al guardar resultados:", err);
-      alert(
-        "Hubo un error al guardar los resultados. Por favor, intenta nuevamente."
-      );
+      toast.error("Hubo un error al guardar los resultados. Por favor, intenta nuevamente.");
+      isSavingInProgress.current = false;
     }
   };
 
@@ -1086,19 +1099,9 @@ const MocaStartSelf = () => {
           )}
 
           {/* Mensajes de éxito/error al guardar o actualizar */}
-          {isSuccess && isAdmin && showAdminDetails && (
-            <Alert variant="success" className="mt-3 text-center">
-              Resultados guardados exitosamente.
-            </Alert>
-          )}
           {isSaveError && isAdmin && showAdminDetails && (
             <Alert variant="danger" className="mt-3 text-center">
               {saveError?.data?.error || "Hubo un error al guardar los resultados."}
-            </Alert>
-          )}
-          {isUpdateSuccess && isAdmin && showAdminDetails && (
-            <Alert variant="success" className="mt-3 text-center">
-              Estado de MOCA actualizado correctamente.
             </Alert>
           )}
           {isUpdateError && isAdmin && showAdminDetails && (
