@@ -37,21 +37,34 @@ const DashboardIAScreen = () => {
     const FINDINGS_PER_PAGE = 3;
 
     // 1. Fetch Data
-    const { data: mocaHistory } = useGetAllMocaSelfsQuery(patientId);
-
-    // Si tenemos evalId (de una evaluación específica), lo usamos. 
-    // Si no, buscamos la más reciente del historial.
-    const selectedEvalId = evalId || (mocaHistory && mocaHistory.length > 0
-        ? [...mocaHistory].sort((a, b) => new Date(b.testDate) - new Date(a.testDate))[0]._id
-        : null);
-
-    const { data: mocaRecord, isLoading: loadingEval } = useGetMocaSelfByIdQuery(selectedEvalId, {
-        skip: !selectedEvalId
+    // Si venimos de una evaluación específica, cargamos esa primero para saber de qué paciente es
+    const { data: mocaRecordById, isLoading: loadingEvalById } = useGetMocaSelfByIdQuery(evalId, {
+        skip: !evalId
     });
+
+    // El patientId efectivo viene de la URL o del registro cargado
+    const effectivePatientId = patientId || (mocaRecordById?.patient?._id || mocaRecordById?.patient);
+
+    // Cargamos el historial filtrado por este paciente
+    const { data: mocaHistory, isLoading: loadingHistory } = useGetAllMocaSelfsQuery(effectivePatientId, {
+        skip: !effectivePatientId
+    });
+
+    // Determinamos el ID de evaluación a mostrar (el de la URL o el más reciente del historial)
+    const selectedEvalId = evalId || (mocaHistory && mocaHistory.length > 0 ? mocaHistory[0]._id : null);
+
+    // Si el ID seleccionado no es el que ya cargamos (porque veníamos por patientId), cargamos el correspondiente
+    const { data: mocaRecordFromHistory, isLoading: loadingEvalFromHistory } = useGetMocaSelfByIdQuery(selectedEvalId, {
+        skip: !selectedEvalId || selectedEvalId === evalId
+    });
+
+    // Registro final para mostrar
+    const mocaRecord = evalId ? mocaRecordById : mocaRecordFromHistory;
+    const loadingEval = evalId ? loadingEvalById : loadingEvalFromHistory;
 
     const [getMultimodalAnalysis, { isLoading: loadingMultimodal }] = useGetMultimodalAnalysisMutation();
 
-    const targetPatientId = patientId || (mocaRecord?.patient?._id || mocaRecord?.patient);
+    const targetPatientId = effectivePatientId;
     const { data: patient, isLoading: loadingPatient } = useGetPatientByIdQuery(targetPatientId, {
         skip: !targetPatientId
     });
@@ -67,7 +80,7 @@ const DashboardIAScreen = () => {
                             visuoespacial: mocaRecord.modulesData?.Visuoespacial?.totalScore || 0,
                             atencion: mocaRecord.modulesData?.Atencion?.totalScore || 0
                         },
-                        deterioro_label: mocaRecord.totalScore >= 13 ? 'Leve' : mocaRecord.totalScore >= 7 ? 'Moderado' : 'Grave'
+                        deterioro_label: mocaRecord.totalScore >= 13 ? 'LEVE' : mocaRecord.totalScore >= 7 ? 'MODERADO' : 'GRAVE'
                     },
                     emotions: {
                         distribution: mocaRecord.emotionData?.derivedVariables?.averageEmotionProbabilities || {},
@@ -237,7 +250,7 @@ const DashboardIAScreen = () => {
         'Disgust': '#ec4899'
     };
 
-    if (loadingEval || loadingPatient) return (
+    if (loadingEval || loadingPatient || loadingHistory) return (
         <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh', background: '#f8fafc' }}>
             <Spinner animation="grow" variant="primary" />
         </div>
@@ -328,7 +341,7 @@ const DashboardIAScreen = () => {
                                 <span className="score-max">{mocaRecord.totalMaxScore || 30}</span>
                             </div>
                             <div className={`risk-label ${mocaRecord.totalScore >= 13 ? 'bajo' : mocaRecord.totalScore >= 7 ? 'moderado' : 'alto'}`}>
-                                Riesgo: {mocaRecord.totalScore >= 13 ? 'Leve' : mocaRecord.totalScore >= 7 ? 'Moderado' : 'Grave'}
+                                Riesgo: {mocaRecord.totalScore >= 13 ? 'LEVE' : mocaRecord.totalScore >= 7 ? 'MODERADO' : 'GRAVE'}
                             </div>
                         </div>
                     </div>

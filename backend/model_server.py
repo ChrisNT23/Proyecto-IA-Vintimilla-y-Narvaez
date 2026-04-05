@@ -296,11 +296,15 @@ def evaluate_emotion():
         weights = {
             'angry': 1.25,
             'sad': 1.2,
-            'neutral': 0.9  # Reducimos ligeramente neutral para evitar que "se coma" a las demás
+            'neutral': 0.9, # Reducimos ligeramente neutral para evitar que "se coma" a las demás
+            'disgust': 0.55 # Penalti para reducir falsos positivos de disgusto
         }
         
+        # Mapping for EMOTION_CLASSES
+        EMOTION_MAP = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
+        
         weighted_preds = np.copy(preds)
-        for i, cls in enumerate(EMOTION_CLASSES):
+        for i, cls in enumerate(EMOTION_MAP):
             if cls in weights:
                 weighted_preds[i] *= weights[cls]
         

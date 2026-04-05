@@ -88,10 +88,23 @@ class EmotionDetector:
                     
                     # Get prediction
                     processed_face = self.preprocess_face(face_roi)
-                    preds = self.model.predict(processed_face, verbose=0)
-                    emotion_idx = np.argmax(preds)
-                    emotion = self.class_names[emotion_idx]
-                    confidence = preds[0][emotion_idx]
+                    preds = self.model.predict(processed_face, verbose=0)[0]
+                    
+                    # Apply weights to reduce sensitivity of certain classes (like disgust)
+                    # and increase others (like sadness/anger)
+                    weights = {
+                        'angry': 1.25, 'sad': 1.2, 'neutral': 0.9, 'disgust': 0.55
+                    }
+                    
+                    weighted_preds = np.copy(preds)
+                    emotions_list = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
+                    for i, cls in enumerate(emotions_list):
+                        if cls in weights:
+                            weighted_preds[i] *= weights[cls]
+                    
+                    emotion_idx = np.argmax(weighted_preds)
+                    emotion = emotions_list[emotion_idx]
+                    confidence = float(weighted_preds[emotion_idx] / np.sum(weighted_preds))
                     
                     # Draw results
                     color = (0, 255, 0) # Green box

@@ -19,9 +19,9 @@ const PatientCard = ({ patient }) => {
 
     const getRiskInfo = (score) => {
         if (score === null || score === undefined) return { label: 'PENDIENTE', class: 'pendiente' };
-        if (score >= 26) return { label: 'BAJO', class: 'bajo' };
-        if (score >= 18) return { label: 'MODERADO', class: 'moderado' };
-        return { label: 'ALTO', class: 'alto' };
+        if (score >= 13) return { label: 'LEVE', class: 'bajo' };
+        if (score >= 7) return { label: 'MODERADO', class: 'moderado' };
+        return { label: 'GRAVE', class: 'alto' };
     };
 
     const risk = getRiskInfo(latestEval?.totalScore);
