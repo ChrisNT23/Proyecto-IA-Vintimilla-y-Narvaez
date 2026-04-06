@@ -7,7 +7,6 @@ Este proyecto es una plataforma integral diseñada para digitalizar y optimizar 
 El sistema permite a médicos y cuidadores gestionar de manera eficiente la salud de los pacientes a través de:
 - **Gestión de Perfiles**: Registro detallado de historial médico y evolución.
 - **Evaluación MoCA Asistida por IA**: Uso de Redes Neuronales Convolucionales (CNN) basadas en **MobileNetV2** para calificar automáticamente dibujos de la prueba MoCA (Cubo, Reloj).
-- **Tratamientos Personalizados**: Asignación de actividades cognitivas y recordatorios de medicación.
 - **Monitoreo Emocional**: Seguimiento de estados de ánimo y bienestar.
 - **Dashboards y Reportes**: Visualización de datos y reportes automáticos en PDF.
 
