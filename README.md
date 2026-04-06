@@ -1,6 +1,4 @@
-# Aplicación de inteligencia artificial multimodal para apoyo a la 
-evaluación cognitiva inicial mediante análisis cognitivo y 
-emocional
+# Aplicación de inteligencia artificial multimodal para apoyo a la evaluación cognitiva inicial mediante análisis cognitivo y emocional
 
 Este proyecto es una plataforma integral diseñada para digitalizar y optimizar el diagnóstico, seguimiento y tratamiento de pacientes con trastornos neurodegenerativos. Combina el poder del stack **MERN** (MongoDB, Express, React, Node.js) con modelos avanzados de **Inteligencia Artificial** para la evaluación cognitiva.
 
