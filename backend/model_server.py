@@ -288,18 +288,17 @@ def evaluate_emotion():
         img_bytes = base64.b64decode(encoded)
         img = Image.open(io.BytesIO(img_bytes)).convert('RGB')
         
-        # Preprocess and Predict
+        
         img_array = preprocess_for_emotions(img)
         preds = model_emotions.predict(img_array, verbose=0)[0]
         
-        # --- Aplicar Pesos de Sensibilidad para Tristeza y Enojo ---
-        # Si estas emociones superan un umbral de ruido, les damos un boost (1.2x)
+        
         weights = {
             'happy': 1.25, 
-            'angry': 1.15,
-            'sad': 1.0, 
-            'neutral': 0.55, 
-            'disgust': 0.55 
+            'angry': 0.7,
+            'sad': 0.7, 
+            'neutral': 1.20, 
+            'disgust': 0.25 
         }
         
         EMOTION_MAP = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
@@ -309,7 +308,7 @@ def evaluate_emotion():
             if cls in weights:
                 weighted_preds[i] *= weights[cls]
         
-        # Normalizar de nuevo para que sumen 1
+        
         weighted_preds = weighted_preds / np.sum(weighted_preds)
         
         idx = int(np.argmax(weighted_preds))
@@ -357,7 +356,7 @@ sys.path.append(os.path.join(BASE_DIR, 'multimodal-ia'))
 from multimodal_engine import run_multimodal_analysis
 import pickle
 
-# Path for Multimodal Model in ai_models
+
 MODEL_MULTIMODAL_PATH = os.path.join(BASE_DIR, 'ai_models', 'multimodal_dtree_model.pkl')
 multimodal_model_data = None
 
@@ -390,12 +389,12 @@ def multimodal_integration():
         if not data:
             return jsonify({"error": "No data provided"}), 400
         
-        mode = request.args.get('mode', 'rules') # 'rules' o 'predictive'
+        mode = request.args.get('mode', 'rules') 
         
-        # Ejecutar análisis core (Camino A ya calcule todo lo necesario)
+       
         analysis_result = run_multimodal_analysis(data)
-        
-        # Si el modo es predictivo, sobreescribir confiabilidad con la predicción del modelo
+         
+    
         if mode == 'predictive':
             if multimodal_model_data is None:
                 analysis_result['predictive_model_status'] = "Model not loaded, falling back to rules"
@@ -405,10 +404,7 @@ def multimodal_integration():
                     le = multimodal_model_data['label_encoder']
                     features_list = multimodal_model_data['features']
                     
-                    # Preparar vector de características
-                    # FEATURES = ['moca_total_score','negative_emotion_ratio','emotion_volatility',
-                    #             'clock_score','cube_score','stress_index','dominant_emotion_encoded']
-                    
+                                        
                     moca_score = data.get('moca', {}).get('total_score', 0)
                     emotions = data.get('emotions', {})
                     dist = emotions.get('distribution', {})
@@ -419,7 +415,7 @@ def multimodal_integration():
                     stress = emotions.get('stress_index', 0.5)
                     dom_em = emotions.get('dominant_emotion', 'neutral')
                     
-                    # Codificar emoción dominante
+                    
                     dom_em_encoded = le.transform([dom_em])[0] if dom_em in le.classes_ else le.transform(['neutral'])[0]
                     
                     feature_vector = np.array([[
@@ -428,8 +424,7 @@ def multimodal_integration():
                     ]])
                     
                     prediction = clf.predict(feature_vector)[0]
-                    # Convertir etiqueta de predicción a confiabilidad
-                    # label: 'posiblemente_sesgado' | 'confiable'
+                    
                     analysis_result['predictive_reliability'] = "baja/media" if prediction == 'posiblemente_sesgado' else "alta"
                     analysis_result['result_reliability'] = analysis_result['predictive_reliability'] # Override
                     analysis_result['analysis_mode'] = "predictive (Camino B)"
@@ -452,7 +447,7 @@ def multimodal_integration():
 
 if __name__ == '__main__':
     logger.info("Starting refined Model Server on port 5001...")
-    # Add project root to sys path to ensure multimodal_engine is importable
+    
     import sys
     sys.path.append(BASE_DIR)
     app.run(host='0.0.0.0', port=5001, debug=False)
