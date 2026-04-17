@@ -12,7 +12,7 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
 
   const wordList = ["ROSTRO", "SEDA", "IGLESIA", "CLAVEL", "ROJO"];
 
-  // Definición de etapas
+
   const STAGE_FIRST_READ = 1;
   const STAGE_FIRST_RECALL = 2;
   const STAGE_SECOND_READ = 3;
@@ -20,7 +20,7 @@ const Memoria = ({ onComplete, onPrevious, isFirstModule }) => {
   const STAGE_FINAL = 5;
 
   const [stage, setStage] = useState(STAGE_FIRST_READ);
-  const [started, setStarted] = useState(false); // ← controla si ya arrancó
+  const [started, setStarted] = useState(false);
   const [responses, setResponses] = useState([]);
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState("");
